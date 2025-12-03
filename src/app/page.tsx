@@ -1,15 +1,32 @@
+import { HeroSection } from '@/components/features/hero-section';
+import { TravelStyleSection } from '@/components/features/travel-style-section';
+import { GoldenHourDealsSection } from '@/components/features/golden-hour-deals-section';
+import { ExploreSection } from '@/components/features/explore-section';
+import { WhyChooseUsSection } from '@/components/features/why-choose-us-section';
+import { ThreeStepsSection } from '@/components/features/three-steps-section';
+import { TestimonialsSection } from '@/components/features/testimonials-section';
+import { Footer } from '@/components/features/footer';
+
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm">
-        <h1 className="text-4xl font-bold text-primary mb-4">
-          Welcome to Urban Trips
-        </h1>
-        <p className="text-gray-600">
-          Your Next.js project is ready to go!
-        </p>
-      </div>
+    <main className="min-h-screen">
+      <HeroSection />
+      <TravelStyleSection />
+      <GoldenHourDealsSection />
+      <ExploreSection
+        title="Explore India"
+        subtitle="Discover the rich culture and vibrant cities of India"
+        cardCount={5}
+      />
+      <ExploreSection
+        title="Quick Visa Getaways"
+        subtitle="Explore destinations with easy visa processes"
+        cardCount={5}
+      />
+      <WhyChooseUsSection />
+      <ThreeStepsSection />
+      <TestimonialsSection />
+      <Footer />
     </main>
   );
 }
-
