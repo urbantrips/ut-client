@@ -1,0 +1,291 @@
+# Cursor Rules for Next.js + TypeScript Stack
+
+## Core Technologies
+- Next.js 14+ (App Router)
+- TypeScript (strict mode)
+- Tailwind CSS
+- Framer Motion
+- TanStack Query (React Query)
+- Zod
+- Zustand
+
+## Code Style & Structure
+
+### TypeScript
+- Use strict TypeScript configuration
+- Prefer `interface` for object shapes, `type` for unions/intersections
+- Avoid `any` - use `unknown` if type is truly unknown
+- Use proper type inference; don't over-annotate
+- Create shared types in `@/types` directory
+
+### Component Structure
+- Use functional components with TypeScript
+- Prefer named exports for components
+- Use `'use client'` directive only when necessary (client components)
+- Keep server components as default when possible
+- File naming: `kebab-case.tsx` for components
+
+```typescript
+// Example component structure
+interface ComponentProps {
+  title: string;
+  isActive?: boolean;
+}
+
+export function Component({ title, isActive = false }: ComponentProps) {
+  // component logic
+}
+```
+
+### File Organization
+```
+src/
+├── app/              # Next.js app router pages
+├── components/       # Reusable components
+│   ├── ui/          # Base UI components
+│   └── features/    # Feature-specific components
+├── hooks/           # Custom React hooks
+├── lib/             # Utility functions
+├── store/           # Zustand stores
+├── types/           # TypeScript types
+└── schemas/         # Zod schemas
+```
+
+## TanStack Query
+
+### Query Keys
+- Use hierarchical query keys as arrays
+- Create query key factories for consistency
+
+```typescript
+export const queryKeys = {
+  users: {
+    all: ['users'] as const,
+    detail: (id: string) => ['users', id] as const,
+    list: (filters: string) => ['users', 'list', filters] as const,
+  },
+};
+```
+
+### Usage
+- Use `useQuery` for GET requests
+- Use `useMutation` for POST/PUT/DELETE
+- Implement proper error handling
+- Leverage optimistic updates where appropriate
+
+```typescript
+const { data, isLoading, error } = useQuery({
+  queryKey: queryKeys.users.detail(userId),
+  queryFn: () => fetchUser(userId),
+  staleTime: 5 * 60 * 1000, // 5 minutes
+});
+```
+
+## Zod Schemas
+
+### Validation
+- Define schemas for all external data (API responses, forms)
+- Colocate schemas with related components or in `@/schemas`
+- Use `z.infer<>` to derive TypeScript types
+
+```typescript
+import { z } from 'zod';
+
+export const userSchema = z.object({
+  id: z.string(),
+  name: z.string().min(1),
+  email: z.string().email(),
+  age: z.number().positive().optional(),
+});
+
+export type User = z.infer<typeof userSchema>;
+```
+
+### Form Validation
+- Combine with React Hook Form for forms
+- Validate on submit and provide clear error messages
+
+## Zustand Store
+
+### Store Structure
+- Keep stores small and focused (single responsibility)
+- Use slices pattern for larger stores
+- Avoid storing derived state
+
+```typescript
+import { create } from 'zustand';
+import { devtools, persist } from 'zustand/middleware';
+
+interface UserStore {
+  user: User | null;
+  setUser: (user: User) => void;
+  clearUser: () => void;
+}
+
+export const useUserStore = create<UserStore>()(
+  devtools(
+    persist(
+      (set) => ({
+        user: null,
+        setUser: (user) => set({ user }),
+        clearUser: () => set({ user: null }),
+      }),
+      { name: 'user-storage' }
+    )
+  )
+);
+```
+
+## Tailwind CSS
+
+### Best Practices
+- Use Tailwind's utility classes; avoid custom CSS when possible
+- Create component variants using `clsx` or `cn` utility
+- Use Tailwind's design tokens for consistency
+- Leverage `@apply` sparingly in component-specific styles
+
+```typescript
+import { cn } from '@/lib/utils';
+
+export function Button({ className, ...props }: ButtonProps) {
+  return (
+    <button
+      className={cn(
+        'rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700',
+        className
+      )}
+      {...props}
+    />
+  );
+}
+```
+
+### Responsive Design
+- Mobile-first approach: base styles, then `sm:`, `md:`, `lg:`, etc.
+- Use Tailwind's breakpoints consistently
+
+## Framer Motion
+
+### Animation Principles
+- Use `motion` components from framer-motion
+- Define animation variants for reusability
+- Keep animations subtle and purposeful
+- Use `AnimatePresence` for enter/exit animations
+
+```typescript
+import { motion } from 'framer-motion';
+
+const variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
+
+export function AnimatedCard() {
+  return (
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={variants}
+      transition={{ duration: 0.3 }}
+    >
+      Content
+    </motion.div>
+  );
+}
+```
+
+### Performance
+- Use `layout` prop for layout animations
+- Prefer `transform` properties (x, y, scale) over layout properties
+- Use `useReducedMotion` hook for accessibility
+
+## Next.js Specific
+
+### App Router
+- Use server components by default
+- Add `'use client'` only when using hooks, context, or browser APIs
+- Leverage parallel routes and intercepting routes where beneficial
+- Use route groups `(group)` for organization without affecting URL
+
+### Data Fetching
+- Fetch data in server components when possible
+- Use `async/await` directly in server components
+- Implement proper loading states with `loading.tsx`
+- Handle errors with `error.tsx`
+
+### Image Optimization
+- Always use Next.js `<Image>` component
+- Specify width and height or use `fill` with parent container
+- Use appropriate `sizes` prop for responsive images
+
+```typescript
+import Image from 'next/image';
+
+<Image
+  src="/hero.jpg"
+  alt="Hero"
+  width={800}
+  height={600}
+  priority
+  sizes="(max-width: 768px) 100vw, 800px"
+/>
+```
+
+### Metadata
+- Use `generateMetadata` for dynamic metadata
+- Export static `metadata` object for static pages
+
+## Performance & Best Practices
+
+### Code Splitting
+- Dynamic imports for heavy components
+- Use `next/dynamic` with appropriate loading states
+
+```typescript
+import dynamic from 'next/dynamic';
+
+const HeavyComponent = dynamic(() => import('@/components/heavy'), {
+  loading: () => <Skeleton />,
+  ssr: false,
+});
+```
+
+### Error Handling
+- Use error boundaries for component errors
+- Implement proper try/catch in async functions
+- Provide user-friendly error messages
+- Log errors appropriately
+
+### Accessibility
+- Use semantic HTML
+- Include proper ARIA labels
+- Ensure keyboard navigation works
+- Test with screen readers
+- Maintain color contrast ratios
+
+### Testing
+- Write unit tests for utilities and hooks
+- Integration tests for critical user flows
+- Use TypeScript to catch errors at compile time
+
+## Environment Variables
+- Prefix public variables with `NEXT_PUBLIC_`
+- Never commit `.env.local` to git
+- Validate env vars with Zod schema at startup
+
+```typescript
+// lib/env.ts
+import { z } from 'zod';
+
+const envSchema = z.object({
+  NEXT_PUBLIC_API_URL: z.string().url(),
+  DATABASE_URL: z.string(),
+});
+
+export const env = envSchema.parse(process.env);
+```
+
+## Git Conventions
+- Use conventional commits: `feat:`, `fix:`, `chore:`, `docs:`
+- Keep commits atomic and focused
+- Write descriptive commit messages
