@@ -105,11 +105,11 @@ export function ThreeStepsSection() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.2 }}
-                  className="relative pl-20 pb-16 last:pb-0"
+                  className="relative pl-24 pb-16 last:pb-0"
                 >
                   {/* Vertical Connecting Line */}
                   {index < steps.length - 1 && (
-                    <div className="absolute left-10 top-20 w-0.5 h-full bg-primary" />
+                    <div className="absolute left-[40px] top-20 bottom-0 w-0.5 bg-primary" />
                   )}
 
                   {/* Step Number Circle - Yellow outline with white fill */}
