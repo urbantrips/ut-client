@@ -11,7 +11,7 @@ export function BrowseDestinationsSection() {
 
   return (
     <section className="py-16 bg-white">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="">
         {/* Filter Navigation */}
         <div className="flex flex-wrap gap-3 mb-8 justify-center">
           {filterOptions.map((filter) => (
