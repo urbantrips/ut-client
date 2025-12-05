@@ -42,7 +42,7 @@ export function Header() {
       
       {/* Main header content */}
       <motion.div
-        className={`px-4 py-4 transition-all duration-300 ${
+        className={`px-3 sm:px-4 py-3 sm:py-4 transition-all duration-300 ${
           isScrolled
             ? 'bg-white/95 backdrop-blur-md shadow-lg'
             : 'bg-white'
@@ -57,7 +57,7 @@ export function Header() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Link href="/" className="text-2xl font-bold text-black relative group">
+            <Link href="/" className="text-xl sm:text-2xl font-bold text-black relative group">
               <span className="relative z-10">Urbantrips</span>
               <motion.span
                 className="absolute inset-0 bg-primary/20 blur-xl opacity-0 group-hover:opacity-100"

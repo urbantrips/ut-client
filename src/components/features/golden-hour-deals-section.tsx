@@ -33,17 +33,17 @@ export function GoldenHourDealsSection() {
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="grid md:grid-cols-[auto_1fr] gap-4 md:gap-6 items-center">
+        <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-6 md:gap-6 items-center">
           {/* Left Content */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, type: 'spring', stiffness: 100 }}
-            className="space-y-6"
+            className="space-y-4 sm:space-y-6 text-center md:text-left"
           >
             <motion.h3
-              className="text-6xl md:text-7xl font-cursive text-primary mb-4"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-cursive text-primary mb-2 sm:mb-4"
               style={{ fontFamily: 'cursive', color: '#F5C842' }}
               animate={{
                 textShadow: [
@@ -57,7 +57,7 @@ export function GoldenHourDealsSection() {
               Celebrating
             </motion.h3>
             <motion.h4
-              className="text-2xl md:text-3xl font-normal italic text-gray-900 mb-8"
+              className="text-xl sm:text-2xl md:text-3xl font-normal italic text-gray-900 mb-4 sm:mb-8"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
@@ -67,7 +67,7 @@ export function GoldenHourDealsSection() {
             </motion.h4>
             
             {/* Stats */}
-            <div className="flex gap-8 md:gap-12">
+            <div className="flex gap-6 sm:gap-8 md:gap-12 justify-center md:justify-start">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -76,7 +76,7 @@ export function GoldenHourDealsSection() {
                 whileHover={{ scale: 1.05 }}
               >
                 <motion.div
-                  className="text-5xl md:text-6xl font-bold text-gray-900 mb-1"
+                  className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-1"
                   initial={{ scale: 0 }}
                   whileInView={{ scale: 1 }}
                   viewport={{ once: true }}
@@ -84,7 +84,7 @@ export function GoldenHourDealsSection() {
                 >
                   1000+
                 </motion.div>
-                <div className="text-base md:text-lg text-gray-900">
+                <div className="text-sm sm:text-base md:text-lg text-gray-900">
                   Happy Customers
                 </div>
               </motion.div>
@@ -96,7 +96,7 @@ export function GoldenHourDealsSection() {
                 whileHover={{ scale: 1.05 }}
               >
                 <motion.div
-                  className="text-5xl md:text-6xl font-bold text-gray-900 mb-1"
+                  className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-1"
                   initial={{ scale: 0 }}
                   whileInView={{ scale: 1 }}
                   viewport={{ once: true }}
@@ -104,7 +104,7 @@ export function GoldenHourDealsSection() {
                 >
                   4.7/5
                 </motion.div>
-                <div className="text-base md:text-lg text-gray-900">
+                <div className="text-sm sm:text-base md:text-lg text-gray-900">
                   Traveler Satisfaction
                 </div>
               </motion.div>
@@ -112,13 +112,13 @@ export function GoldenHourDealsSection() {
           </motion.div>
 
           {/* Right Cards - Marquee */}
-          <div ref={containerRef} className="overflow-hidden min-w-0 w-full">
+          <div ref={containerRef} className="overflow-hidden min-w-0 w-full mt-4 md:mt-0">
             <div className="flex gap-3 md:gap-4 animate-marquee" style={{ width: 'fit-content' }}>
               {/* First set of cards */}
               {cards.map((_, index) => (
                 <motion.div
                   key={`first-${index}`}
-                  className="flex-shrink-0 aspect-[3/4] w-32 md:w-48 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden group"
+                  className="flex-shrink-0 aspect-[3/4] w-28 sm:w-32 md:w-48 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden group"
                   whileHover={{ scale: 1.05, rotate: 2 }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -128,7 +128,7 @@ export function GoldenHourDealsSection() {
               {cards.map((_, index) => (
                 <motion.div
                   key={`second-${index}`}
-                  className="flex-shrink-0 aspect-[3/4] w-32 md:w-48 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden group"
+                  className="flex-shrink-0 aspect-[3/4] w-28 sm:w-32 md:w-48 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden group"
                   whileHover={{ scale: 1.05, rotate: 2 }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

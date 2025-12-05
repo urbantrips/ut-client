@@ -37,20 +37,20 @@ const testimonials = [
 
 const TestimonialCard = ({ testimonial }: { testimonial: typeof testimonials[0] }) => (
   <motion.div
-    className="bg-yellow-50 border-2 border-primary/30 rounded-xl p-6 flex gap-4 items-start flex-shrink-0 w-80 shadow-lg hover:shadow-2xl transition-all duration-300 group relative overflow-hidden"
+    className="bg-yellow-50 border-2 border-primary/30 rounded-xl p-4 sm:p-6 flex gap-3 sm:gap-4 items-start flex-shrink-0 w-[280px] sm:w-80 shadow-lg hover:shadow-2xl transition-all duration-300 group relative overflow-hidden"
     whileHover={{ scale: 1.02, y: -5 }}
   >
     {/* Background gradient on hover */}
     <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
     
     <motion.div
-      className="w-12 h-12 bg-gradient-to-br from-primary to-primary-600 rounded-full flex-shrink-0 relative z-10 shadow-md"
+      className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-primary to-primary-600 rounded-full flex-shrink-0 relative z-10 shadow-md"
       whileHover={{ rotate: 360 }}
       transition={{ duration: 0.6 }}
     />
     <div className="flex-1 relative z-10">
-      <p className="text-gray-700 mb-4 leading-relaxed">{testimonial.review}</p>
-      <p className="font-semibold text-gray-900">
+      <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4 leading-relaxed">{testimonial.review}</p>
+      <p className="text-sm sm:text-base font-semibold text-gray-900">
         {testimonial.name} - {testimonial.location}
       </p>
     </div>
@@ -74,15 +74,15 @@ export function TestimonialsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center"
+          className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-8 sm:mb-12 text-center px-2"
         >
           What our Customer&apos;s say?
         </motion.h2>
 
         {/* Top row - marquee to the right */}
-        <div className="mb-4 overflow-hidden min-w-0 w-full">
+        <div className="mb-3 sm:mb-4 overflow-hidden min-w-0 w-full">
           <div 
-            className="flex gap-6 animate-marquee" 
+            className="flex gap-4 sm:gap-6 animate-marquee" 
             style={{ width: 'fit-content' }}
           >
             {topRowDuplicated.map((testimonial, index) => (
@@ -94,7 +94,7 @@ export function TestimonialsSection() {
         {/* Bottom row - marquee to the left */}
         <div className="overflow-hidden min-w-0 w-full">
           <div 
-            className="flex gap-6 animate-marquee-reverse" 
+            className="flex gap-4 sm:gap-6 animate-marquee-reverse" 
             style={{ width: 'fit-content' }}
           >
             {bottomRowDuplicated.map((testimonial, index) => (

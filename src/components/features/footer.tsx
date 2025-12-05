@@ -37,7 +37,7 @@ export function Footer() {
           <motion.button
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
-            className="group relative bg-primary text-gray-900 px-10 py-5 rounded-full font-bold text-xl shadow-2xl hover:shadow-primary/50 transition-all duration-300 overflow-hidden"
+            className="group relative bg-primary text-gray-900 px-6 sm:px-8 md:px-10 py-3 sm:py-4 md:py-5 rounded-full font-bold text-base sm:text-lg md:text-xl shadow-2xl hover:shadow-primary/50 transition-all duration-300 overflow-hidden"
           >
             {/* Animated background glow */}
             <motion.div

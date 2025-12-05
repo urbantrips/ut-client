@@ -19,10 +19,10 @@ export function ExploreSection({ title, subtitle, cardCount = 4 }: ExploreSectio
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
             {title}
           </h2>
-          <p className="text-lg text-gray-600">
+          <p className="text-base sm:text-lg text-gray-600 px-2">
             {subtitle}
           </p>
         </motion.div>
@@ -63,7 +63,7 @@ export function ExploreSection({ title, subtitle, cardCount = 4 }: ExploreSectio
                 />
               </motion.div>
               <motion.p
-                className="text-base font-bold text-black text-center group-hover:text-primary transition-colors duration-300"
+                className="text-sm sm:text-base font-bold text-black text-center group-hover:text-primary transition-colors duration-300"
               >
                 Bali
               </motion.p>

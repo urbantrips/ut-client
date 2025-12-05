@@ -18,13 +18,13 @@ export function BrowseDestinationsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="flex flex-wrap gap-3 mb-12 justify-center"
+          className="flex flex-wrap gap-2 sm:gap-3 mb-8 sm:mb-12 justify-center"
         >
           {filterOptions.map((filter) => (
             <motion.button
               key={filter}
               onClick={() => setActiveFilter(filter)}
-              className={`px-6 py-2.5 rounded-full font-medium transition-all duration-300 relative overflow-hidden ${
+              className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-full font-medium transition-all duration-300 relative overflow-hidden text-sm sm:text-base ${
                 activeFilter === filter
                   ? 'bg-primary text-black shadow-lg'
                   : 'bg-gray-200 text-black hover:bg-gray-300'
@@ -88,7 +88,7 @@ export function BrowseDestinationsSection() {
                   />
                 </motion.div>
                 <motion.p
-                  className="text-base font-bold text-black text-center group-hover:text-primary transition-colors duration-300"
+                  className="text-sm sm:text-base font-bold text-black text-center group-hover:text-primary transition-colors duration-300"
                 >
                   {destination}
                 </motion.p>

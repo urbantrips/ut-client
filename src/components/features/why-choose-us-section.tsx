@@ -37,15 +37,15 @@ export function WhyChooseUsSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
             Why Choose Us?
           </h2>
-          <p className="text-lg text-gray-600">
+          <p className="text-base sm:text-lg text-gray-600 px-2">
             we believe every journey should be as unique as the traveler.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {features.map((feature, index) => (
             <motion.div
               key={index}
@@ -63,7 +63,7 @@ export function WhyChooseUsSection() {
                 y: -10,
                 transition: { duration: 0.2 }
               }}
-              className="bg-white p-6 rounded-xl border-2 border-primary/20 flex flex-col items-center text-center shadow-lg hover:shadow-2xl transition-all duration-300 group relative overflow-hidden"
+              className="bg-white p-4 sm:p-6 rounded-xl border-2 border-primary/20 flex flex-col items-center text-center shadow-lg hover:shadow-2xl transition-all duration-300 group relative overflow-hidden"
             >
               {/* Background gradient on hover */}
               <motion.div
@@ -71,7 +71,7 @@ export function WhyChooseUsSection() {
               />
               
               <motion.div
-                className={`w-24 h-24 rounded-full bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-6 relative z-10 shadow-md group-hover:shadow-xl transition-shadow duration-300`}
+                className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-4 sm:mb-6 relative z-10 shadow-md group-hover:shadow-xl transition-shadow duration-300`}
                 whileHover={{ rotate: 360 }}
                 transition={{ duration: 0.6 }}
               >
@@ -85,10 +85,10 @@ export function WhyChooseUsSection() {
                     repeatType: 'reverse',
                   }}
                 >
-                  <Star className={`w-12 h-12 ${feature.color}`} />
+                  <Star className={`w-10 h-10 sm:w-12 sm:h-12 ${feature.color}`} />
                 </motion.div>
               </motion.div>
-              <h3 className="text-lg font-semibold text-gray-900 leading-tight relative z-10 group-hover:text-gray-800 transition-colors duration-300">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 leading-tight relative z-10 group-hover:text-gray-800 transition-colors duration-300">
                 {feature.title}
               </h3>
             </motion.div>

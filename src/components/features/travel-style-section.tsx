@@ -13,13 +13,13 @@ export function TravelStyleSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-3xl md:text-4xl font-bold text-black mb-12 text-center"
+          className="text-2xl sm:text-3xl md:text-4xl font-bold text-black mb-8 sm:mb-12 text-center px-2"
         >
           Select Your Travel Style
         </motion.h2>
 
         {/* Travel Style Cards */}
-        <div className="flex flex-wrap gap-8 justify-center">
+        <div className="flex flex-wrap gap-4 sm:gap-6 md:gap-8 justify-center">
           {travelStyles.map((style, index) => (
             <motion.div
               key={`${style}-${index}`}
@@ -40,7 +40,7 @@ export function TravelStyleSection() {
               className="flex flex-col items-center cursor-pointer group"
             >
               <motion.div
-                className="w-32 h-40 rounded-xl border-2 border-primary/30 bg-gradient-to-br from-primary-50/60 to-white flex flex-col items-center justify-center relative overflow-hidden shadow-lg group-hover:shadow-2xl transition-shadow duration-300"
+                className="w-24 h-32 sm:w-28 sm:h-36 md:w-32 md:h-40 rounded-xl border-2 border-primary/30 bg-gradient-to-br from-primary-50/60 to-white flex flex-col items-center justify-center relative overflow-hidden shadow-lg group-hover:shadow-2xl transition-shadow duration-300"
                 whileHover={{ borderColor: 'rgba(255, 220, 46, 0.8)' }}
               >
                 {/* Animated background gradient */}
@@ -51,7 +51,7 @@ export function TravelStyleSection() {
                 
                 {/* Circular gradient placeholder with animation */}
                 <motion.div
-                  className="w-20 h-20 rounded-full bg-gradient-to-br from-primary-200/60 to-primary-50/40 relative z-10"
+                  className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-primary-200/60 to-primary-50/40 relative z-10"
                   animate={{
                     scale: [1, 1.1, 1],
                     rotate: [0, 5, -5, 0],
@@ -70,7 +70,7 @@ export function TravelStyleSection() {
                 />
               </motion.div>
               <motion.span
-                className="text-sm font-bold text-black mt-3 relative"
+                className="text-xs sm:text-sm font-bold text-black mt-2 sm:mt-3 relative"
                 whileHover={{ color: 'rgba(255, 220, 46, 1)' }}
               >
                 {style}

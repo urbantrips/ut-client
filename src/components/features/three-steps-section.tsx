@@ -64,15 +64,15 @@ export function ThreeStepsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-12 text-center"
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-8 sm:mb-12 text-center px-2"
         >
           Your Perfect Trip, Planned in Just 3 Simple Steps
         </motion.h2>
 
         <div className="relative">
-          <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-start">
             {/* Left: Image Placeholders */}
-            <div className="relative h-full min-h-[600px] z-10">
+            <div className="relative h-full min-h-[300px] sm:min-h-[400px] md:min-h-[600px] z-10 hidden md:block">
               {/* Top smaller box - positioned upper right, behind bottom box */}
               <div
                 className="absolute top-0 right-0 z-10"
@@ -105,21 +105,21 @@ export function ThreeStepsSection() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.2 }}
-                  className="relative pl-24 pb-12 last:pb-0"
+                  className="relative pl-16 sm:pl-20 md:pl-24 pb-8 sm:pb-10 md:pb-12 last:pb-0"
                 >
                   {/* Vertical Connecting Line */}
                   {index < steps.length - 1 && (
-                    <div className="absolute left-[40px] top-20 bottom-0 w-0.5 bg-primary" />
+                    <div className="absolute left-[28px] sm:left-[36px] md:left-[40px] top-16 sm:top-18 md:top-20 bottom-0 w-0.5 bg-primary" />
                   )}
 
                   {/* Step Number Circle - Yellow outline with white fill */}
                   <motion.div
-                    className="absolute left-0 top-0 w-20 h-20 rounded-full border-2 border-primary bg-white flex items-center justify-center z-10 shadow-lg"
+                    className="absolute left-0 top-0 w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full border-2 border-primary bg-white flex items-center justify-center z-10 shadow-lg"
                     whileHover={{ scale: 1.1, rotate: 360 }}
                     transition={{ duration: 0.6 }}
                   >
                     <motion.span
-                      className="text-xl font-bold text-gray-900"
+                      className="text-base sm:text-lg md:text-xl font-bold text-gray-900"
                       initial={{ scale: 0 }}
                       whileInView={{ scale: 1 }}
                       viewport={{ once: true }}
@@ -131,10 +131,10 @@ export function ThreeStepsSection() {
 
                   {/* Step Content */}
                   <div>
-                    <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3 md:mb-4">
                       {step.title}
                     </h3>
-                    <p className="text-gray-700 leading-relaxed">
+                    <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
                       {step.description}
                     </p>
                   </div>

@@ -11,9 +11,11 @@ import { Footer } from '@/components/features/footer';
 
 export default function Home() {
   return (
-    <main className="min-h-screen pt-20">
+    <main className="min-h-screen pt-16 sm:pt-20 overflow-x-hidden">
       <Header />
-      <HeroSection />
+      <div className="px-2 sm:px-4 md:px-6 lg:px-8">
+        <HeroSection />
+      </div>
       <TravelStyleSection />
       <BrowseDestinationsSection />
       <GoldenHourDealsSection />
