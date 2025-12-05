@@ -17,6 +17,8 @@
   
   body {
     @apply bg-white text-gray-900 antialiased;
+    font-size: 18px;
+    line-height: 1.6;
     overflow-x: hidden;
   }
 }
