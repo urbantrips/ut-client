@@ -27,17 +27,18 @@ export function ExploreSection({ title, subtitle, cardCount = 5 }: ExploreSectio
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {Array.from({ length: cardCount }).map((_, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-              className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center cursor-pointer hover:shadow-lg transition-shadow"
+              transition={{ duration: 0.3, delay: index * 0.05 }}
+              className="cursor-pointer"
             >
-              <span className="text-sm text-gray-500">Card{index + 1}</span>
+              <div className="aspect-square bg-gray-200 rounded-xl mb-2"></div>
+              <p className="text-base font-bold text-black text-center">Bali</p>
             </motion.div>
           ))}
         </div>

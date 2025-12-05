@@ -17,7 +17,7 @@ export default function Home() {
       <GoldenHourDealsSection />
       <ExploreSection
         title="Explore India"
-        subtitle="Discover the rich culture and vibrant cities of India"
+        subtitle="Unfold top visa-free getaways for smooth journeys."
         cardCount={5}
       />
       <ExploreSection
