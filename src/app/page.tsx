@@ -9,7 +9,7 @@ import { Footer } from '@/components/features/footer';
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen p-6">
       <HeroSection />
       <TravelStyleSection />
       <GoldenHourDealsSection />
