@@ -1,33 +1,30 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { Star } from 'lucide-react';
 
 const features = [
   {
-    icon: '⭐',
-    color: 'text-yellow-500',
-    title: 'Personalized Itineraries & Recommendations',
+    color: 'fill-yellow-400 text-yellow-400',
+    title: 'Personalized Travel Experiences',
   },
   {
-    icon: '⭐',
-    color: 'text-purple-500',
-    title: '24/7 Customer Support & Assistance',
+    color: 'fill-purple-600 text-purple-600',
+    title: 'Expert End-to-End Support, Always',
   },
   {
-    icon: '⭐',
-    color: 'text-red-500',
-    title: 'Best Price Guarantee & Deals',
+    color: 'fill-red-600 text-red-600',
+    title: 'Best Value Recommendations',
   },
   {
-    icon: '⭐',
-    color: 'text-green-500',
-    title: 'Flexible Booking & Cancellation',
+    color: 'fill-green-500 text-green-500',
+    title: 'Trusted by Travelers Across India',
   },
 ];
 
 export function WhyChooseUsSection() {
   return (
-    <section className="py-16 px-4 bg-gray-50">
+    <section className="py-16 px-4 bg-white">
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -40,7 +37,7 @@ export function WhyChooseUsSection() {
             Why Choose Us?
           </h2>
           <p className="text-lg text-gray-600">
-            Experience seamless travel planning with our unique features
+            we believe every journey should be as unique as the traveler.
           </p>
         </motion.div>
 
@@ -52,12 +49,12 @@ export function WhyChooseUsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
-              className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow"
+              className="bg-white p-6 rounded-lg border border-yellow-200 flex flex-col items-center text-center"
             >
-              <div className={`text-4xl mb-4 ${feature.color}`}>
-                {feature.icon}
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-yellow-50 to-white flex items-center justify-center mb-4">
+                <Star className={`w-12 h-12 ${feature.color}`} />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 className="text-lg font-semibold text-gray-900 leading-tight">
                 {feature.title}
               </h3>
             </motion.div>
