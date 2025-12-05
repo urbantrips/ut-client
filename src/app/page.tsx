@@ -1,3 +1,4 @@
+import { Header } from '@/components/features/header';
 import { HeroSection } from '@/components/features/hero-section';
 import { TravelStyleSection } from '@/components/features/travel-style-section';
 import { BrowseDestinationsSection } from '@/components/features/browse-destinations-section';
@@ -10,8 +11,10 @@ import { Footer } from '@/components/features/footer';
 
 export default function Home() {
   return (
-    <main className="min-h-screen p-6">
-      <HeroSection />
+    <main className="min-h-screen">
+      <Header />
+      <div className="p-6">
+        <HeroSection />
       <TravelStyleSection />
       <BrowseDestinationsSection />
       <GoldenHourDealsSection />
@@ -29,6 +32,7 @@ export default function Home() {
       <ThreeStepsSection />
       <TestimonialsSection />
       <Footer />
+      </div>
     </main>
   );
 }
