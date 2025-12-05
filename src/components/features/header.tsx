@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Star, Menu, X } from 'lucide-react';
+import { User, MapPin, Menu, X } from 'lucide-react';
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
@@ -77,7 +77,7 @@ export function Header() {
                   whileHover={{ rotate: 360 }}
                   transition={{ duration: 0.5 }}
                 >
-                  <Star className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors" />
+                  <User className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors" />
                 </motion.div>
                 <span className="relative">
                   My Account
@@ -97,7 +97,7 @@ export function Header() {
                   whileHover={{ rotate: 360 }}
                   transition={{ duration: 0.5 }}
                 >
-                  <Star className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors" />
+                  <MapPin className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors" />
                 </motion.div>
                 <span className="relative">
                   My Trips
@@ -140,7 +140,7 @@ export function Header() {
                 className="flex items-center gap-2 text-black hover:text-primary transition-colors py-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                <Star className="w-4 h-4 text-gray-400" />
+                <User className="w-4 h-4 text-gray-400" />
                 <span>My Account</span>
               </Link>
             </motion.div>
@@ -154,7 +154,7 @@ export function Header() {
                 className="flex items-center gap-2 text-black hover:text-primary transition-colors py-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                <Star className="w-4 h-4 text-gray-400" />
+                <MapPin className="w-4 h-4 text-gray-400" />
                 <span>My Trips</span>
               </Link>
             </motion.div>
