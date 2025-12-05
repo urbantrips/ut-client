@@ -1,70 +1,33 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState } from 'react';
 
-const travelStyles = ['Relax', 'Solo', 'Family', 'Honeymoon', 'Friends'];
-const categories = ['See All', 'Adventure', 'Culture', 'Nature', 'Relaxation', 'Luxury'];
+const travelStyles = ['Romantic', 'Beach', 'Adventure', 'Heritage', 'Romantic'];
 
 export function TravelStyleSection() {
-  const [selectedCategory, setSelectedCategory] = useState('See All');
-
   return (
-    <section className="py-16 px-4 bg-white">
-      <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 text-center">
+    <section className="py-16 bg-white">
+      <div className="max-w-7xl mx-auto px-4">
+        <h2 className="text-3xl md:text-4xl font-bold text-black mb-8 text-center">
           Select Your Travel Style
         </h2>
 
         {/* Travel Style Cards */}
-        <div className="flex flex-wrap justify-center gap-4 mb-12">
+        <div className="flex flex-wrap gap-8 justify-center">
           {travelStyles.map((style, index) => (
             <motion.div
-              key={style}
+              key={`${style}-${index}`}
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
-              className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center cursor-pointer hover:bg-primary/20 transition-colors"
+              className="flex flex-col items-center cursor-pointer"
             >
-              <span className="text-sm font-medium text-gray-700">{style}</span>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Category Tags */}
-        <div className="flex flex-wrap justify-center gap-3 mb-12">
-          {categories.map((category, index) => (
-            <motion.button
-              key={category}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-6 py-2 rounded-full font-medium transition-all ${
-                category === 'See All' || selectedCategory === category
-                  ? 'bg-primary text-gray-900'
-                  : 'border-2 border-primary text-primary hover:bg-primary/10'
-              }`}
-            >
-              {category}
-            </motion.button>
-          ))}
-        </div>
-
-        {/* Destination Cards Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {Array.from({ length: 8 }).map((_, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
-              className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center cursor-pointer hover:shadow-lg transition-shadow"
-            >
-              <span className="text-sm text-gray-500">Card{index + 1}</span>
+              <div className="w-32 h-40 rounded-xl border-[1px] border-yellow-200/60 bg-yellow-50/40 flex flex-col items-center justify-center relative overflow-hidden">
+                {/* Circular gradient placeholder */}
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-100/40 to-yellow-50/20"></div>
+              </div>
+              <span className="text-sm font-bold text-black mt-3">{style}</span>
             </motion.div>
           ))}
         </div>
