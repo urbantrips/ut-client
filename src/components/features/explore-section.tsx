@@ -37,7 +37,7 @@ export function ExploreSection({ title, subtitle, cardCount = 4 }: ExploreSectio
               transition={{ duration: 0.3, delay: index * 0.05 }}
               className="cursor-pointer"
             >
-              <div className="aspect-square bg-gray-200 rounded-xl mb-2"></div>
+              <div className="aspect-square bg-gray-200 rounded-xl mb-4"></div>
               <p className="text-base font-bold text-black text-center">Bali</p>
             </motion.div>
           ))}

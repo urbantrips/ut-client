@@ -7,7 +7,7 @@ export function GoldenHourDealsSection() {
 
   return (
     <section className="py-16 px-4 overflow-hidden" style={{ backgroundColor: '#FFF9E6' }}>
-      <div className="mx-auto">
+      <div className="max-w-7xl mx-auto">
         <div className="grid md:grid-cols-[auto_1fr] gap-4 md:gap-6 items-center">
           {/* Left Content */}
           <motion.div
@@ -15,7 +15,7 @@ export function GoldenHourDealsSection() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="space-y-6 pl-8"
+            className="space-y-6"
           >
             <h3 className="text-6xl md:text-7xl font-cursive text-primary mb-4" style={{ fontFamily: 'cursive', color: '#F5C842' }}>
               Celebrating

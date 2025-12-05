@@ -51,7 +51,7 @@ export function WhyChooseUsSection() {
               transition={{ duration: 0.3, delay: index * 0.1 }}
               className="bg-white p-6 rounded-lg border border-yellow-200 flex flex-col items-center text-center"
             >
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-yellow-50 to-white flex items-center justify-center mb-4">
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-yellow-50 to-white flex items-center justify-center mb-6">
                 <Star className={`w-12 h-12 ${feature.color}`} />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 leading-tight">

@@ -6,9 +6,9 @@ const travelStyles = ['Romantic', 'Beach', 'Adventure', 'Heritage', 'Romantic'];
 
 export function TravelStyleSection() {
   return (
-    <section className="py-16 bg-white">
-      <div className="max-w-7xl mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-black mb-8 text-center">
+    <section className="py-16 px-4 bg-white">
+      <div className="max-w-7xl mx-auto">
+        <h2 className="text-3xl md:text-4xl font-bold text-black mb-12 text-center">
           Select Your Travel Style
         </h2>
 

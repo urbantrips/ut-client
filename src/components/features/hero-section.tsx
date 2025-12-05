@@ -16,8 +16,8 @@ export function HeroSection() {
       {/* Content Container */}
       <div className="relative z-10 h-full flex flex-col items-center justify-center px-4">
         {/* Main Text */}
-        <div className="text-center mb-8">
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-2">
+        <div className="text-center mb-12">
+          <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
             Plan, book, and explore
           </h1>
           <h2 className="text-5xl md:text-6xl font-bold text-white">

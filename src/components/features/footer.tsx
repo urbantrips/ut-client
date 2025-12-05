@@ -46,7 +46,7 @@ export function Footer() {
         </motion.div>
 
         {/* Copyright */}
-        <div className="border-t border-primary/30 pt-8 text-center text-gray-400 text-sm">
+        <div className="border-t border-primary/30 pt-12 text-center text-gray-400 text-sm">
           <p>&copy; {new Date().getFullYear()} Urban Trips. All rights reserved.</p>
         </div>
       </div>

@@ -10,10 +10,10 @@ export function BrowseDestinationsSection() {
   const [activeFilter, setActiveFilter] = useState('Must Visit');
 
   return (
-    <section className="py-16 bg-white">
-      <div className="">
+    <section className="py-16 px-4 bg-white">
+      <div className="max-w-7xl mx-auto">
         {/* Filter Navigation */}
-        <div className="flex flex-wrap gap-3 mb-8 justify-center">
+        <div className="flex flex-wrap gap-3 mb-12 justify-center">
           {filterOptions.map((filter) => (
             <motion.button
               key={filter}
@@ -42,7 +42,7 @@ export function BrowseDestinationsSection() {
               transition={{ duration: 0.3, delay: index * 0.05 }}
               className="cursor-pointer"
             >
-              <div className="aspect-square bg-gray-200 rounded-xl mb-2"></div>
+              <div className="aspect-square bg-gray-200 rounded-xl mb-4"></div>
               <p className="text-base font-bold text-black text-center">{destination}</p>
             </motion.div>
           ))}

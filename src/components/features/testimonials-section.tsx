@@ -36,10 +36,10 @@ const testimonials = [
 ];
 
 const TestimonialCard = ({ testimonial }: { testimonial: typeof testimonials[0] }) => (
-  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex gap-4 items-start flex-shrink-0 w-80">
+  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 flex gap-4 items-start flex-shrink-0 w-80">
     <div className="w-12 h-12 bg-yellow-400 rounded flex-shrink-0"></div>
     <div className="flex-1">
-      <p className="text-gray-700 mb-2">{testimonial.review}</p>
+      <p className="text-gray-700 mb-4">{testimonial.review}</p>
       <p className="font-semibold text-gray-900">
         {testimonial.name} - {testimonial.location}
       </p>
@@ -70,7 +70,7 @@ export function TestimonialsSection() {
         </motion.h2>
 
         {/* Top row - marquee to the right */}
-        <div className="mb-6 overflow-hidden min-w-0 w-full">
+        <div className="mb-4 overflow-hidden min-w-0 w-full">
           <div 
             className="flex gap-6 animate-marquee" 
             style={{ width: 'fit-content' }}

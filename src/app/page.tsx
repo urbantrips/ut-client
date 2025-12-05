@@ -13,8 +13,7 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       <Header />
-      <div className="p-6">
-        <HeroSection />
+      <HeroSection />
       <TravelStyleSection />
       <BrowseDestinationsSection />
       <GoldenHourDealsSection />
@@ -32,7 +31,6 @@ export default function Home() {
       <ThreeStepsSection />
       <TestimonialsSection />
       <Footer />
-      </div>
     </main>
   );
 }
