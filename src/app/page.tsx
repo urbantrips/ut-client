@@ -1,5 +1,6 @@
 import { HeroSection } from '@/components/features/hero-section';
 import { TravelStyleSection } from '@/components/features/travel-style-section';
+import { BrowseDestinationsSection } from '@/components/features/browse-destinations-section';
 import { GoldenHourDealsSection } from '@/components/features/golden-hour-deals-section';
 import { ExploreSection } from '@/components/features/explore-section';
 import { WhyChooseUsSection } from '@/components/features/why-choose-us-section';
@@ -12,6 +13,7 @@ export default function Home() {
     <main className="min-h-screen p-6">
       <HeroSection />
       <TravelStyleSection />
+      <BrowseDestinationsSection />
       <GoldenHourDealsSection />
       <ExploreSection
         title="Explore India"
