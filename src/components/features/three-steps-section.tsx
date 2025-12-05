@@ -113,11 +113,21 @@ export function ThreeStepsSection() {
                   )}
 
                   {/* Step Number Circle - Yellow outline with white fill */}
-                  <div className="absolute left-0 top-0 w-20 h-20 rounded-full border-2 border-primary bg-white flex items-center justify-center z-10">
-                    <span className="text-xl font-bold text-gray-900">
+                  <motion.div
+                    className="absolute left-0 top-0 w-20 h-20 rounded-full border-2 border-primary bg-white flex items-center justify-center z-10 shadow-lg"
+                    whileHover={{ scale: 1.1, rotate: 360 }}
+                    transition={{ duration: 0.6 }}
+                  >
+                    <motion.span
+                      className="text-xl font-bold text-gray-900"
+                      initial={{ scale: 0 }}
+                      whileInView={{ scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.2 + 0.3, type: 'spring', stiffness: 200 }}
+                    >
                       {step.number}
-                    </span>
-                  </div>
+                    </motion.span>
+                  </motion.div>
 
                   {/* Step Content */}
                   <div>

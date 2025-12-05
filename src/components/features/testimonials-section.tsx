@@ -36,15 +36,25 @@ const testimonials = [
 ];
 
 const TestimonialCard = ({ testimonial }: { testimonial: typeof testimonials[0] }) => (
-  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 flex gap-4 items-start flex-shrink-0 w-80">
-    <div className="w-12 h-12 bg-yellow-400 rounded flex-shrink-0"></div>
-    <div className="flex-1">
-      <p className="text-gray-700 mb-4">{testimonial.review}</p>
+  <motion.div
+    className="bg-yellow-50 border-2 border-primary/30 rounded-xl p-6 flex gap-4 items-start flex-shrink-0 w-80 shadow-lg hover:shadow-2xl transition-all duration-300 group relative overflow-hidden"
+    whileHover={{ scale: 1.02, y: -5 }}
+  >
+    {/* Background gradient on hover */}
+    <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+    
+    <motion.div
+      className="w-12 h-12 bg-gradient-to-br from-primary to-primary-600 rounded-full flex-shrink-0 relative z-10 shadow-md"
+      whileHover={{ rotate: 360 }}
+      transition={{ duration: 0.6 }}
+    />
+    <div className="flex-1 relative z-10">
+      <p className="text-gray-700 mb-4 leading-relaxed">{testimonial.review}</p>
       <p className="font-semibold text-gray-900">
         {testimonial.name} - {testimonial.location}
       </p>
     </div>
-  </div>
+  </motion.div>
 );
 
 export function TestimonialsSection() {

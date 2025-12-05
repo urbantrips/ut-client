@@ -4,8 +4,28 @@ import { motion } from 'framer-motion';
 
 export function Footer() {
   return (
-    <footer className="text-white py-16 px-4">
-      <div className="max-w-7xl mx-auto">
+    <footer className="bg-gradient-to-b from-gray-900 to-black text-white py-16 px-4 relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          className="absolute top-0 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.5, 0.3],
+          }}
+          transition={{ duration: 6, repeat: Infinity }}
+        />
+        <motion.div
+          className="absolute bottom-0 right-1/4 w-80 h-80 bg-primary/5 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.3, 1],
+            opacity: [0.3, 0.5, 0.3],
+          }}
+          transition={{ duration: 8, repeat: Infinity, delay: 2 }}
+        />
+      </div>
+
+      <div className="max-w-7xl mx-auto relative z-10">
         {/* Plan My Trip Button */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -15,15 +35,28 @@ export function Footer() {
           className="text-center mb-12"
         >
           <motion.button
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
-            className="group relative bg-primary text-gray-900 px-10 py-5 rounded-full font-bold text-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
+            className="group relative bg-primary text-gray-900 px-10 py-5 rounded-full font-bold text-xl shadow-2xl hover:shadow-primary/50 transition-all duration-300 overflow-hidden"
           >
+            {/* Animated background glow */}
+            <motion.div
+              className="absolute inset-0 bg-primary rounded-full"
+              animate={{
+                boxShadow: [
+                  '0 0 20px rgba(255, 220, 46, 0.5)',
+                  '0 0 40px rgba(255, 220, 46, 0.8)',
+                  '0 0 20px rgba(255, 220, 46, 0.5)',
+                ],
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            
             {/* Shine effect on hover */}
-            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
             
             {/* Button content */}
-            <span className="relative flex items-center gap-3">
+            <span className="relative flex items-center gap-3 z-10">
               <span>Plan My Trip</span>
               <motion.svg
                 className="w-5 h-5"
@@ -46,9 +79,15 @@ export function Footer() {
         </motion.div>
 
         {/* Copyright */}
-        <div className="border-t border-primary/30 pt-12 text-center text-gray-400 text-sm">
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3 }}
+          className="border-t border-white/10 pt-12 text-center text-gray-400 text-sm"
+        >
           <p>&copy; {new Date().getFullYear()} Urban Trips. All rights reserved.</p>
-        </div>
+        </motion.div>
       </div>
     </footer>
   );
