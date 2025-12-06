@@ -4,7 +4,11 @@ import { motion } from 'framer-motion';
 import { useRef } from 'react';
 
 export function CelebratingSmileSection() {
-  const cards = Array.from({ length: 4 });
+  const reels = [
+    '/assets/videos/reel1.mp4',
+    '/assets/videos/reel2.mp4',
+    '/assets/videos/reel3.mp4',
+  ];
   const containerRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -131,21 +135,37 @@ export function CelebratingSmileSection() {
           <div ref={containerRef} className="overflow-hidden min-w-0 w-full mt-4 md:mt-0 flex items-center h-[400px] sm:h-[500px] md:h-[650px]">
             <div className="flex gap-2 sm:gap-3 md:gap-4 animate-marquee w-fit">
               {/* First set of cards */}
-              {cards.map((_, index) => (
+              {reels.map((reel, index) => (
                 <motion.div
                   key={`first-${index}`}
-                  className="flex-shrink-0 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden group w-[180px] h-[320px] sm:w-[210px] sm:h-[380px] md:w-[246px] md:h-[458px]"
+                  className="flex-shrink-0 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden group w-[180px] h-[320px] sm:w-[210px] sm:h-[380px] md:w-[246px] md:h-[458px] relative"
                   whileHover={{ scale: 1.05, rotate: 2 }}
                 >
+                  <video
+                    src={reel}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </motion.div>
               ))}
               {/* Duplicate set for seamless loop */}
-              {cards.map((_, index) => (
+              {reels.map((reel, index) => (
                 <motion.div
                   key={`second-${index}`}
-                  className="flex-shrink-0 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden group w-[180px] h-[320px] sm:w-[210px] sm:h-[380px] md:w-[246px] md:h-[458px]"
+                  className="flex-shrink-0 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden group w-[180px] h-[320px] sm:w-[210px] sm:h-[380px] md:w-[246px] md:h-[458px] relative"
                 >
+                  <video
+                    src={reel}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </motion.div>
               ))}

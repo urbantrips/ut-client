@@ -3,49 +3,28 @@
 import { Button } from '@/components/ui/button';
 import { Send } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useMemo } from 'react';
 
 export const HeroSection = () => {
   const popularDestinations = ['Paris', 'Tokyo', 'Bali', 'New York', 'Dubai'];
-  
-  const videoUrl = useMemo(() => 
-    'https://player.vimeo.com/video/1064786254?background=1&autoplay=1&loop=1&muted=1&controls=0',
-    []
-  );
 
   return (
     <div className="relative">
       <div className="h-[320px] sm:h-[360px] md:h-[413px] rounded-3xl inverted-radius relative overflow-hidden">
-        {/* Vimeo Video Background */}
+        {/* Video Background */}
         <div className="absolute inset-0 w-full h-full overflow-hidden">
-          <div 
-            className="absolute inset-0 w-full h-full"
-            style={{
-              paddingBottom: '56.25%', // 16:9 aspect ratio
-              height: 0,
-              overflow: 'hidden'
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute top-0 left-0 w-full h-full object-cover"
+            style={{ 
+              transform: 'scale(1.2)',
+              transformOrigin: 'center center'
             }}
           >
-            <iframe
-              key="hero-video"
-              src={videoUrl}
-              className="absolute top-0 left-0 w-full h-full"
-              style={{ 
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                border: 'none',
-                pointerEvents: 'none',
-                transform: 'scale(1.2)',
-                transformOrigin: 'center center'
-              }}
-              allow="autoplay; fullscreen; picture-in-picture"
-              allowFullScreen
-              title="Hero Background Video"
-            />
-          </div>
+            <source src="/assets/videos/hero-video.mp4" type="video/mp4" />
+          </video>
         </div>
         {/* Overlay for better text readability */}
         <div className="absolute inset-0 bg-black/20 z-[1]"></div>
