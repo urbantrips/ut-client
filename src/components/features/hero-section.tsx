@@ -9,11 +9,11 @@ export const HeroSection = () => {
         <div className="relative z-10 flex flex-col items-center justify-center min-h-[500px] px-4 py-12">
           {/* Heading */}
           <div className="text-center mb-8">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-2">
+            <h1 className="text-[40px] sm:text-3xl md:text-6xl font-bold text-white mb-2">
               Plan, book, and explore
             </h1>
             <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white">
-              All with the power of <span className="text-[rgb(var(--primary))]">AI</span>.
+              All with the power of <span className="text-[rgb(var(--primary))]" style={{ fontFamily: 'var(--font-dancing-script), cursive', fontWeight: 700, WebkitTextStroke: '0.5px rgba(0,0,0,0.2)', textShadow: '1px 1px 0px rgba(0,0,0,0.1), 0px 0px 2px rgba(0,0,0,0.1)' }}>AI.</span>
             </h2>
           </div>
 
