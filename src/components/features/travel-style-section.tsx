@@ -11,37 +11,26 @@ const travelStyles = [
 export function TravelStyleSection() {
   return (
     <section className="w-full px-4 sm:px-6 lg:px-8">
-      <div className="px-20">
-        <h2 className="py-12 text-left">
+      <div className="lg:px-20 sm:px-10 md:px-10">
+        <h2 className="py-6 sm:py-12 text-left">
           Select Your Travel Style
         </h2>
         {/* Cards Container */}
-        <div className="flex flex-wrap justify-between">
+        <div className="flex overflow-x-auto gap-3 sm:gap-4 md:flex-wrap md:gap-4 lg:justify-between lg:gap-0 scrollbar-hide">
           {travelStyles.map((style) => (
             <div
               key={style.id}
-              className="relative flex flex-col items-center justify-between bg-primary-50 border-primary-200 p-4 cursor-pointer hover:border-primary-400 transition-colors"
-              style={{
-                width: '180px',
-                height: '208px',
-                borderRadius: '30px',
-                borderWidth: '2px',
-                borderStyle: 'solid',
-              }}
+              className="relative flex flex-col items-center justify-between bg-primary-50 border-2 border-primary-200 p-4 cursor-pointer hover:border-primary-400 transition-colors w-[83px] h-[95px] sm:w-[83px] sm:h-[95px] md:w-[180px] md:h-[208px] lg:w-[180px] lg:h-[208px] rounded-[15px] flex-shrink-0"
             >
               {/* Circular Icon Area */}
               <div className="flex-1 flex items-center justify-center w-full">
                 <div 
-                  className="rounded-full bg-white/80 shadow-sm"
-                  style={{
-                    width: '115px',
-                    height: '115px',
-                  }}
+                  className="rounded-full bg-white/80 shadow-sm w-[49px] h-[46px] sm:w-[49px] sm:h-[46px] md:w-[100px] md:h-[100px] lg:w-[115px] lg:h-[115px]"
                 />
               </div>
 
               {/* Label */}
-              <div className="text-base font-semibold text-gray-900">
+              <div className="text-[10px] sm:text-[10px] md:text-base font-semibold text-gray-900">
                 {style.name}
               </div>
             </div>
