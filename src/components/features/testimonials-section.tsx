@@ -53,8 +53,13 @@ export function TestimonialsSection() {
   };
 
   return (
-    <section className="py-16 px-4 bg-white overflow-hidden">
+    <section className="py-12 px-4 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <h2 className="text-center font-bold text-black text-2xl md:text-3xl mb-8">
+          What our Customer's say?
+        </h2>
+        
         {/* First Row - Marquee to Right */}
         <div className="mb-4 overflow-hidden">
           <div className="flex gap-4 animate-marquee-left" style={{ width: 'fit-content' }}>
