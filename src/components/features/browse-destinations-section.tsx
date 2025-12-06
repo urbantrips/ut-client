@@ -10,10 +10,10 @@ export function BrowseDestinationsSection() {
   const [activeFilter, setActiveFilter] = useState('Must Visit');
 
   return (
-    <section className="w-full mt-6 px-4 sm:px-6 lg:px-8">
+    <section className="w-full py-12 px-4 sm:px-6 lg:px-8">
       <div className="px-20">
         {/* Filter Options */}
-        <div className="flex flex-wrap justify-between gap-2 mb-8">
+        <div className="flex flex-wrap justify-between gap-2 mb-12">
           {filterOptions.map((filter) => (
             <button
               key={filter}

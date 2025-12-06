@@ -12,7 +12,7 @@ export function TravelStyleSection() {
   return (
     <section className="w-full px-4 sm:px-6 lg:px-8">
       <div className="px-20">
-        <h2 className="py-12">
+        <h2 className="py-12 text-left">
           Select Your Travel Style
         </h2>
         {/* Cards Container */}
