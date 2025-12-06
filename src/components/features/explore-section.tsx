@@ -6,13 +6,13 @@ interface ExploreSectionProps {
 
 export function ExploreSection({ title, subtitle, cardCount = 4 }: ExploreSectionProps) {
   return (
-    <section className="py-16 px-4 bg-white">
+    <section className="px-4 bg-white">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
+        <div className="text-center py-12">
+          <h2 className="mb-4">
             {title}
           </h2>
-          <p className="text-base sm:text-lg text-gray-600 px-2">
+          <p>
             {subtitle}
           </p>
         </div>

@@ -9,7 +9,7 @@ export function GoldenHourDealsSection() {
 
   return (
     <section 
-      className="px-4 overflow-hidden relative" 
+      className="px-4 overflow-hidden relative mt-12" 
       style={{ backgroundColor: '#FFF9E6' }}
     >
       {/* Decorative background elements */}

@@ -53,10 +53,10 @@ export function TestimonialsSection() {
   };
 
   return (
-    <section className="py-12 px-4 bg-white overflow-hidden">
+    <section className="px-4 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <h2 className="text-center font-bold text-black text-2xl md:text-3xl mb-8">
+        <h2 className="py-12">
           What our Customer's say?
         </h2>
         

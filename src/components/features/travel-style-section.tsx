@@ -10,9 +10,9 @@ const travelStyles = [
 
 export function TravelStyleSection() {
   return (
-    <section className="w-full mt-6 px-4 sm:px-6 lg:px-8">
+    <section className="w-full px-4 sm:px-6 lg:px-8">
       <div className="px-20">
-        <h2 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-8">
+        <h2 className="py-12">
           Select Your Travel Style
         </h2>
         {/* Cards Container */}
@@ -20,7 +20,7 @@ export function TravelStyleSection() {
           {travelStyles.map((style) => (
             <div
               key={style.id}
-              className="relative flex flex-col items-center justify-between bg-[#FEF9E7] border-primary-200 p-4 cursor-pointer hover:border-primary-400 transition-colors"
+              className="relative flex flex-col items-center justify-between bg-primary-50 border-primary-200 p-4 cursor-pointer hover:border-primary-400 transition-colors"
               style={{
                 width: '180px',
                 height: '208px',

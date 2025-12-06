@@ -27,17 +27,9 @@ export function ThreeStepsSection() {
   return (
     <section className="px-4 bg-primary-50 relative overflow-hidden flex items-center" style={{ height: '946px' }}>
       <div className="max-w-7xl mx-auto relative z-10 w-full">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
-        >
-          <h2 className="">
-            Your Perfect Trip, Planned in<br />Just 3 Simple Steps
-          </h2>
-        </motion.div>
+        <h2 className="py-12">
+          Your Perfect Trip, Planned in<br />Just 3 Simple Steps
+        </h2>
 
         <div className="relative">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center">
@@ -54,7 +46,7 @@ export function ThreeStepsSection() {
               {/* Bottom larger box - positioned lower left, in front, overlaps top box */}
               <div
                 className="absolute z-20"
-                style={{ 
+                style={{
                   width: '300px',
                   height: '333px',
                   bottom: '0',
@@ -90,10 +82,10 @@ export function ThreeStepsSection() {
                   >
                     {/* Outer yellow ring (thinner) */}
                     <div className="absolute inset-0 rounded-full border border-primary" />
-                    
+
                     {/* Inner yellow ring (thicker/bolder) with gap from outer ring */}
                     <div className="absolute inset-[4px] sm:inset-[5px] md:inset-[6px] rounded-full border-[4px] sm:border-[5px] md:border-[6px] border-primary" />
-                    
+
                     {/* White circle with number - with gap from inner ring */}
                     <div className="relative w-8 h-8 sm:w-9 sm:h-9 md:w-12 md:h-12 rounded-full bg-white flex items-center justify-center">
                       <motion.span

@@ -28,10 +28,10 @@ const features = [
 
 export function WhyChooseUsSection() {
   return (
-    <section className="w-full py-16 px-4 sm:px-6 lg:px-8 bg-white">
+    <section className="w-full pb-12 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
+        <div className="text-center py-12">
+          <h2 className="mb-4">
             Why Choose Us?
           </h2>
           <p className="text-base sm:text-lg text-gray-600">
