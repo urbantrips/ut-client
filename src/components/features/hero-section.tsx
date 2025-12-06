@@ -100,18 +100,18 @@ export const HeroSection = () => {
 
         {/* Trusted Brand Badge - Positioned in inverted border space */}
       </div>
-      <div className="absolute bottom-1 right-0 sm:bottom-0 sm:right-1 md:bottom-1 md:right-1 flex flex-col sm:flex-row items-end sm:items-center gap-0.5 sm:gap-2 pb-0.5 pr-0.5 sm:pb-0 sm:pr-0">
+      <div className="absolute bottom-0 right-0 sm:bottom-0 sm:right-1 md:bottom-1 md:right-1 flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-2 md:gap-2.5 pr-1 sm:pr-1 md:pr-0 translate-y-[12px] sm:translate-y-0 md:translate-y-0">
         <div className="flex -space-x-1.5 sm:-space-x-4 md:-space-x-5">
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="w-4 h-4 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full bg-gray-300 border border-white sm:border-2"
+              className="w-4 h-4 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full bg-gray-300 border border-white sm:border-2 shadow-sm"
             />
           ))}
         </div>
-        <div className="flex flex-col items-end sm:items-start">
-          <span className="text-[8px] sm:text-xs md:text-sm font-semibold text-gray-900 leading-[1.1]">Trusted Brand</span>
-          <span className="text-[7px] sm:text-[10px] md:text-xs text-gray-600 leading-[1.1]">by 1000+ Travelers</span>
+        <div className="flex flex-col items-end sm:items-start gap-0 sm:gap-0.5">
+          <span className="text-[8px] sm:text-xs md:text-sm font-semibold text-gray-900 leading-tight whitespace-nowrap">Trusted Brand</span>
+          <span className="text-[7px] sm:text-[10px] md:text-xs text-gray-600 leading-tight whitespace-nowrap">by 1000+ Travelers</span>
         </div>
       </div>
     </div>

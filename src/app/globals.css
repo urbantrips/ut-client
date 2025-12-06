@@ -188,7 +188,7 @@
     /* Mobile defaults */
     --r: 10px; /* the radius */
     --s: 16px; /* size of inner curve */
-    --x: 50px; /* horizontal offset (no percentage) */
+    --x: 45px; /* horizontal offset (no percentage) */
     --y: 6px; /* vertical offset (no percentage) */
     
     --_m: /calc(2*var(--r)) calc(2*var(--r)) radial-gradient(#000 70%,#0000 72%);
