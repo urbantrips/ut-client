@@ -4,7 +4,7 @@ import { ArrowRight } from 'lucide-react';
 
 export function Footer() {
   return (
-    <div className="w-full flex items-center justify-center pb-20">
+    <div className="w-full flex items-center justify-center pb-20 py-12">
       <button
         className="text-gray-900 font-bold rounded-[30px] flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
         style={{
