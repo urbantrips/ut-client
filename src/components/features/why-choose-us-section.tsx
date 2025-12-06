@@ -28,9 +28,9 @@ const features = [
 
 export function WhyChooseUsSection() {
   return (
-    <section className="w-full pb-12 px-4 sm:px-6 lg:px-8 bg-white">
+    <section className="w-full pb-12 px-4 sm:px-6 md:px-6 lg:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center py-6 sm:py-12">
+        <div className="text-center py-6 sm:py-12 md:py-10">
           <h2 className="mb-4">
             Why Choose Us?
           </h2>
@@ -39,14 +39,14 @@ export function WhyChooseUsSection() {
           </p>
         </div>
 
-        <div className="flex overflow-x-auto gap-3 sm:gap-4 md:flex-wrap md:gap-6 md:justify-between lg:justify-between scrollbar-hide">
+        <div className="flex overflow-x-auto gap-3 sm:gap-4 md:flex md:justify-center md:overflow-x-auto lg:justify-between lg:gap-0 scrollbar-hide">
           {features.map((feature, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
-              className="flex flex-col items-center cursor-pointer group flex-shrink-0"
+              className={`flex flex-col items-center cursor-pointer group flex-shrink-0 ${index < features.length - 1 ? 'md:mr-6' : ''}`}
             >
               <div
                 className="mb-4 flex flex-col items-center justify-center relative w-[106px] h-[140px] sm:w-[200px] sm:h-[240px] md:w-[289px] md:h-[331px] lg:w-[289px] lg:h-[331px] p-2 sm:p-4 md:p-8 lg:p-8 rounded-[15px] sm:rounded-[20px] md:rounded-[30px] lg:rounded-[30px] border border-solid"
