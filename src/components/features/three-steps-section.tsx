@@ -76,23 +76,23 @@ export function ThreeStepsSection() {
               {/* Top smaller box - positioned upper right, behind bottom box */}
               <div
                 className="absolute top-0 right-0 z-10"
-                style={{ maxWidth: '240px', width: '100%' }}
+                style={{ width: '300px', height: '333px' }}
               >
-                <div className="aspect-[3/4] bg-white border-2 border-primary rounded-lg" />
+                <div className="w-full h-full bg-white border-2 border-primary" style={{ borderRadius: '30px' }} />
               </div>
 
               {/* Bottom larger box - positioned lower left, in front, overlaps top box */}
               <div
                 className="absolute z-20"
                 style={{ 
-                  maxWidth: '240px', 
-                  width: '100%',
+                  width: '300px',
+                  height: '333px',
                   bottom: '0',
                   left: '0',
-                  transform: 'translateY(-60px) translateX(180px)'
+                  transform: 'translateY(-60px) translateX(90px)'
                 }}
               >
-                <div className="aspect-[3/4] bg-white border-2 border-primary rounded-lg" />
+                <div className="w-full h-full bg-white border-2 border-primary" style={{ borderRadius: '30px' }} />
               </div>
             </div>
 
