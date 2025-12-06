@@ -37,7 +37,7 @@ export function BrowseDestinationsSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
-              className={`flex flex-col cursor-pointer group ${index >= 6 ? 'hidden sm:flex' : ''}`}
+              className={`flex flex-col cursor-pointer group ${index >= 6 ? 'hidden xl:flex' : ''}`}
             >
               {/* Image Placeholder - Responsive sizes */}
               <div
