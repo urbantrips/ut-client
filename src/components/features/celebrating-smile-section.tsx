@@ -138,8 +138,7 @@ export function CelebratingSmileSection() {
               {reels.map((reel, index) => (
                 <motion.div
                   key={`first-${index}`}
-                  className="flex-shrink-0 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden group w-[180px] h-[320px] sm:w-[210px] sm:h-[380px] md:w-[246px] md:h-[458px] relative"
-                  whileHover={{ scale: 1.05, rotate: 2 }}
+                  className="flex-shrink-0 bg-white rounded-xl shadow-lg overflow-hidden group w-[180px] h-[320px] sm:w-[210px] sm:h-[380px] md:w-[246px] md:h-[458px] relative"
                 >
                   <video
                     src={reel}
@@ -149,14 +148,13 @@ export function CelebratingSmileSection() {
                     playsInline
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </motion.div>
               ))}
               {/* Duplicate set for seamless loop */}
               {reels.map((reel, index) => (
                 <motion.div
                   key={`second-${index}`}
-                  className="flex-shrink-0 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden group w-[180px] h-[320px] sm:w-[210px] sm:h-[380px] md:w-[246px] md:h-[458px] relative"
+                  className="flex-shrink-0 bg-white rounded-xl shadow-lg overflow-hidden group w-[180px] h-[320px] sm:w-[210px] sm:h-[380px] md:w-[246px] md:h-[458px] relative"
                 >
                   <video
                     src={reel}
@@ -166,7 +164,6 @@ export function CelebratingSmileSection() {
                     playsInline
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </motion.div>
               ))}
             </div>
