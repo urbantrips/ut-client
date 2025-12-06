@@ -107,26 +107,35 @@ export function ThreeStepsSection() {
                   transition={{ duration: 0.5, delay: index * 0.2 }}
                   className="relative pl-16 sm:pl-20 md:pl-24 pb-8 sm:pb-10 md:pb-12 last:pb-0"
                 >
-                  {/* Vertical Connecting Line */}
+                  {/* Vertical Connecting Line - Yellow, extending from bottom center of outer ring */}
                   {index < steps.length - 1 && (
-                    <div className="absolute left-[28px] sm:left-[36px] md:left-[40px] top-16 sm:top-18 md:top-20 bottom-0 w-0.5 bg-primary" />
+                    <div className="absolute left-[27px] sm:left-[31px] md:left-[39px] top-14 sm:top-16 md:top-20 bottom-0 w-[2px] bg-primary" />
                   )}
 
-                  {/* Step Number Circle - Yellow outline with white fill */}
+                  {/* Step Number Circle - White circle with two concentric yellow rings */}
                   <motion.div
-                    className="absolute left-0 top-0 w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full border-2 border-primary bg-white flex items-center justify-center z-10 shadow-lg"
-                    whileHover={{ scale: 1.1, rotate: 360 }}
+                    className="absolute left-0 top-0 flex items-center justify-center z-10 w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20"
+                    whileHover={{ scale: 1.1 }}
                     transition={{ duration: 0.6 }}
                   >
-                    <motion.span
-                      className="text-base sm:text-lg md:text-xl font-bold text-gray-900"
-                      initial={{ scale: 0 }}
-                      whileInView={{ scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.2 + 0.3, type: 'spring', stiffness: 200 }}
-                    >
-                      {step.number}
-                    </motion.span>
+                    {/* Outer yellow ring (thinner) */}
+                    <div className="absolute inset-0 rounded-full border border-primary" />
+                    
+                    {/* Inner yellow ring (thicker/bolder) with gap from outer ring */}
+                    <div className="absolute inset-[4px] sm:inset-[5px] md:inset-[6px] rounded-full border-[4px] sm:border-[5px] md:border-[6px] border-primary" />
+                    
+                    {/* White circle with number - with gap from inner ring */}
+                    <div className="relative w-8 h-8 sm:w-9 sm:h-9 md:w-12 md:h-12 rounded-full bg-white flex items-center justify-center">
+                      <motion.span
+                        className="text-sm sm:text-base md:text-lg font-bold text-gray-900"
+                        initial={{ scale: 0 }}
+                        whileInView={{ scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: index * 0.2 + 0.3, type: 'spring', stiffness: 200 }}
+                      >
+                        {step.number}
+                      </motion.span>
+                    </div>
                   </motion.div>
 
                   {/* Step Content */}
