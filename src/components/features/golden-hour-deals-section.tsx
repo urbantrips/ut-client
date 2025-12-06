@@ -9,12 +9,12 @@ export function GoldenHourDealsSection() {
 
   return (
     <section 
-      className="px-4 overflow-hidden relative mt-12 bg-[#FFF9E6]"
+      className="px-4 sm:px-6 md:px-4 overflow-hidden relative mt-8 sm:mt-10 md:mt-12 bg-[#FFF9E6]"
     >
       {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          className="absolute top-10 right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl"
+          className="absolute top-4 right-4 w-20 h-20 md:top-10 md:right-10 md:w-32 md:h-32 bg-primary/10 rounded-full blur-3xl"
           animate={{
             scale: [1, 1.2, 1],
             opacity: [0.3, 0.5, 0.3],
@@ -22,7 +22,7 @@ export function GoldenHourDealsSection() {
           transition={{ duration: 4, repeat: Infinity }}
         />
         <motion.div
-          className="absolute bottom-10 left-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl"
+          className="absolute bottom-4 left-4 w-24 h-24 md:bottom-10 md:left-10 md:w-40 md:h-40 bg-primary/10 rounded-full blur-3xl"
           animate={{
             scale: [1, 1.3, 1],
             opacity: [0.3, 0.5, 0.3],
@@ -31,8 +31,8 @@ export function GoldenHourDealsSection() {
         />
       </div>
 
-      <div className="max-w-7xl mx-auto relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-6 md:gap-6 items-center">
+      <div className="max-w-7xl mx-auto relative z-10 py-6 sm:py-8 md:py-0">
+        <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-4 sm:gap-6 md:gap-6 items-center">
           {/* Left Content */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -42,11 +42,10 @@ export function GoldenHourDealsSection() {
             className="space-y-4 sm:space-y-6 text-center md:text-left"
           >
             <motion.h3
-              className="mb-2 sm:mb-4"
+              className="mb-2 sm:mb-4 text-4xl md:text-[55px]"
               style={{
                 fontFamily: 'var(--font-dancing-script), cursive',
                 fontWeight: 700,
-                fontSize: '55px',
                 lineHeight: '100%',
                 color: '#F5C842'
               }}
@@ -62,11 +61,10 @@ export function GoldenHourDealsSection() {
               Celebrating
             </motion.h3>
             <motion.h4
-              className="mb-4 sm:mb-8"
+              className="mb-4 sm:mb-8 text-3xl md:text-[45px]"
               style={{
                 fontFamily: 'var(--font-dancing-script), cursive',
                 fontWeight: 700,
-                fontSize: '45px',
                 lineHeight: '100%',
                 color: '#1F2937'
               }}
@@ -79,7 +77,7 @@ export function GoldenHourDealsSection() {
             </motion.h4>
             
             {/* Stats */}
-            <div className="flex gap-6 sm:gap-8 md:gap-12 justify-center md:justify-start">
+            <div className="flex gap-4 sm:gap-6 md:gap-12 justify-center md:justify-start">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -88,9 +86,8 @@ export function GoldenHourDealsSection() {
                 whileHover={{ scale: 1.05 }}
               >
                 <motion.div
-                  className="mb-1 text-gray-900"
+                  className="mb-1 text-gray-900 text-3xl md:text-[40px]"
                   style={{
-                    fontSize: '40px',
                     fontWeight: 700
                   }}
                   initial={{ scale: 0 }}
@@ -100,7 +97,7 @@ export function GoldenHourDealsSection() {
                 >
                   1000+
                 </motion.div>
-                <div className="text-sm sm:text-base md:text-lg text-gray-900">
+                <div className="text-xs sm:text-sm md:text-lg text-gray-900">
                   Happy Customers
                 </div>
               </motion.div>
@@ -112,9 +109,8 @@ export function GoldenHourDealsSection() {
                 whileHover={{ scale: 1.05 }}
               >
                 <motion.div
-                  className="mb-1 text-gray-900"
+                  className="mb-1 text-gray-900 text-3xl md:text-[40px]"
                   style={{
-                    fontSize: '40px',
                     fontWeight: 700
                   }}
                   initial={{ scale: 0 }}
@@ -124,7 +120,7 @@ export function GoldenHourDealsSection() {
                 >
                   4.7/5
                 </motion.div>
-                <div className="text-sm sm:text-base md:text-lg text-gray-900">
+                <div className="text-xs sm:text-sm md:text-lg text-gray-900">
                   Traveler Satisfaction
                 </div>
               </motion.div>
@@ -132,13 +128,13 @@ export function GoldenHourDealsSection() {
           </motion.div>
 
           {/* Right Cards - Marquee */}
-          <div ref={containerRef} className="overflow-hidden min-w-0 w-full mt-4 md:mt-0 flex items-center h-[650px]">
-            <div className="flex gap-3 md:gap-4 animate-marquee w-fit">
+          <div ref={containerRef} className="overflow-hidden min-w-0 w-full mt-4 md:mt-0 flex items-center h-[400px] sm:h-[500px] md:h-[650px]">
+            <div className="flex gap-2 sm:gap-3 md:gap-4 animate-marquee w-fit">
               {/* First set of cards */}
               {cards.map((_, index) => (
                 <motion.div
                   key={`first-${index}`}
-                  className="flex-shrink-0 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden group w-[246px] h-[458px]"
+                  className="flex-shrink-0 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden group w-[180px] h-[320px] sm:w-[210px] sm:h-[380px] md:w-[246px] md:h-[458px]"
                   whileHover={{ scale: 1.05, rotate: 2 }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -148,7 +144,7 @@ export function GoldenHourDealsSection() {
               {cards.map((_, index) => (
                 <motion.div
                   key={`second-${index}`}
-                  className="flex-shrink-0 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden group w-[246px] h-[458px]"
+                  className="flex-shrink-0 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden group w-[180px] h-[320px] sm:w-[210px] sm:h-[380px] md:w-[246px] md:h-[458px]"
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </motion.div>
