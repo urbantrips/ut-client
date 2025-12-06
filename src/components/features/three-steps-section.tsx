@@ -34,7 +34,7 @@ export function ThreeStepsSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
+          <h2 className="">
             Your Perfect Trip, Planned in<br />Just 3 Simple Steps
           </h2>
         </motion.div>

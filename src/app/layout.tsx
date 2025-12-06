@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
-import { Plus_Jakarta_Sans, Dancing_Script } from 'next/font/google';
+import { Montserrat, Dancing_Script } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
 
-const plusJakartaSans = Plus_Jakarta_Sans({ 
+const montserrat = Montserrat({ 
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700', '800'],
-  variable: '--font-plus-jakarta-sans',
+  variable: '--font-montserrat',
 });
 
 const dancingScript = Dancing_Script({
@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${plusJakartaSans.className} ${dancingScript.variable}`}>
+      <body className={`${montserrat.className} ${dancingScript.variable}`}>
         <Providers>{children}</Providers>
       </body>
     </html>

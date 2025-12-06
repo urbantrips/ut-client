@@ -17,9 +17,23 @@
   
   body {
     @apply bg-white text-gray-900 antialiased;
+    font-family: 'Montserrat', system-ui, sans-serif;
     font-size: 18px;
     line-height: 1.6;
     overflow-x: hidden;
+  }
+  
+  h2 {
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 100%;
+    letter-spacing: 0;
+    text-align: center;
+  }
+
+  p {
+    font-size: 20px;
+    font-weight: 400;
   }
 }
 
