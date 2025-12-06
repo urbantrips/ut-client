@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { useRef } from 'react';
 
-export function GoldenHourDealsSection() {
+export function CelebratingSmileSection() {
   const cards = Array.from({ length: 4 });
   const containerRef = useRef<HTMLDivElement>(null);
 

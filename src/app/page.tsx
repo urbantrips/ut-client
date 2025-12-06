@@ -2,7 +2,7 @@ import { Header } from '@/components/features/header';
 import { HeroSection } from '@/components/features/hero-section';
 import { TravelStyleSection } from '@/components/features/travel-style-section';
 import { BrowseDestinationsSection } from '@/components/features/browse-destinations-section';
-import { GoldenHourDealsSection } from '@/components/features/golden-hour-deals-section';
+import { CelebratingSmileSection } from '@/components/features/celebrating-smile';
 import { ExploreSection } from '@/components/features/explore-section';
 import { WhyChooseUsSection } from '@/components/features/why-choose-us-section';
 import { ThreeStepsSection } from '@/components/features/three-steps-section';
@@ -18,7 +18,7 @@ export default function Home() {
       </div>
       <TravelStyleSection />
       <BrowseDestinationsSection />
-      <GoldenHourDealsSection />
+      <CelebratingSmileSection />
       <ExploreSection
         title="Explore India"
         subtitle="Unfold top visa-free getaways for smooth journeys."
