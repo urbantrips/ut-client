@@ -18,7 +18,7 @@ export function BrowseDestinationsSection() {
             <button
               key={filter}
               onClick={() => setActiveFilter(filter)}
-              className={`w-[110px] h-[30px] sm:w-[160px] sm:h-[45px] md:w-[200px] md:h-[55px] lg:w-[216px] lg:h-[58px] text-[9px] sm:text-[12px] md:text-[13px] lg:text-[14px] rounded-full font-medium transition-colors flex items-center justify-center flex-shrink-0 ${
+              className={`w-[110px] h-[30px] sm:w-[160px] sm:h-[45px] md:w-[200px] md:h-[55px] lg:w-[216px] lg:h-[58px] text-[10px] sm:text-[12px] md:text-[13px] lg:text-[14px] rounded-full font-medium transition-colors flex items-center justify-center flex-shrink-0 ${
                 activeFilter === filter
                   ? 'bg-primary text-gray-900'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
