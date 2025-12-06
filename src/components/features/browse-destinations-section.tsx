@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useState } from 'react';
 
 const filterOptions = ['Must Visit', 'Trending', 'Weekend', 'New Discoveries', 'Just for You'];
@@ -10,92 +10,57 @@ export function BrowseDestinationsSection() {
   const [activeFilter, setActiveFilter] = useState('Must Visit');
 
   return (
-    <section className="py-16 px-4 bg-gradient-to-b from-white to-gray-50">
-      <div className="max-w-7xl mx-auto">
-        {/* Filter Navigation */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="flex flex-wrap gap-2 sm:gap-3 mb-8 sm:mb-12 justify-center"
-        >
+    <section className="w-full mt-6 px-4 sm:px-6 lg:px-8">
+      <div className="px-20">
+        {/* Filter Options */}
+        <div className="flex flex-wrap justify-between gap-2 mb-8">
           {filterOptions.map((filter) => (
-            <motion.button
+            <button
               key={filter}
               onClick={() => setActiveFilter(filter)}
-              className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-full font-medium transition-all duration-300 relative overflow-hidden text-sm sm:text-base ${
+              className={`rounded-full font-medium transition-colors flex items-center justify-center ${
                 activeFilter === filter
-                  ? 'bg-primary text-black shadow-lg'
-                  : 'bg-gray-200 text-black hover:bg-gray-300'
+                  ? 'bg-primary text-gray-900'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
+              style={{
+                width: '216px',
+                height: '58px',
+              }}
             >
-              {activeFilter === filter && (
-                <motion.div
-                  layoutId="activeFilter"
-                  className="absolute inset-0 bg-primary rounded-full"
-                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                />
-              )}
-              <span className="relative z-10">{filter}</span>
-            </motion.button>
+              {filter}
+            </button>
           ))}
-        </motion.div>
+        </div>
 
-        {/* Destination Grid */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeFilter}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6"
-          >
-            {destinations.map((destination, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.8, y: 30 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ 
-                  duration: 0.4, 
-                  delay: index * 0.05,
-                  type: 'spring',
-                  stiffness: 100
+        {/* Destinations Grid */}
+        <div className="flex flex-wrap justify-between gap-6">
+          {destinations.map((destination, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.05 }}
+              className="flex flex-col cursor-pointer group"
+            >
+              {/* Image Placeholder - Exact 232x232 */}
+              <div
+                className="bg-gray-200 rounded-lg mb-3 overflow-hidden"
+                style={{
+                  width: '232px',
+                  height: '232px',
                 }}
-                whileHover={{ 
-                  scale: 1.05, 
-                  y: -8,
-                  transition: { duration: 0.2 }
-                }}
-                className="cursor-pointer group"
               >
-                <motion.div
-                  className="aspect-square bg-gradient-to-br from-gray-200 to-gray-300 rounded-xl mb-4 overflow-hidden relative shadow-lg group-hover:shadow-2xl transition-shadow duration-300"
-                  whileHover={{ 
-                    boxShadow: '0 20px 40px rgba(0,0,0,0.15)'
-                  }}
-                >
-                  {/* Gradient overlay on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  
-                  {/* Shimmer effect */}
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full"
-                    transition={{ duration: 0.6 }}
-                  />
-                </motion.div>
-                <motion.p
-                  className="text-sm sm:text-base font-bold text-black text-center group-hover:text-primary transition-colors duration-300"
-                >
-                  {destination}
-                </motion.p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </AnimatePresence>
+                <div className="w-full h-full bg-gray-200 group-hover:bg-gray-300 transition-colors" />
+              </div>
+              
+              {/* Destination Name */}
+              <h3 className="text-lg text-center font-bold text-gray-900">
+                {destination}
+              </h3>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   );
