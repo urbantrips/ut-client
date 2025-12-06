@@ -26,38 +26,6 @@ const steps = [
 export function ThreeStepsSection() {
   return (
     <section className="py-16 px-4 bg-primary-50 relative overflow-hidden">
-      {/* Sparkle Graphics */}
-      <div className="absolute top-0 left-0 w-64 h-64 opacity-30">
-        <svg
-          width="100%"
-          height="100%"
-          viewBox="0 0 200 200"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M50 30 L55 50 L75 45 L60 60 L65 80 L50 65 L35 80 L40 60 L25 45 L45 50 Z"
-            fill="currentColor"
-            className="text-primary-400"
-          />
-          <path
-            d="M120 20 L122 30 L132 28 L125 35 L127 45 L120 38 L113 45 L115 35 L108 28 L118 30 Z"
-            fill="currentColor"
-            className="text-primary-400"
-          />
-          <path
-            d="M30 100 L32 110 L42 108 L35 115 L37 125 L30 118 L23 125 L25 115 L18 108 L28 110 Z"
-            fill="currentColor"
-            className="text-primary-400"
-          />
-          <path
-            d="M150 80 L152 90 L162 88 L155 95 L157 105 L150 98 L143 105 L145 95 L138 88 L148 90 Z"
-            fill="currentColor"
-            className="text-primary-400"
-          />
-        </svg>
-      </div>
-
       <div className="max-w-7xl mx-auto relative z-10">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
