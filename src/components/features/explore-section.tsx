@@ -24,7 +24,7 @@ export function ExploreSection({ title, subtitle, cardCount = 4 }: ExploreSectio
               className="cursor-pointer group"
             >
               <div
-                className="w-[246px] h-[310px] bg-gradient-to-br from-gray-200 to-gray-300 mb-4 overflow-hidden relative shadow-lg group-hover:shadow-2xl transition-shadow duration-300"
+                className="w-[246px] h-[310px] bg-gradient-to-br from-gray-200 to-gray-300 mb-4 overflow-hidden relative shadow-lg  transition-shadow duration-300"
                 style={{ borderRadius: '30px' }}
               >
                 {/* Image placeholder with gradient overlay */}
