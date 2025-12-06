@@ -1,3 +1,8 @@
+'use client';
+
+import { Button } from '@/components/ui/button';
+import { Send } from 'lucide-react';
+
 export const HeroSection = () => {
   return (
     <div className="relative">
@@ -18,12 +23,19 @@ export const HeroSection = () => {
           </div>
 
           {/* Search Bar */}
-          <div className="w-full max-w-2xl">
+          <div className="w-full max-w-2xl relative">
             <input
               type="text"
               placeholder="Where would you like to visit?"
-              className="w-full px-6 py-4 rounded-xl border-4 border-[rgb(var(--primary))] text-gray-900 placeholder-black placeholder:italic focus:outline-none focus:ring-4 focus:ring-[rgb(var(--primary))]/30 text-lg"
+              className="w-full px-6 py-4 pr-[70px] rounded-[30px] border-4 border-[rgb(var(--primary))] text-gray-900 placeholder-black placeholder:italic focus:outline-none focus:ring-4 focus:ring-[rgb(var(--primary))]/30 text-lg"
             />
+            <Button
+              variant="primary"
+              size="lg"
+              className="absolute right-[12px] inset-y-[10px] h-[48px] w-[48px] p-0 rounded-full flex items-center justify-center"
+            >
+              <Send className="w-5 h-5" />
+            </Button>
           </div>
         </div>
 
