@@ -3,18 +3,55 @@
 import { Button } from '@/components/ui/button';
 import { Send } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useMemo } from 'react';
 
 export const HeroSection = () => {
   const popularDestinations = ['Paris', 'Tokyo', 'Bali', 'New York', 'Dubai'];
+  
+  const videoUrl = useMemo(() => 
+    'https://player.vimeo.com/video/1064786254?background=1&autoplay=1&loop=1&muted=1&controls=0',
+    []
+  );
 
   return (
     <div className="relative">
-      <div className="bg-cover bg-center bg-no-repeat h-[320px] sm:h-[360px] md:h-[413px] rounded-3xl inverted-radius relative overflow-hidden" style={{ backgroundImage: 'url(https://picsum.photos/1920/1080?random=1)' }}>
+      <div className="h-[320px] sm:h-[360px] md:h-[413px] rounded-3xl inverted-radius relative overflow-hidden">
+        {/* Vimeo Video Background */}
+        <div className="absolute inset-0 w-full h-full overflow-hidden">
+          <div 
+            className="absolute inset-0 w-full h-full"
+            style={{
+              paddingBottom: '56.25%', // 16:9 aspect ratio
+              height: 0,
+              overflow: 'hidden'
+            }}
+          >
+            <iframe
+              key="hero-video"
+              src={videoUrl}
+              className="absolute top-0 left-0 w-full h-full"
+              style={{ 
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                border: 'none',
+                pointerEvents: 'none',
+                transform: 'scale(1.2)',
+                transformOrigin: 'center center'
+              }}
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowFullScreen
+              title="Hero Background Video"
+            />
+          </div>
+        </div>
         {/* Overlay for better text readability */}
-        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="absolute inset-0 bg-black/20 z-[1]"></div>
 
         {/* Main Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 sm:px-4 py-5 sm:py-8 md:py-12">
+        <div className="relative z-[2] flex flex-col items-center justify-center h-full px-4 sm:px-4 py-5 sm:py-8 md:py-12">
           {/* Heading */}
           <div className="text-center mb-3 sm:mb-6 md:mb-8 max-w-[90%] sm:max-w-none">
             <motion.div
