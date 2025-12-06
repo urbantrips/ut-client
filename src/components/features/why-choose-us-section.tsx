@@ -34,7 +34,7 @@ export function WhyChooseUsSection() {
           <h2 className="mb-4">
             Why Choose Us?
           </h2>
-          <p className="text-base sm:text-lg text-gray-600">
+          <p className="">
             we believe every journey should be as unique as the traveler.
           </p>
         </div>
