@@ -45,10 +45,11 @@ export function BrowseDestinationsSection() {
             >
               {/* Image Placeholder - Exact 232x232 */}
               <div
-                className="bg-gray-200 rounded-lg mb-3 overflow-hidden"
+                className="bg-gray-200 mb-3 overflow-hidden"
                 style={{
                   width: '232px',
                   height: '232px',
+                  borderRadius: '30px',
                 }}
               >
                 <div className="w-full h-full bg-gray-200 group-hover:bg-gray-300 transition-colors" />
