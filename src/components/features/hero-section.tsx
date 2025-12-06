@@ -22,7 +22,7 @@ export const HeroSection = () => {
             <input
               type="text"
               placeholder="Where would you like to visit?"
-              className="w-full px-6 py-4 rounded-xl border-4 border-[rgb(var(--primary))] text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-[rgb(var(--primary))]/30 text-lg"
+              className="w-full px-6 py-4 rounded-xl border-4 border-[rgb(var(--primary))] text-gray-900 placeholder-black placeholder:italic focus:outline-none focus:ring-4 focus:ring-[rgb(var(--primary))]/30 text-lg"
             />
           </div>
         </div>
