@@ -9,7 +9,7 @@ export function GoldenHourDealsSection() {
 
   return (
     <section 
-      className="py-16 px-4 overflow-hidden relative" 
+      className="px-4 overflow-hidden relative" 
       style={{ backgroundColor: '#FFF9E6' }}
     >
       {/* Decorative background elements */}
@@ -125,7 +125,7 @@ export function GoldenHourDealsSection() {
           </motion.div>
 
           {/* Right Cards - Marquee */}
-          <div ref={containerRef} className="overflow-hidden min-w-0 w-full mt-4 md:mt-0">
+          <div ref={containerRef} className="overflow-hidden min-w-0 w-full mt-4 md:mt-0 flex items-center" style={{ height: '650px' }}>
             <div className="flex gap-3 md:gap-4 animate-marquee" style={{ width: 'fit-content' }}>
               {/* First set of cards */}
               {cards.map((_, index) => (
