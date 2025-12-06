@@ -25,17 +25,19 @@ const steps = [
 
 export function ThreeStepsSection() {
   return (
-    <section className="py-16 px-4 bg-primary-50 relative overflow-hidden">
+    <section className="px-4 bg-primary-50 relative overflow-hidden" style={{ height: '946px' }}>
       <div className="max-w-7xl mx-auto relative z-10">
-        <motion.h2
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-8 sm:mb-12 text-center px-2"
+          className="text-center mb-12"
         >
-          Your Perfect Trip, Planned in Just 3 Simple Steps
-        </motion.h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
+            Your Perfect Trip, Planned in<br />Just 3 Simple Steps
+          </h2>
+        </motion.div>
 
         <div className="relative">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-start">
@@ -73,7 +75,7 @@ export function ThreeStepsSection() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.2 }}
-                  className="relative pl-16 sm:pl-20 md:pl-24 pb-8 sm:pb-10 md:pb-12 last:pb-0"
+                  className="relative pl-16 sm:pl-20 md:pl-24 pb-12 sm:pb-16 md:pb-20 last:pb-0"
                 >
                   {/* Vertical Connecting Line - Yellow, extending from bottom center of outer ring */}
                   {index < steps.length - 1 && (
