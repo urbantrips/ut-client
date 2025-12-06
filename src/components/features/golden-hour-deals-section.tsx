@@ -9,8 +9,7 @@ export function GoldenHourDealsSection() {
 
   return (
     <section 
-      className="px-4 overflow-hidden relative mt-12" 
-      style={{ backgroundColor: '#FFF9E6' }}
+      className="px-4 overflow-hidden relative mt-12 bg-[#FFF9E6]"
     >
       {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -44,7 +43,7 @@ export function GoldenHourDealsSection() {
           >
             <motion.h3
               className="mb-2 sm:mb-4"
-              style={{ 
+              style={{
                 fontFamily: 'var(--font-dancing-script), cursive',
                 fontWeight: 700,
                 fontSize: '55px',
@@ -89,7 +88,11 @@ export function GoldenHourDealsSection() {
                 whileHover={{ scale: 1.05 }}
               >
                 <motion.div
-                  className="text-[40px] font-bold text-gray-900 mb-1"
+                  className="mb-1 text-gray-900"
+                  style={{
+                    fontSize: '40px',
+                    fontWeight: 700
+                  }}
                   initial={{ scale: 0 }}
                   whileInView={{ scale: 1 }}
                   viewport={{ once: true }}
@@ -109,7 +112,11 @@ export function GoldenHourDealsSection() {
                 whileHover={{ scale: 1.05 }}
               >
                 <motion.div
-                  className="text-[40px] font-bold text-gray-900 mb-1"
+                  className="mb-1 text-gray-900"
+                  style={{
+                    fontSize: '40px',
+                    fontWeight: 700
+                  }}
                   initial={{ scale: 0 }}
                   whileInView={{ scale: 1 }}
                   viewport={{ once: true }}
@@ -125,14 +132,13 @@ export function GoldenHourDealsSection() {
           </motion.div>
 
           {/* Right Cards - Marquee */}
-          <div ref={containerRef} className="overflow-hidden min-w-0 w-full mt-4 md:mt-0 flex items-center" style={{ height: '650px' }}>
-            <div className="flex gap-3 md:gap-4 animate-marquee" style={{ width: 'fit-content' }}>
+          <div ref={containerRef} className="overflow-hidden min-w-0 w-full mt-4 md:mt-0 flex items-center h-[650px]">
+            <div className="flex gap-3 md:gap-4 animate-marquee w-fit">
               {/* First set of cards */}
               {cards.map((_, index) => (
                 <motion.div
                   key={`first-${index}`}
-                  className="flex-shrink-0 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden group"
-                  style={{ width: '246px', height: '458px' }}
+                  className="flex-shrink-0 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden group w-[246px] h-[458px]"
                   whileHover={{ scale: 1.05, rotate: 2 }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -142,8 +148,7 @@ export function GoldenHourDealsSection() {
               {cards.map((_, index) => (
                 <motion.div
                   key={`second-${index}`}
-                  className="flex-shrink-0 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden group"
-                  style={{ width: '246px', height: '458px' }}
+                  className="flex-shrink-0 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden group w-[246px] h-[458px]"
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </motion.div>
