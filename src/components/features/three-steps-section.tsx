@@ -25,8 +25,8 @@ const steps = [
 
 export function ThreeStepsSection() {
   return (
-    <section className="px-4 bg-primary-50 relative overflow-hidden" style={{ height: '946px' }}>
-      <div className="max-w-7xl mx-auto relative z-10">
+    <section className="px-4 bg-primary-50 relative overflow-hidden flex items-center" style={{ height: '946px' }}>
+      <div className="max-w-7xl mx-auto relative z-10 w-full">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -40,7 +40,7 @@ export function ThreeStepsSection() {
         </motion.div>
 
         <div className="relative">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center">
             {/* Left: Image Placeholders */}
             <div className="relative h-full min-h-[300px] sm:min-h-[400px] md:min-h-[600px] z-10 hidden md:block">
               {/* Top smaller box - positioned upper right, behind bottom box */}
