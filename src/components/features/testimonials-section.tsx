@@ -49,7 +49,7 @@ export function TestimonialsSection() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <h2 className="py-6 sm:py-12">
-          What our Customer's say?
+          What our Customer&apos;s say?
         </h2>
         
         {/* First Row - Marquee to Right */}
