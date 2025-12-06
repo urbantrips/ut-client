@@ -10,15 +10,15 @@ export function BrowseDestinationsSection() {
   const [activeFilter, setActiveFilter] = useState('Must Visit');
 
   return (
-    <section className="w-full py-12 px-4 sm:px-6 lg:px-8">
+    <section className="w-full py-6 sm:py-12 md:py-10 px-4 sm:px-6 lg:px-8">
       <div className="lg:px-20 sm:px-10 md:px-10">
         {/* Filter Options */}
-        <div className="flex flex-nowrap gap-2 mb-12 overflow-x-auto pb-2 scrollbar-hide">
+        <div className="flex flex-nowrap gap-2 sm:gap-3 mb-6 sm:mb-10 md:mb-12 overflow-x-auto scrollbar-hide">
           {filterOptions.map((filter) => (
             <button
               key={filter}
               onClick={() => setActiveFilter(filter)}
-              className={`w-[115px] h-[31px] sm:w-[216px] sm:h-[58px] text-[10px] sm:text-[14px] rounded-full font-medium transition-colors flex items-center justify-center flex-shrink-0 ${
+              className={`w-[110px] h-[30px] sm:w-[160px] sm:h-[45px] md:w-[200px] md:h-[55px] lg:w-[216px] lg:h-[58px] text-[9px] sm:text-[12px] md:text-[13px] lg:text-[14px] rounded-full font-medium transition-colors flex items-center justify-center flex-shrink-0 ${
                 activeFilter === filter
                   ? 'bg-primary text-gray-900'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -37,17 +37,17 @@ export function BrowseDestinationsSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
-              className={`flex flex-col cursor-pointer group ${index >= 6 ? 'hidden xl:flex' : ''}`}
+              className={`flex flex-col cursor-pointer group ${index >= 6 ? 'hidden sm:flex' : ''}`}
             >
               {/* Image Placeholder - Responsive sizes */}
               <div
-                className="w-[102px] h-[114px] sm:w-[232px] sm:h-[232px] rounded-[15px] sm:rounded-[30px] bg-gray-200 mb-3 overflow-hidden"
+                className="w-[102px] h-[114px] sm:w-[180px] sm:h-[200px] md:w-[210px] md:h-[220px] lg:w-[232px] lg:h-[232px] rounded-[12px] sm:rounded-[20px] md:rounded-[25px] lg:rounded-[30px] bg-gray-200 mb-2 sm:mb-3 overflow-hidden"
               >
                 <div className="w-full h-full bg-gray-200 group-hover:bg-gray-300 transition-colors" />
               </div>
               
               {/* Destination Name */}
-              <h3 className="text-[14px] sm:text-lg text-center font-bold text-gray-900">
+              <h3 className="text-[12px] sm:text-[14px] md:text-base lg:text-lg text-center font-bold text-gray-900">
                 {destination}
               </h3>
             </motion.div>

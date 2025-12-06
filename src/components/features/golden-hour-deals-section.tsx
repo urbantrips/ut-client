@@ -9,7 +9,7 @@ export function GoldenHourDealsSection() {
 
   return (
     <section 
-      className="px-4 sm:px-6 md:px-4 overflow-hidden relative mt-8 sm:mt-10 md:mt-12 bg-[#FFF9E6]"
+      className="px-4 sm:px-6 md:px-4 overflow-hidden relative py-6 sm:py-12 md:py-10 bg-[#FFF9E6]"
     >
       {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
