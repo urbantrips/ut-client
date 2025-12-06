@@ -72,7 +72,7 @@ export const HeroSection = () => {
             <Button
               variant="primary"
               size="lg"
-              className="absolute right-[6px] sm:right-[12px] inset-y-[6px] sm:inset-y-[10px] h-[36px] sm:h-[48px] w-[36px] sm:w-[48px] p-0 rounded-full flex items-center justify-center"
+              className="absolute right-[10px] sm:right-[12px] inset-y-[4px] sm:inset-y-[10px] h-[36px] sm:h-[48px] w-[36px] sm:w-[48px] p-0 rounded-full flex items-center justify-center"
             >
               <Send className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
             </Button>
