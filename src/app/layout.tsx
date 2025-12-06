@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Plus_Jakarta_Sans } from 'next/font/google';
+import { Plus_Jakarta_Sans, Dancing_Script } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
 
@@ -7,6 +7,12 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700', '800'],
   variable: '--font-plus-jakarta-sans',
+});
+
+const dancingScript = Dancing_Script({
+  subsets: ['latin'],
+  weight: ['700'],
+  variable: '--font-dancing-script',
 });
 
 export const metadata: Metadata = {
@@ -21,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={plusJakartaSans.className}>
+      <body className={`${plusJakartaSans.className} ${dancingScript.variable}`}>
         <Providers>{children}</Providers>
       </body>
     </html>

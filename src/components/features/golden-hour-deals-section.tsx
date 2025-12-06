@@ -43,8 +43,14 @@ export function GoldenHourDealsSection() {
             className="space-y-4 sm:space-y-6 text-center md:text-left"
           >
             <motion.h3
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-cursive text-primary mb-2 sm:mb-4"
-              style={{ fontFamily: 'cursive', color: '#F5C842' }}
+              className="mb-2 sm:mb-4"
+              style={{ 
+                fontFamily: 'var(--font-dancing-script), cursive',
+                fontWeight: 700,
+                fontSize: '55px',
+                lineHeight: '100%',
+                color: '#F5C842'
+              }}
               animate={{
                 textShadow: [
                   '0 0 20px rgba(245, 200, 66, 0.3)',
@@ -57,7 +63,14 @@ export function GoldenHourDealsSection() {
               Celebrating
             </motion.h3>
             <motion.h4
-              className="text-xl sm:text-2xl md:text-3xl font-normal italic text-gray-900 mb-4 sm:mb-8"
+              className="mb-4 sm:mb-8"
+              style={{
+                fontFamily: 'var(--font-dancing-script), cursive',
+                fontWeight: 700,
+                fontSize: '45px',
+                lineHeight: '100%',
+                color: '#1F2937'
+              }}
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
@@ -76,7 +89,7 @@ export function GoldenHourDealsSection() {
                 whileHover={{ scale: 1.05 }}
               >
                 <motion.div
-                  className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-1"
+                  className="text-[40px] font-bold text-gray-900 mb-1"
                   initial={{ scale: 0 }}
                   whileInView={{ scale: 1 }}
                   viewport={{ once: true }}
@@ -96,7 +109,7 @@ export function GoldenHourDealsSection() {
                 whileHover={{ scale: 1.05 }}
               >
                 <motion.div
-                  className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-1"
+                  className="text-[40px] font-bold text-gray-900 mb-1"
                   initial={{ scale: 0 }}
                   whileInView={{ scale: 1 }}
                   viewport={{ once: true }}
@@ -118,7 +131,8 @@ export function GoldenHourDealsSection() {
               {cards.map((_, index) => (
                 <motion.div
                   key={`first-${index}`}
-                  className="flex-shrink-0 aspect-[3/4] w-28 sm:w-32 md:w-48 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden group"
+                  className="flex-shrink-0 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden group"
+                  style={{ width: '246px', height: '458px' }}
                   whileHover={{ scale: 1.05, rotate: 2 }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -128,8 +142,8 @@ export function GoldenHourDealsSection() {
               {cards.map((_, index) => (
                 <motion.div
                   key={`second-${index}`}
-                  className="flex-shrink-0 aspect-[3/4] w-28 sm:w-32 md:w-48 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden group"
-                  whileHover={{ scale: 1.05, rotate: 2 }}
+                  className="flex-shrink-0 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden group"
+                  style={{ width: '246px', height: '458px' }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </motion.div>

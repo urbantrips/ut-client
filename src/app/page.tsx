@@ -22,12 +22,12 @@ export default function Home() {
       <ExploreSection
         title="Explore India"
         subtitle="Unfold top visa-free getaways for smooth journeys."
-        cardCount={4}
+        cardCount={5}
       />
       <ExploreSection
         title="Quick Visa Getaways"
         subtitle="Explore destinations with easy visa processes"
-        cardCount={4}
+        cardCount={5}
       />
       <WhyChooseUsSection />
       <ThreeStepsSection />
