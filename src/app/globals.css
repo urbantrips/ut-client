@@ -181,7 +181,7 @@
   .inverted-radius {
     --r: 20px; /* the radius */
     --s: 30px; /* size of inner curve */
-    --x: 200px; /* horizontal offset (no percentage) */
+    --x: 170px; /* horizontal offset (no percentage) */
     --y: 10px; /* vertical offset (no percentage) */
     
     --_m: /calc(2*var(--r)) calc(2*var(--r)) radial-gradient(#000 70%,#0000 72%);
