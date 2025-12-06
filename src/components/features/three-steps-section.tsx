@@ -25,36 +25,45 @@ const steps = [
 
 export function ThreeStepsSection() {
   return (
-    <section className="px-4 bg-primary-50 relative overflow-hidden flex items-center" style={{ height: '946px' }}>
+    <section className="w-full px-4 sm:px-6 lg:px-8 bg-primary-50 relative overflow-hidden py-8 sm:py-12 md:py-16 lg:py-20">
       <div className="max-w-7xl mx-auto relative z-10 w-full">
-        <h2 className="py-12">
-          Your Perfect Trip, Planned in<br />Just 3 Simple Steps
-        </h2>
+        <div className="text-center mb-8 sm:mb-12 md:mb-16">
+          <h2 className="mb-4">
+            Your Perfect Trip, Planned in<br className="hidden sm:block" /> Just 3 Simple Steps
+          </h2>
+        </div>
 
         <div className="relative">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center">
-            {/* Left: Image Placeholders */}
-            <div className="relative h-full min-h-[300px] sm:min-h-[400px] md:min-h-[600px] z-10 hidden md:block">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-16 xl:gap-20 items-start lg:items-center">
+            {/* Left: Image Placeholders - Desktop only */}
+            <div className="relative h-full min-h-[250px] sm:min-h-[350px] md:min-h-[450px] lg:min-h-[600px] xl:min-h-[700px] z-10 hidden lg:block">
               {/* Top smaller box - positioned upper right, behind bottom box */}
               <div
                 className="absolute top-0 right-0 z-10"
-                style={{ width: '300px', height: '333px' }}
+                style={{ 
+                  width: 'clamp(250px, 25vw, 350px)', 
+                  height: 'clamp(280px, 28vw, 390px)',
+                  maxWidth: '350px',
+                  maxHeight: '390px'
+                }}
               >
-                <div className="w-full h-full bg-white border-2 border-primary" style={{ borderRadius: '30px' }} />
+                <div className="w-full h-full bg-white border-2 border-primary rounded-[30px] shadow-lg" />
               </div>
 
               {/* Bottom larger box - positioned lower left, in front, overlaps top box */}
               <div
                 className="absolute z-20"
                 style={{
-                  width: '300px',
-                  height: '333px',
+                  width: 'clamp(250px, 25vw, 350px)',
+                  height: 'clamp(280px, 28vw, 390px)',
+                  maxWidth: '350px',
+                  maxHeight: '390px',
                   bottom: '0',
                   left: '0',
                   transform: 'translateY(-60px) translateX(90px)'
                 }}
               >
-                <div className="w-full h-full bg-white border-2 border-primary" style={{ borderRadius: '30px' }} />
+                <div className="w-full h-full bg-white border-2 border-primary rounded-[30px] shadow-lg" />
               </div>
             </div>
 
@@ -65,18 +74,18 @@ export function ThreeStepsSection() {
                   key={step.number}
                   initial={{ opacity: 0, x: 50 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
+                  viewport={{ once: true, margin: '-50px' }}
                   transition={{ duration: 0.5, delay: index * 0.2 }}
-                  className="relative pl-16 sm:pl-20 md:pl-24 pb-12 sm:pb-16 md:pb-20 last:pb-0"
+                  className="relative pl-14 sm:pl-16 md:pl-20 lg:pl-24 pb-10 sm:pb-12 md:pb-16 lg:pb-20 last:pb-0"
                 >
                   {/* Vertical Connecting Line - Yellow, extending from bottom center of outer ring */}
                   {index < steps.length - 1 && (
-                    <div className="absolute left-[27px] sm:left-[31px] md:left-[39px] top-14 sm:top-16 md:top-20 bottom-0 w-[2px] bg-primary" />
+                    <div className="absolute left-[25px] sm:left-[29px] md:left-[35px] lg:left-[39px] top-12 sm:top-14 md:top-16 lg:top-20 bottom-0 w-[2px] bg-primary" />
                   )}
 
                   {/* Step Number Circle - White circle with two concentric yellow rings */}
                   <motion.div
-                    className="absolute left-0 top-0 flex items-center justify-center z-10 w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20"
+                    className="absolute left-0 top-0 flex items-center justify-center z-10 w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20"
                     whileHover={{ scale: 1.1 }}
                     transition={{ duration: 0.6 }}
                   >
@@ -84,12 +93,12 @@ export function ThreeStepsSection() {
                     <div className="absolute inset-0 rounded-full border border-primary" />
 
                     {/* Inner yellow ring (thicker/bolder) with gap from outer ring */}
-                    <div className="absolute inset-[4px] sm:inset-[5px] md:inset-[6px] rounded-full border-[4px] sm:border-[5px] md:border-[6px] border-primary" />
+                    <div className="absolute inset-[3px] sm:inset-[4px] md:inset-[5px] lg:inset-[6px] rounded-full border-[3px] sm:border-[4px] md:border-[5px] lg:border-[6px] border-primary" />
 
                     {/* White circle with number - with gap from inner ring */}
-                    <div className="relative w-8 h-8 sm:w-9 sm:h-9 md:w-12 md:h-12 rounded-full bg-white flex items-center justify-center">
+                    <div className="relative w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 lg:w-12 lg:h-12 rounded-full bg-white flex items-center justify-center">
                       <motion.span
-                        className="text-sm sm:text-base md:text-lg font-bold text-gray-900"
+                        className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-gray-900"
                         initial={{ scale: 0 }}
                         whileInView={{ scale: 1 }}
                         viewport={{ once: true }}
@@ -102,7 +111,7 @@ export function ThreeStepsSection() {
 
                   {/* Step Content */}
                   <div>
-                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3 md:mb-4">
+                    <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-900 mb-2 sm:mb-3 md:mb-4">
                       {step.title}
                     </h3>
                     <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
