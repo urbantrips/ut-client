@@ -8,6 +8,7 @@ import { WhyChooseUsSection } from '@/components/features/why-choose-us-section'
 import { ThreeStepsSection } from '@/components/features/three-steps-section';
 import { TestimonialsSection } from '@/components/features/testimonials-section';
 import { Footer } from '@/components/features/footer';
+import { destinationsByCategory } from '@/data/destinations';
 
 export default function Home() {
   return (
@@ -22,11 +23,13 @@ export default function Home() {
       <ExploreSection
         title="Explore India"
         subtitle="Unfold top visa-free getaways for smooth journeys."
+        destinations={destinationsByCategory['Explore India']}
         cardCount={5}
       />
       <ExploreSection
         title="Quick Visa Getaways"
         subtitle="Explore destinations with easy visa processes"
+        destinations={destinationsByCategory['Quick Visa Getaways']}
         cardCount={5}
       />
       <WhyChooseUsSection />

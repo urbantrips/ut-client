@@ -3,7 +3,7 @@ export interface Destination {
   image: string;
 }
 
-export type DestinationCategory = 'Must Visit' | 'Trending' | 'Weekend' | 'New Discoveries' | 'Just for You';
+export type DestinationCategory = 'Must Visit' | 'Trending' | 'Weekend' | 'New Discoveries' | 'Just for You' | 'Explore India' | 'Quick Visa Getaways';
 
 export const destinationsByCategory: Record<DestinationCategory, Destination[]> = {
   'Must Visit': [
@@ -65,6 +65,32 @@ export const destinationsByCategory: Record<DestinationCategory, Destination[]> 
     { title: 'Spiti Star-Gazing', image: '/assets/destinations/just-for-you/Spiti Star-Gazing.png' },
     { title: 'Sri Lanka Ella Train', image: '/assets/destinations/just-for-you/Sri Lanka Ella Train.png' },
     { title: 'Vietnam', image: '/assets/destinations/just-for-you/Vietnam.png' },
+  ],
+  'Explore India': [
+    { title: 'Agra', image: '/assets/destinations/must-visit/Agra.png' },
+    { title: 'Andaman', image: '/assets/destinations/must-visit/Andaman.png' },
+    { title: 'Darjeeling', image: '/assets/destinations/must-visit/darjeeling.png' },
+    { title: 'Jaisalmer', image: '/assets/destinations/must-visit/Jaisalmer.png' },
+    { title: 'Ladakh', image: '/assets/destinations/must-visit/Ladakh.png' },
+    { title: 'Lakshadweep', image: '/assets/destinations/must-visit/Lakshadweep.png' },
+    { title: 'Meghalaya', image: '/assets/destinations/must-visit/Meghalaya.png' },
+    { title: 'Rajasthan', image: '/assets/destinations/just-for-you/Rajasthan.png' },
+    { title: 'Goa', image: '/assets/destinations/just-for-you/Goa.png' },
+    { title: 'Kerala', image: '/assets/destinations/weekend/Muannar.png' },
+  ],
+  'Quick Visa Getaways': [
+    { title: 'Bali', image: '/assets/destinations/quick-visa/Bali.png' },
+    { title: 'Cambodia', image: '/assets/destinations/quick-visa/Cambodia.png' },
+    { title: 'Malaysia', image: '/assets/destinations/quick-visa/Malaysia.png' },
+    { title: 'Nepal', image: '/assets/destinations/quick-visa/Nepal.png' },
+    { title: 'Oman', image: '/assets/destinations/quick-visa/Oman.png' },
+    { title: 'Qatar', image: '/assets/destinations/quick-visa/Qatar.png' },
+    { title: 'Singapore', image: '/assets/destinations/quick-visa/Singapore.png' },
+    { title: 'Sri Lanka', image: '/assets/destinations/quick-visa/Sri Lanka.png' },
+    { title: 'Thailand', image: '/assets/destinations/quick-visa/Thailand.png' },
+    { title: 'Turkey', image: '/assets/destinations/quick-visa/Turkey.png' },
+    { title: 'UAE', image: '/assets/destinations/quick-visa/UAE.png' },
+    { title: 'Vietnam', image: '/assets/destinations/quick-visa/Vietnam.png' },
   ],
 };
 
