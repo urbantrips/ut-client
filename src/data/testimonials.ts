@@ -15,19 +15,19 @@ export const testimonials: Testimonial[] = [
   {
     name: 'Binusha Vijayan',
     location: 'Kochi',
-    image: '/assets/reviews/Binusha Vijayan.png',
+    image: '/assets/reviews/Binusha Vijayan.webp',
     review: 'Amazing experience! Will definitely book again.',
   },
   {
     name: 'Mira M Rahiman',
     location: 'Bangalore',
-    image: '/assets/reviews/Mira M Rahiman.png',
+    image: '/assets/reviews/Mira M Rahiman.webp',
     review: 'Best travel experience I\'ve ever had. Truly memorable!',
   },
   {
     name: 'Mubashir',
     location: 'Delhi',
-    image: '/assets/reviews/Mubashir.png',
+    image: '/assets/reviews/Mubashir.webp',
     review: 'Professional service and great destinations. Loved it!',
   },
   {
@@ -39,7 +39,7 @@ export const testimonials: Testimonial[] = [
   {
     name: 'Siji Devarajan',
     location: 'Chennai',
-    image: '/assets/reviews/Siji Devarajan.png',
+    image: '/assets/reviews/Siji Devarajan.webp',
     review: 'Fantastic journey with amazing memories created.',
   },
   {
@@ -51,13 +51,13 @@ export const testimonials: Testimonial[] = [
   {
     name: 'Soumya Deepu',
     location: 'Kolkata',
-    image: '/assets/reviews/soumya deepu.png',
+    image: '/assets/reviews/soumya deepu.webp',
     review: 'Unforgettable experience! Highly satisfied.',
   },
   {
     name: 'Wafia Hasanath',
     location: 'Mumbai',
-    image: '/assets/reviews/Wafia Hasanath kk.png',
+    image: '/assets/reviews/Wafia Hasanath kk.webp',
     review: 'Wonderful trip with excellent customer support.',
   },
 ];

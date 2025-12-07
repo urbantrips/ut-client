@@ -24,6 +24,8 @@ export function TestimonialsSection() {
             alt={testimonial.name}
             fill
             className="object-cover"
+            quality={85}
+            loading="lazy"
           />
         </div>
         

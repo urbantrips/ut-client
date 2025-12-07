@@ -33,7 +33,8 @@ function DestinationCard({ destination, index, activeFilter }: { destination: De
               sizes="(max-width: 640px) 102px, (max-width: 768px) 180px, (max-width: 1024px) 210px, 232px"
               onError={() => setImageError(true)}
               onLoad={() => setImageLoaded(true)}
-              unoptimized
+              loading="lazy"
+              quality={85}
             />
             {!imageLoaded && (
               <div className="absolute inset-0 bg-gray-200 animate-pulse" />

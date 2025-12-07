@@ -7,7 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "compress:images": "node scripts/compress-images.js",
+    "compress:videos": "node scripts/compress-videos.js",
+    "compress": "npm run compress:images && npm run compress:videos",
+    "update:image-paths": "node scripts/update-image-paths.js",
+    "optimize": "npm run compress:images && npm run update:image-paths"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.28.0",
@@ -29,6 +34,7 @@
     "eslint": "^8.56.0",
     "eslint-config-next": "^14.2.0",
     "postcss": "^8.4.0",
+    "sharp": "^0.34.5",
     "tailwindcss": "^3.4.0",
     "typescript": "^5.3.0"
   }

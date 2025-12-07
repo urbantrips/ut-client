@@ -55,7 +55,8 @@ export function ExploreSection({ title, subtitle, destinations, cardCount = 5 }:
                       sizes="(max-width: 640px) 180px, (max-width: 768px) 120px, (max-width: 1024px) 220px, 246px"
                       onError={() => handleImageError(index)}
                       onLoad={() => handleImageLoad(index)}
-                      unoptimized
+                      loading="lazy"
+                      quality={85}
                     />
                     {!imageLoaded[index] && (
                       <div className="absolute inset-0 bg-gray-200 animate-pulse" />

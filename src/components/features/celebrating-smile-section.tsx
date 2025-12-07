@@ -146,6 +146,7 @@ export function CelebratingSmileSection() {
                     loop
                     muted
                     playsInline
+                    preload="metadata"
                     className="w-full h-full object-cover"
                   />
                 </motion.div>
@@ -162,6 +163,7 @@ export function CelebratingSmileSection() {
                     loop
                     muted
                     playsInline
+                    preload="metadata"
                     className="w-full h-full object-cover"
                   />
                 </motion.div>

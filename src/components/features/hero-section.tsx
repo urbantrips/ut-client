@@ -17,6 +17,7 @@ export const HeroSection = () => {
             loop
             muted
             playsInline
+            preload="metadata"
             className="absolute top-0 left-0 w-full h-full object-cover"
             style={{ 
               transform: 'scale(1.2)',

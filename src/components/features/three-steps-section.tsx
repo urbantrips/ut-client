@@ -50,11 +50,13 @@ export function ThreeStepsSection() {
               >
                 <div className="w-full h-full bg-white border-2 border-primary rounded-[30px] shadow-lg overflow-hidden">
                   <Image
-                    src="/assets/3-step-plan/image1.png"
+                    src="/assets/3-step-plan/image1.webp"
                     alt="Step 1"
                     width={350}
                     height={390}
                     className="w-full h-full object-cover"
+                    quality={85}
+                    loading="lazy"
                   />
                 </div>
               </div>
@@ -74,11 +76,13 @@ export function ThreeStepsSection() {
               >
                 <div className="w-full h-full bg-white border-2 border-primary rounded-[30px] shadow-lg overflow-hidden">
                   <Image
-                    src="/assets/3-step-plan/image2.png"
+                    src="/assets/3-step-plan/image2.webp"
                     alt="Step 2"
                     width={350}
                     height={390}
                     className="w-full h-full object-cover"
+                    quality={85}
+                    loading="lazy"
                   />
                 </div>
               </div>
