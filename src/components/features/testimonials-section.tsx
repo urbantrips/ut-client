@@ -45,7 +45,7 @@ export function TestimonialsSection() {
   };
 
   return (
-    <section className="px-4 sm:px-6 lg:px-8 bg-white overflow-hidden">
+    <section className="bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <h2 className="py-6 sm:py-12">
