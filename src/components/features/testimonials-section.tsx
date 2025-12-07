@@ -1,17 +1,11 @@
-export function TestimonialsSection() {
-  const testimonials = [
-    { name: "Rohit", location: "Mumbai" },
-    { name: "Rohit", location: "Mumbai" },
-    { name: "Rohit", location: "Mumbai" },
-    { name: "Rohit", location: "Mumbai" },
-    { name: "Rohit", location: "Mumbai" },
-    { name: "Rohit", location: "Mumbai" },
-  ];
+import { testimonials } from '@/data/testimonials';
+import Image from 'next/image';
 
+export function TestimonialsSection() {
   const firstRow = testimonials.slice(0, 3);
   const secondRow = testimonials.slice(3, 6);
 
-  const renderCard = (testimonial: { name: string; location: string }, index: number, rowIndex: number) => {
+  const renderCard = (testimonial: typeof testimonials[0], index: number, rowIndex: number) => {
     const isYellowBackground = (rowIndex * 3 + index) % 2 === 0;
     
     return (
@@ -23,18 +17,20 @@ export function TestimonialsSection() {
           border: isYellowBackground ? 'none' : '1px solid #F5C842',
         }}
       >
-        {/* Avatar/Icon */}
-        <div
-          className="flex-shrink-0 w-[40px] h-[40px] md:w-[60px] md:h-[60px] rounded-[8px] md:rounded-[12px]"
-          style={{
-            backgroundColor: '#F5C842',
-          }}
-        />
+        {/* Avatar/Image */}
+        <div className="flex-shrink-0 w-[40px] h-[40px] md:w-[60px] md:h-[60px] rounded-[8px] md:rounded-[12px] overflow-hidden relative">
+          <Image
+            src={testimonial.image}
+            alt={testimonial.name}
+            fill
+            className="object-cover"
+          />
+        </div>
         
         {/* Text Content */}
         <div className="flex-1 flex flex-col justify-center min-w-0">
           <p className="font-bold text-black text-[10px] md:text-base leading-tight mb-0.5 md:mb-1">
-            Every detail thought of. Highly recommend!
+            {testimonial.review}
           </p>
           <p className="text-black text-[10px] md:text-base">
             {testimonial.name} - {testimonial.location}
