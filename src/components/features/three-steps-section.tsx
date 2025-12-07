@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 const steps = [
   {
@@ -35,9 +36,9 @@ export function ThreeStepsSection() {
 
         <div className="relative">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-16 xl:gap-20 items-start lg:items-center">
-            {/* Left: Image Placeholders - Desktop only */}
+            {/* Left: Images - Desktop only */}
             <div className="relative h-full min-h-[250px] sm:min-h-[350px] md:min-h-[450px] lg:min-h-[600px] xl:min-h-[700px] z-10 hidden lg:block">
-              {/* Top smaller box - positioned upper right, behind bottom box */}
+              {/* Top image - positioned upper right, behind bottom image */}
               <div
                 className="absolute top-0 right-0 z-10"
                 style={{ 
@@ -47,10 +48,18 @@ export function ThreeStepsSection() {
                   maxHeight: '390px'
                 }}
               >
-                <div className="w-full h-full bg-white border-2 border-primary rounded-[30px] shadow-lg" />
+                <div className="w-full h-full bg-white border-2 border-primary rounded-[30px] shadow-lg overflow-hidden">
+                  <Image
+                    src="/assets/3-step-plan/image1.png"
+                    alt="Step 1"
+                    width={350}
+                    height={390}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               </div>
 
-              {/* Bottom larger box - positioned lower left, in front, overlaps top box */}
+              {/* Bottom image - positioned lower left, in front, overlaps top image */}
               <div
                 className="absolute z-20"
                 style={{
@@ -63,7 +72,15 @@ export function ThreeStepsSection() {
                   transform: 'translateY(-60px) translateX(90px)'
                 }}
               >
-                <div className="w-full h-full bg-white border-2 border-primary rounded-[30px] shadow-lg" />
+                <div className="w-full h-full bg-white border-2 border-primary rounded-[30px] shadow-lg overflow-hidden">
+                  <Image
+                    src="/assets/3-step-plan/image2.png"
+                    alt="Step 2"
+                    width={350}
+                    height={390}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               </div>
             </div>
 
