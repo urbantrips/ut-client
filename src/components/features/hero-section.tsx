@@ -3,10 +3,16 @@
 import { Button } from '@/components/ui/button';
 import { Send } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 
 export const HeroSection = () => {
   const popularDestinations = ['Paris', 'Tokyo', 'Bali', 'New York', 'Dubai'];
 
+  const router = useRouter();
+
+  const handleSearch = () => {
+    router.push('/search');
+  };
   return (
     <div className="relative">
       <div className="h-[320px] sm:h-[360px] md:h-[413px] rounded-3xl inverted-radius relative overflow-hidden">
@@ -68,11 +74,14 @@ export const HeroSection = () => {
             <input
               type="text"
               placeholder="Where would you like to visit?"
-              className="w-full px-3.5 sm:px-6 py-2.5 sm:py-4 pr-[56px] sm:pr-[70px] rounded-[30px] border-2 sm:border-4 border-[rgb(var(--primary))] text-gray-900 placeholder-black placeholder:italic focus:outline-none focus:ring-2 sm:focus:ring-4 focus:ring-[rgb(var(--primary))]/30 text-sm sm:text-base md:text-lg"
+              readOnly
+              onClick={handleSearch}
+              className="w-full px-3.5 sm:px-6 py-2.5 sm:py-4 pr-[56px] sm:pr-[70px] rounded-[30px] border-2 sm:border-4 border-[rgb(var(--primary))] text-gray-900 placeholder-black placeholder:italic focus:outline-none focus:ring-2 sm:focus:ring-4 focus:ring-[rgb(var(--primary))]/30 text-sm sm:text-base md:text-lg cursor-pointer"
             />
             <Button
               variant="primary"
               size="lg"
+              onClick={handleSearch}
               className="absolute right-[10px] sm:right-[12px] inset-y-[4px] sm:inset-y-[10px] h-[36px] sm:h-[48px] w-[36px] sm:w-[48px] p-0 rounded-full flex items-center justify-center"
             >
               <Send className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
