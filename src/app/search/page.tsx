@@ -82,23 +82,23 @@ export default function SearchDestinationPage() {
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                             >
-                                <div className="flex items-center gap-3 flex-wrap">
-                                    <span className={`text-base md:text-lg font-bold ${isSelected ? 'text-black' : 'text-gray-900'}`}>
-                                        {dest.title}
-                                    </span>
+                                <span className={`text-base md:text-lg font-bold ${isSelected ? 'text-black' : 'text-gray-900'}`}>
+                                    {dest.title}
+                                </span>
+                                <div className="flex items-center gap-3">
                                     {dest.tag && (
                                         <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-full ${getTagStyle(dest.tag)}`}>
                                             {dest.tag}
                                         </span>
                                     )}
+                                    {isSelected && (
+                                        <motion.div
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            className="w-2 h-2 rounded-full bg-primary-500"
+                                        />
+                                    )}
                                 </div>
-                                {isSelected && (
-                                    <motion.div
-                                        initial={{ scale: 0 }}
-                                        animate={{ scale: 1 }}
-                                        className="w-2 h-2 rounded-full bg-primary-500"
-                                    />
-                                )}
                             </motion.div>
                         );
                     })}
