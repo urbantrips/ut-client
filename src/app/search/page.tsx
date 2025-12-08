@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { getAllDestinationsIncludingCombos, getDestinationTag } from '@/data/all-destinations';
@@ -9,6 +9,12 @@ import { getTagStyle, filterDestinations } from '@/lib/destination-utils';
 export default function SearchDestinationPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedTitle, setSelectedTitle] = useState<string>('');
+    const searchInputRef = useRef<HTMLInputElement>(null);
+
+    // Auto-focus search input on mount
+    useEffect(() => {
+        searchInputRef.current?.focus();
+    }, []);
 
     // Get all unique destinations from all-destinations.ts
     const allDestinations = useMemo(() => {
@@ -53,6 +59,7 @@ export default function SearchDestinationPage() {
                 {/* Search Input */}
                 <div className="w-full mb-10 relative">
                     <input
+                        ref={searchInputRef}
                         type="text"
                         placeholder="Search Destination..."
                         value={searchQuery}
