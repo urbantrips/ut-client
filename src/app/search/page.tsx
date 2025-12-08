@@ -3,32 +3,50 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { destinationsByCategory } from '@/data/destinations';
+import { getAllDestinationsIncludingCombos, findAllMatchingCategories, getDestinationsByCategory } from '@/data/all-destinations';
 
 export default function SearchDestinationPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedTitle, setSelectedTitle] = useState<string>('');
 
-    // Flatten and deduplicate destinations
+    // Get all unique destinations from all-destinations.ts
     const allDestinations = useMemo(() => {
-        const unique = new Set<string>();
-        const list: { title: string }[] = [];
-
-        Object.values(destinationsByCategory).forEach(categoryDests => {
-            categoryDests.forEach(dest => {
-                if (!unique.has(dest.title)) {
-                    unique.add(dest.title);
-                    list.push({ title: dest.title });
-                }
-            });
-        });
-
-        return list.sort((a, b) => a.title.localeCompare(b.title));
+        const destinationStrings = getAllDestinationsIncludingCombos();
+        return destinationStrings.map(title => ({ title }));
     }, []);
 
-    const filteredDestinations = allDestinations.filter(dest =>
-        dest.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // Filter destinations based on search query
+    const filteredDestinations = useMemo(() => {
+        if (!searchQuery.trim()) {
+            return allDestinations;
+        }
+
+        const query = searchQuery.toLowerCase().trim();
+        const uniqueDestinations = new Set<string>();
+        
+        // Check if search query matches any categories (regions or combos)
+        const matchingCategories = findAllMatchingCategories(query);
+        
+        if (matchingCategories.length > 0) {
+            // Collect destinations from all matching categories
+            matchingCategories.forEach(category => {
+                const categoryDestinations = getDestinationsByCategory(category);
+                categoryDestinations.forEach(dest => uniqueDestinations.add(dest));
+            });
+        }
+        
+        // Also include individual destinations that match the search query
+        allDestinations.forEach(dest => {
+            if (dest.title.toLowerCase().includes(query)) {
+                uniqueDestinations.add(dest.title);
+            }
+        });
+        
+        // Convert to array and sort
+        return Array.from(uniqueDestinations)
+            .map(title => ({ title }))
+            .sort((a, b) => a.title.localeCompare(b.title));
+    }, [searchQuery, allDestinations]);
 
     return (
         <div className="min-h-screen bg-white text-gray-900 p-6 sm:p-8 flex flex-col font-sans relative">
@@ -63,7 +81,7 @@ export default function SearchDestinationPage() {
                         placeholder="Search Destination..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full px-6 py-4 rounded-[20px] border placeholder:italic border-primary-500 outline-none placeholder-gray-500 text-base font-medium shadow-sm focus:ring-1 focus:ring-primary-500"
+                        className="w-full px-6 py-4 rounded-[30px] border placeholder:italic placeholder:text-sm md:placeholder:text-base border-primary-500 outline-none placeholder-gray-500 text-base font-medium shadow-sm focus:ring-1 focus:ring-primary-500"
                         style={{ borderRadius: '25px', fontFamily: 'var(--font-montserrat), sans-serif' }}
                     />
                 </div>
