@@ -3,7 +3,8 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { getAllDestinationsIncludingCombos, findAllMatchingCategories, getDestinationsByCategory } from '@/data/all-destinations';
+import { getAllDestinationsIncludingCombos, getDestinationTag } from '@/data/all-destinations';
+import { getTagStyle, filterDestinations } from '@/lib/destination-utils';
 
 export default function SearchDestinationPage() {
     const [searchQuery, setSearchQuery] = useState('');
@@ -12,40 +13,15 @@ export default function SearchDestinationPage() {
     // Get all unique destinations from all-destinations.ts
     const allDestinations = useMemo(() => {
         const destinationStrings = getAllDestinationsIncludingCombos();
-        return destinationStrings.map(title => ({ title }));
+        return destinationStrings.map(title => ({ 
+            title,
+            tag: getDestinationTag(title)
+        }));
     }, []);
 
     // Filter destinations based on search query
     const filteredDestinations = useMemo(() => {
-        if (!searchQuery.trim()) {
-            return allDestinations;
-        }
-
-        const query = searchQuery.toLowerCase().trim();
-        const uniqueDestinations = new Set<string>();
-        
-        // Check if search query matches any categories (regions or combos)
-        const matchingCategories = findAllMatchingCategories(query);
-        
-        if (matchingCategories.length > 0) {
-            // Collect destinations from all matching categories
-            matchingCategories.forEach(category => {
-                const categoryDestinations = getDestinationsByCategory(category);
-                categoryDestinations.forEach(dest => uniqueDestinations.add(dest));
-            });
-        }
-        
-        // Also include individual destinations that match the search query
-        allDestinations.forEach(dest => {
-            if (dest.title.toLowerCase().includes(query)) {
-                uniqueDestinations.add(dest.title);
-            }
-        });
-        
-        // Convert to array and sort
-        return Array.from(uniqueDestinations)
-            .map(title => ({ title }))
-            .sort((a, b) => a.title.localeCompare(b.title));
+        return filterDestinations(searchQuery, allDestinations);
     }, [searchQuery, allDestinations]);
 
     return (
@@ -106,9 +82,16 @@ export default function SearchDestinationPage() {
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                             >
-                                <span className={`text-base md:text-lg font-bold ${isSelected ? 'text-black' : 'text-gray-900'}`}>
-                                    {dest.title}
-                                </span>
+                                <div className="flex items-center gap-3 flex-wrap">
+                                    <span className={`text-base md:text-lg font-bold ${isSelected ? 'text-black' : 'text-gray-900'}`}>
+                                        {dest.title}
+                                    </span>
+                                    {dest.tag && (
+                                        <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-full ${getTagStyle(dest.tag)}`}>
+                                            {dest.tag}
+                                        </span>
+                                    )}
+                                </div>
                                 {isSelected && (
                                     <motion.div
                                         initial={{ scale: 0 }}

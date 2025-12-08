@@ -326,6 +326,38 @@ export function getDestinationsByCategory(category: string): string[] {
   return [];
 }
 
+// Trending destination interface
+export interface TrendingDestination {
+  title: string;
+  tag: string;
+}
+
+// Trending destinations with tags
+export const trendingDestinations: TrendingDestination[] = [
+  { title: 'Meghalaya', tag: 'Trending' },
+  { title: 'Kashmir', tag: 'Most Visited' },
+  { title: 'Thailand', tag: 'Quick Visa Getaways' },
+  { title: 'Goa', tag: 'Weekend' },
+  { title: 'Japan', tag: 'Trending' },
+  { title: 'Malaysia', tag: 'Quick Visa Getaways' },
+  { title: 'Bali', tag: 'Trending' },
+  { title: 'Dubai', tag: 'Trending' },
+  { title: 'Maldives', tag: 'Trending' },
+  { title: 'Singapore', tag: 'Quick Visa Getaways' },
+  { title: 'Vietnam', tag: 'Quick Visa Getaways' },
+  { title: 'Turkey', tag: 'Trending' },
+  { title: 'Lakshadweep', tag: 'Most Visited' },
+  { title: 'Ladakh', tag: 'Most Visited' },
+  { title: 'Manali', tag: 'Weekend' },
+  { title: 'Shimla', tag: 'Weekend' },
+];
+
+// Helper function to get tag for a destination
+export function getDestinationTag(destination: string): string | null {
+  const trending = trendingDestinations.find(dest => dest.title === destination);
+  return trending ? trending.tag : null;
+}
+
 // Recently booked destinations interface
 export interface RecentlyBookedDestination {
   title: string;
