@@ -3,7 +3,14 @@
 import { forwardRef, useImperativeHandle } from 'react';
 import { motion } from 'framer-motion';
 import { useTravelersInfoStore, type HotelCategory, type TravelMode, type RoomType, type HotelTravelModeFormData } from '@/store/travelers-info-store';
-import { ChevronDown, Plane, Train, Bus, Car } from 'lucide-react';
+import { Plane, Train, Bus, Car } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 export type { HotelTravelModeFormData };
 
@@ -90,21 +97,25 @@ export const HotelTravelModeForm = forwardRef<HotelTravelModeFormRef, HotelTrave
                 <label className="block text-sm font-bold text-black mb-2" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
                     Room Type
                 </label>
-                <div className="relative">
-                    <select
-                        value={roomType}
-                        onChange={(e) => setRoomType(e.target.value as RoomType)}
-                        className="w-full px-6 py-3.5 rounded-[30px] border border-gray-300 outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition-all text-sm appearance-none bg-white pr-10"
+                <Select value={roomType} onValueChange={(value) => setRoomType(value as RoomType)}>
+                    <SelectTrigger 
+                        className="w-full px-6 py-3.5 rounded-[30px] border border-gray-300 outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition-all text-sm bg-white h-auto"
                         style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
                     >
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
                         {roomTypes.map((type) => (
-                            <option key={type} value={type}>
+                            <SelectItem 
+                                key={type} 
+                                value={type}
+                                style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
+                            >
                                 {type}
-                            </option>
+                            </SelectItem>
                         ))}
-                    </select>
-                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                </div>
+                    </SelectContent>
+                </Select>
             </div>
 
             {/* Preferred Travel Mode */}

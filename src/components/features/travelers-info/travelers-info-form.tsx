@@ -2,8 +2,7 @@
 
 import { forwardRef, useImperativeHandle } from 'react';
 import { motion } from 'framer-motion';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import { DatePicker } from '@/components/ui/date-picker';
 import { useTravelersInfoStore, type TravelStyle, type TravelersInfoFormData } from '@/store/travelers-info-store';
 
 export type { TravelersInfoFormData };
@@ -48,30 +47,6 @@ export const TravelersInfoForm = forwardRef<TravelersInfoFormRef, TravelersInfoF
 
     return (
         <>
-            <style jsx global>{`
-                .react-datepicker-wrapper {
-                    width: 100%;
-                }
-                .react-datepicker__input-container {
-                    width: 100%;
-                }
-                .custom-datepicker {
-                    width: 100%;
-                    padding: 0.875rem 1.5rem;
-                    border-radius: 30px;
-                    border: 1px solid #e5e7eb;
-                    outline: none;
-                    transition: all 0.2s;
-                    font-size: 0.875rem;
-                    color: #6b7280;
-                    font-family: var(--font-montserrat), sans-serif;
-                }
-                .custom-datepicker:focus {
-                    border-color: #facc15;
-                    box-shadow: 0 0 0 1px #facc15;
-                }
-            `}</style>
-
             {/* Departure City */}
                 <div className="mb-6">
                     <label className="block text-sm font-bold text-black mb-2" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
@@ -120,12 +95,10 @@ export const TravelersInfoForm = forwardRef<TravelersInfoFormRef, TravelersInfoF
                             Start Date
                         </label>
                         <DatePicker
-                            selected={startDate}
-                            onChange={(date) => setStartDate(date)}
-                            placeholderText="DD/MM/YY"
+                            date={startDate || undefined}
+                            onSelect={(date) => setStartDate(date || null)}
+                            placeholder="DD/MM/YY"
                             dateFormat="dd/MM/yy"
-                            className="custom-datepicker"
-                            wrapperClassName="w-full"
                         />
                     </div>
                     <div>
@@ -133,13 +106,11 @@ export const TravelersInfoForm = forwardRef<TravelersInfoFormRef, TravelersInfoF
                             End Date
                         </label>
                         <DatePicker
-                            selected={endDate}
-                            onChange={(date) => setEndDate(date)}
-                            placeholderText="DD/MM/YY"
+                            date={endDate || undefined}
+                            onSelect={(date) => setEndDate(date || null)}
+                            placeholder="DD/MM/YY"
                             dateFormat="dd/MM/yy"
                             minDate={startDate || undefined}
-                            className="custom-datepicker"
-                            wrapperClassName="w-full"
                         />
                     </div>
                 </div>
