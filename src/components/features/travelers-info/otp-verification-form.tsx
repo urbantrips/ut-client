@@ -1,10 +1,11 @@
 'use client';
 
-import { forwardRef, useImperativeHandle, useState, useRef, useEffect } from 'react';
+import { forwardRef, useImperativeHandle, useState, useRef, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRightIcon } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { CountryPicker } from '@/components/ui/country-picker';
 import { useTravelersInfoStore } from '@/store/travelers-info-store';
+import { getCountryByCode } from '@/lib/countries';
 
 export interface OtpVerificationFormRef {
     handleContinue: () => void;
@@ -31,7 +32,12 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
         const [isResending, setIsResending] = useState(false);
         const otpInputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-        const countryCode = verificationCountryCode || '+91';
+        const selectedCountry = useMemo(() => {
+            const countryCode = verificationCountryCode || 'IN';
+            return getCountryByCode(countryCode) || getCountryByCode('IN');
+        }, [verificationCountryCode]);
+
+        const dialCode = selectedCountry?.dialCode || '+91';
 
         const handleSendOtp = async () => {
             if (!verificationName.trim() || !verificationPhone.trim()) {
@@ -104,7 +110,7 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
             const formData = {
                 name: verificationName,
                 phone: verificationPhone,
-                countryCode: countryCode,
+                countryCode: dialCode,
                 otp: otpString,
             };
 
@@ -117,7 +123,7 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
             getFormData: () => ({
                 name: verificationName,
                 phone: verificationPhone,
-                countryCode: countryCode,
+                countryCode: dialCode,
                 otp: otp.join(''),
             }),
         }));
@@ -160,28 +166,12 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
                             Phone*
                         </label>
                         <div className="flex gap-2">
-                            <Select
-                                value={countryCode}
+                            <CountryPicker
+                                value={verificationCountryCode || 'IN'}
                                 onValueChange={setVerificationCountryCode}
                                 disabled={isOtpSent}
-                            >
-                                <SelectTrigger className="w-[100px] px-3 py-2.5 rounded-lg border border-gray-300 outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition-all text-sm">
-                                    <SelectValue>
-                                        <div className="flex items-center gap-1.5">
-                                            <span className="text-base">🇮🇳</span>
-                                            <span>{countryCode}</span>
-                                        </div>
-                                    </SelectValue>
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="+91">
-                                        <div className="flex items-center gap-2">
-                                            <span>🇮🇳</span>
-                                            <span>+91</span>
-                                        </div>
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
+                                className="w-[120px]"
+                            />
                             <input
                                 type="tel"
                                 placeholder="Enter your Mobile Number"

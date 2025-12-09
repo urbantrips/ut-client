@@ -131,7 +131,7 @@ export const useTravelersInfoStore = create<TravelersInfoStore>()(
         selectedActivities: [],
         verificationName: '',
         verificationPhone: '',
-        verificationCountryCode: '+91',
+        verificationCountryCode: 'IN',
 
         // Step navigation actions
         setCurrentStep: (step) => set({ currentStep: step }),
@@ -226,7 +226,7 @@ export const useTravelersInfoStore = create<TravelersInfoStore>()(
             selectedActivities: [],
             verificationName: '',
             verificationPhone: '',
-            verificationCountryCode: '+91',
+            verificationCountryCode: 'IN',
           }),
       }),
       {
