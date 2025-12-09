@@ -1,52 +1,53 @@
 'use client';
 
-import { useState } from 'react';
+import { forwardRef, useImperativeHandle } from 'react';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useTravelersInfoStore, type TravelStyle, type TravelersInfoFormData } from '@/store/travelers-info-store';
 
-type TravelStyle = 'Couple' | 'Friends' | 'Family' | 'Solo';
+export type { TravelersInfoFormData };
 
-interface TravelerCounts {
-    adults: number;
-    children: number;
-    infants: number;
+export interface TravelersInfoFormRef {
+    handleContinue: () => void;
+    getFormData: () => TravelersInfoFormData;
 }
 
-export function TravelersInfoForm() {
-    const [departureCity, setDepartureCity] = useState('');
-    const [travelStyle, setTravelStyle] = useState<TravelStyle>('Couple');
-    const [startDate, setStartDate] = useState<Date | null>(null);
-    const [endDate, setEndDate] = useState<Date | null>(null);
-    const [travelerCounts, setTravelerCounts] = useState<TravelerCounts>({
-        adults: 2,
-        children: 1,
-        infants: 0,
-    });
+interface TravelersInfoFormProps {
+    onContinue?: (data: TravelersInfoFormData) => void;
+}
+
+export const TravelersInfoForm = forwardRef<TravelersInfoFormRef, TravelersInfoFormProps>(
+    ({ onContinue }, ref) => {
+    const {
+        departureCity,
+        travelStyle,
+        startDate,
+        endDate,
+        travelerCounts,
+        setDepartureCity,
+        setTravelStyle,
+        setStartDate,
+        setEndDate,
+        updateTravelerCount,
+        getFormData,
+    } = useTravelersInfoStore();
 
     const travelStyles: TravelStyle[] = ['Couple', 'Friends', 'Family', 'Solo'];
 
-    const updateTravelerCount = (type: keyof TravelerCounts, increment: boolean) => {
-        setTravelerCounts(prev => ({
-            ...prev,
-            [type]: Math.max(0, prev[type] + (increment ? 1 : -1))
-        }));
+    const handleContinue = () => {
+        const formData = getFormData();
+        console.log(formData);
+        onContinue?.(formData);
     };
 
-    const handleContinue = () => {
-        // TODO: Navigate to next step or save data
-        console.log({
-            departureCity,
-            travelStyle,
-            startDate,
-            endDate,
-            travelerCounts
-        });
-    };
+    useImperativeHandle(ref, () => ({
+        handleContinue,
+        getFormData,
+    }));
 
     return (
-        <div className="min-h-screen bg-white sm:bg-[#FFFBF0] flex items-center justify-center sm:p-6 font-sans">
+        <>
             <style jsx global>{`
                 .react-datepicker-wrapper {
                     width: 100%;
@@ -70,29 +71,8 @@ export function TravelersInfoForm() {
                     box-shadow: 0 0 0 1px #facc15;
                 }
             `}</style>
-            <div className="w-full max-w-[500px] bg-white sm:rounded-[30px] sm:shadow-sm sm:border border-gray-100 p-6 relative min-h-screen sm:min-h-0">
-                {/* Back Button */}
-                <Link href="/" className="absolute top-6 left-6 text-black hover:opacity-70 transition-opacity">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M19 12H5M12 19l-7-7 7-7" />
-                    </svg>
-                </Link>
 
-                {/* Header */}
-                <div className="mb-8 mt-12 sm:mt-2">
-                    <h1 className="text-xl font-bold text-center text-black mb-6" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
-                        Travelers Info
-                    </h1>
-
-                    {/* Progress Bars */}
-                    <div className="flex gap-2 px-2">
-                        <div className="h-1 flex-1 bg-yellow-400 rounded-full"></div>
-                        <div className="h-1 flex-1 bg-gray-200 rounded-full"></div>
-                        <div className="h-1 flex-1 bg-gray-200 rounded-full"></div>
-                    </div>
-                </div>
-
-                {/* Departure City */}
+            {/* Departure City */}
                 <div className="mb-6">
                     <label className="block text-sm font-bold text-black mb-2" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
                         Departure city
@@ -243,21 +223,9 @@ export function TravelersInfoForm() {
                         </div>
                     </div>
                 </div>
-
-                {/* Continue Button */}
-                <motion.button
-                    onClick={handleContinue}
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                    className="w-full bg-yellow-400 text-black font-bold py-4 rounded-[30px] shadow-none hover:bg-yellow-500 transition-colors flex items-center justify-center gap-2"
-                    style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
-                >
-                    Continue
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M5 10h10m-4-4l4 4-4 4" />
-                    </svg>
-                </motion.button>
-            </div>
-        </div>
+        </>
     );
-}
+    }
+);
+
+TravelersInfoForm.displayName = 'TravelersInfoForm';
