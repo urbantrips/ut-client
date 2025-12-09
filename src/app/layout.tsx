@@ -3,7 +3,7 @@ import { Montserrat, Dancing_Script } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
 
-const montserrat = Montserrat({ 
+const montserrat = Montserrat({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700', '800'],
   variable: '--font-montserrat',
@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${montserrat.className} ${dancingScript.variable}`}>
+      <body className={`${montserrat.className} ${montserrat.variable} ${dancingScript.variable}`}>
         <Providers>{children}</Providers>
       </body>
     </html>

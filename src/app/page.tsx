@@ -1,12 +1,12 @@
 import { Header } from '@/components/features/header';
-import { HeroSection } from '@/components/features/hero-section';
-import { TravelStyleSection } from '@/components/features/travel-style-section';
-import { BrowseDestinationsSection } from '@/components/features/browse-destinations-section';
-import { CelebratingSmileSection } from '@/components/features/celebrating-smile-section';
-import { ExploreSection } from '@/components/features/explore-section';
-import { WhyChooseUsSection } from '@/components/features/why-choose-us-section';
-import { ThreeStepsSection } from '@/components/features/three-steps-section';
-import { TestimonialsSection } from '@/components/features/testimonials-section';
+import { HeroSection } from '@/components/features/homepage/hero-section';
+import { TravelStyleSection } from '@/components/features/homepage/travel-style-section';
+import { BrowseDestinationsSection } from '@/components/features/homepage/browse-destinations-section';
+import { CelebratingSmileSection } from '@/components/features/homepage/celebrating-smile-section';
+import { ExploreSection } from '@/components/features/homepage/explore-section';
+import { WhyChooseUsSection } from '@/components/features/homepage/why-choose-us-section';
+import { ThreeStepsSection } from '@/components/features/homepage/three-steps-section';
+import { TestimonialsSection } from '@/components/features/homepage/testimonials-section';
 import { Footer } from '@/components/features/footer';
 import { destinationsByCategory } from '@/data/destinations';
 
