@@ -61,6 +61,11 @@ interface TravelersInfoStore {
   travelStylePreferences: TravelStylePreferences;
   selectedActivities: string[];
 
+  // Step 4: OTP Verification data
+  verificationName: string;
+  verificationPhone: string;
+  verificationCountryCode: string;
+
   // Step navigation actions
   setCurrentStep: (step: number) => void;
   nextStep: () => void;
@@ -86,6 +91,11 @@ interface TravelersInfoStore {
   setTravelStylePreference: (key: keyof TravelStylePreferences, value: number) => void;
   toggleActivity: (activity: string) => void;
   getTravelStyleActivitiesData: () => TravelStyleActivitiesFormData;
+
+  // Step 4 Actions
+  setVerificationName: (name: string) => void;
+  setVerificationPhone: (phone: string) => void;
+  setVerificationCountryCode: (code: string) => void;
 
   // Reset
   resetForm: () => void;
@@ -119,6 +129,9 @@ export const useTravelersInfoStore = create<TravelersInfoStore>()(
           adventure: 0,
         },
         selectedActivities: [],
+        verificationName: '',
+        verificationPhone: '',
+        verificationCountryCode: '+91',
 
         // Step navigation actions
         setCurrentStep: (step) => set({ currentStep: step }),
@@ -186,6 +199,11 @@ export const useTravelersInfoStore = create<TravelersInfoStore>()(
           };
         },
 
+        // Step 4 Actions
+        setVerificationName: (name) => set({ verificationName: name }),
+        setVerificationPhone: (phone) => set({ verificationPhone: phone }),
+        setVerificationCountryCode: (code) => set({ verificationCountryCode: code }),
+
         // Reset
         resetForm: () =>
           set({
@@ -206,6 +224,9 @@ export const useTravelersInfoStore = create<TravelersInfoStore>()(
               adventure: 0,
             },
             selectedActivities: [],
+            verificationName: '',
+            verificationPhone: '',
+            verificationCountryCode: '+91',
           }),
       }),
       {
@@ -224,10 +245,13 @@ export const useTravelersInfoStore = create<TravelersInfoStore>()(
           needReturnTicket: state.needReturnTicket,
           travelStylePreferences: state.travelStylePreferences,
           selectedActivities: state.selectedActivities,
+          verificationName: state.verificationName,
+          verificationPhone: state.verificationPhone,
+          verificationCountryCode: state.verificationCountryCode,
         }),
         // Custom storage with Date deserialization
         storage: {
-          getItem: (name) => {
+          getItem: (name: string) => {
             const str = localStorage.getItem(name);
             if (!str) return null;
             try {
@@ -239,15 +263,15 @@ export const useTravelersInfoStore = create<TravelersInfoStore>()(
                   endDate: parsed.state.endDate ? new Date(parsed.state.endDate) : null,
                 };
               }
-              return JSON.stringify(parsed);
+              return JSON.stringify(parsed) as any;
             } catch {
-              return str;
+              return str as any;
             }
           },
-          setItem: (name, value) => {
-            localStorage.setItem(name, value);
+          setItem: (name: string, value: any) => {
+            localStorage.setItem(name, value as string);
           },
-          removeItem: (name) => {
+          removeItem: (name: string) => {
             localStorage.removeItem(name);
           },
         },

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { TravelersInfoForm, type TravelersInfoFormRef } from '@/components/features/travelers-info/travelers-info-form';
 import { HotelTravelModeForm, type HotelTravelModeFormRef } from '@/components/features/travelers-info/hotel-travel-mode-form';
 import { TravelStyleActivitiesForm, type TravelStyleActivitiesFormRef } from '@/components/features/travelers-info/travel-style-activities-form';
+import { OtpVerificationForm, type OtpVerificationFormRef } from '@/components/features/travelers-info/otp-verification-form';
 import { BackButton } from '@/components/features/back-button';
 import { useTravelersInfoStore } from '@/store/travelers-info-store';
 import { ArrowRightIcon, ArrowLeftIcon } from 'lucide-react';
@@ -13,6 +14,7 @@ export default function TravelersInfoPage() {
     const step1FormRef = useRef<TravelersInfoFormRef>(null);
     const step2FormRef = useRef<HotelTravelModeFormRef>(null);
     const step3FormRef = useRef<TravelStyleActivitiesFormRef>(null);
+    const step4FormRef = useRef<OtpVerificationFormRef>(null);
     
     const currentStep = useTravelersInfoStore((state) => state.currentStep);
     const nextStep = useTravelersInfoStore((state) => state.nextStep);
@@ -21,7 +23,7 @@ export default function TravelersInfoPage() {
     const getHotelTravelModeData = useTravelersInfoStore((state) => state.getHotelTravelModeData);
     const getTravelStyleActivitiesData = useTravelersInfoStore((state) => state.getTravelStyleActivitiesData);
 
-    const stepTitles = ['Travelers Info', 'Hotel & Travel Mode', 'Travel Style & Activities', 'Review'];
+    const stepTitles = ['Travelers Info', 'Hotel & Travel Mode', 'Travel Style & Activities', 'Verify Details'];
     const currentTitle = stepTitles[currentStep - 1] || 'Travelers Info';
 
     const handleContinue = () => {
@@ -38,15 +40,17 @@ export default function TravelersInfoPage() {
         } else if (currentStep === 3) {
             const formData = getTravelStyleActivitiesData();
             console.log('Step 3 data:', formData);
-            step3FormRef.current?.handleContinue();
-            nextStep();
-        } else {
-            // Step 4 - Final submission
             console.log('All form data:', {
                 step1: getFormData(),
                 step2: getHotelTravelModeData(),
                 step3: getTravelStyleActivitiesData(),
             });
+            step3FormRef.current?.handleContinue();
+            nextStep();
+        } else if (currentStep === 4) {
+            // Step 4 - OTP Verification (handled by form component)
+            step4FormRef.current?.handleContinue();
+            // After verification, you can navigate to success page or itinerary
         }
     };
 
@@ -55,6 +59,28 @@ export default function TravelersInfoPage() {
             previousStep();
         }
     };
+
+    // Special layout for OTP verification step (step 4)
+    if (currentStep === 4) {
+        return (
+            <div className="min-h-screen bg-gray-100 flex flex-col justify-end font-sans">
+                {/* Top Section with Back Button */}
+                <div className="bg-gray-100 pt-6 px-6 pb-4 absolute top-0 left-0 right-0 z-10">
+                    <button
+                        onClick={handleBack}
+                        className="text-black hover:opacity-70 transition-opacity flex items-center"
+                    >
+                        <ArrowLeftIcon className="w-6 h-6" />
+                    </button>
+                </div>
+
+                {/* White Card Section (Lower Half) */}
+                <div className="bg-white rounded-t-[30px] px-6 pt-6 pb-8 mt-auto" style={{ minHeight: '55%' }}>
+                    <OtpVerificationForm ref={step4FormRef} />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-white sm:bg-[#FFFBF0] flex items-center justify-center sm:p-6 font-sans">
@@ -79,27 +105,24 @@ export default function TravelersInfoPage() {
                     </div>
 
                     {/* Progress Bars */}
-                    <div className="flex gap-2 px-2">
-                        {[1, 2, 3, 4].map((step) => (
-                            <div
-                                key={step}
-                                className={`h-1 flex-1 rounded-full ${
-                                    step <= currentStep ? 'bg-yellow-400' : 'bg-gray-200'
-                                }`}
-                            />
-                        ))}
-                    </div>
+                    {currentStep <= 3 && (
+                        <div className="flex gap-2 px-2">
+                            {[1, 2, 3].map((step) => (
+                                <div
+                                    key={step}
+                                    className={`h-1 flex-1 rounded-full ${
+                                        step <= currentStep ? 'bg-yellow-400' : 'bg-gray-200'
+                                    }`}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* Step Content */}
                 {currentStep === 1 && <TravelersInfoForm ref={step1FormRef} />}
                 {currentStep === 2 && <HotelTravelModeForm ref={step2FormRef} />}
                 {currentStep === 3 && <TravelStyleActivitiesForm ref={step3FormRef} />}
-                {currentStep === 4 && (
-                    <div className="mb-8">
-                        <p className="text-center text-gray-600">Review your information</p>
-                    </div>
-                )}
 
                 {/* Continue Button */}
                 <motion.button
@@ -109,8 +132,8 @@ export default function TravelersInfoPage() {
                     className="w-full bg-yellow-400 text-black font-bold py-3 rounded-3xl shadow-none hover:bg-yellow-500 transition-colors flex items-center justify-center gap-2 text-sm"
                     style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
                 >
-                    {currentStep === 3 ? 'Generate My Trip' : currentStep === 4 ? 'Submit' : 'Continue'}
-                    {currentStep !== 3 && currentStep !== 4 && <ArrowRightIcon className="w-4 h-4" />}
+                    {currentStep === 3 ? 'Generate My Trip' : 'Continue'}
+                    {currentStep !== 3 && <ArrowRightIcon className="w-4 h-4" />}
                 </motion.button>
             </div>
         </div>
