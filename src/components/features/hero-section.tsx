@@ -76,13 +76,13 @@ export const HeroSection = () => {
               placeholder="Where would you like to visit?"
               readOnly
               onClick={handleSearch}
-              className="w-full px-3.5 sm:px-6 py-2.5 sm:py-4 pr-[56px] sm:pr-[70px] rounded-[30px] border-2 sm:border-4 border-[rgb(var(--primary))] text-gray-900 placeholder-black placeholder:italic focus:outline-none focus:ring-2 sm:focus:ring-4 focus:ring-[rgb(var(--primary))]/30 text-sm sm:text-base md:text-lg cursor-pointer"
+              className="w-full px-3.5 sm:px-6 py-2 placeholder:text-[12px] sm:py-4 pr-[56px] sm:pr-[70px] rounded-[30px] border-2 sm:border-4 border-[rgb(var(--primary))] text-gray-900 placeholder:italic focus:outline-none focus:ring-2 sm:focus:ring-4 focus:ring-[rgb(var(--primary))]/30 text-sm sm:text-base md:text-lg cursor-pointer"
             />
             <Button
               variant="primary"
               size="lg"
               onClick={handleSearch}
-              className="absolute right-[10px] sm:right-[12px] inset-y-[4px] sm:inset-y-[10px] h-[36px] sm:h-[48px] w-[36px] sm:w-[48px] p-0 rounded-full flex items-center justify-center"
+              className="absolute right-[10px] sm:right-[12px] inset-y-[2px] sm:inset-y-[10px] h-[35px] sm:h-[48px] w-[36px] sm:w-[48px] p-0 rounded-full flex items-center justify-center"
             >
               <Send className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
             </Button>
