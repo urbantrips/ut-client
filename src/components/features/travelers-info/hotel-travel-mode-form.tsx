@@ -1,4 +1,4 @@
-'use client';
+    'use client';
 
 import { forwardRef, useImperativeHandle } from 'react';
 import { motion } from 'framer-motion';
@@ -66,7 +66,7 @@ export const HotelTravelModeForm = forwardRef<HotelTravelModeFormRef, HotelTrave
                 <label className="block text-sm font-bold text-black mb-3" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
                     Hotel Category
                 </label>
-                <div className="flex border border-gray-200 rounded-[30px] overflow-hidden bg-white p-1">
+                <div className="flex border border-gray-200 rounded-3xl overflow-hidden bg-white p-1">
                     {hotelCategories.map((category) => {
                         const isSelected = hotelCategory === category;
                         
@@ -76,8 +76,8 @@ export const HotelTravelModeForm = forwardRef<HotelTravelModeFormRef, HotelTrave
                                 onClick={() => setHotelCategory(category)}
                                 whileTap={{ scale: 0.98 }}
                                 className={`
-                                    flex-1 px-4 py-3.5 font-semibold text-sm transition-all relative
-                                    ${isSelected ? 'rounded-[26px]' : ''}
+                                    flex-1 px-4 py-2 font-semibold text-sm transition-all relative
+                                    ${isSelected ? 'rounded-2xl' : ''}
                                     ${isSelected
                                         ? 'text-black bg-yellow-400'
                                         : 'text-gray-400 bg-white hover:text-gray-600'
@@ -99,7 +99,7 @@ export const HotelTravelModeForm = forwardRef<HotelTravelModeFormRef, HotelTrave
                 </label>
                 <Select value={roomType} onValueChange={(value) => setRoomType(value as RoomType)}>
                     <SelectTrigger 
-                        className="w-full px-6 py-3.5 rounded-[30px] border border-gray-300 outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition-all text-sm bg-white h-auto"
+                        className="w-full px-6 py-2 rounded-3xl border border-gray-300 outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition-all text-sm bg-white h-auto"
                         style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
                     >
                         <SelectValue />
@@ -132,7 +132,7 @@ export const HotelTravelModeForm = forwardRef<HotelTravelModeFormRef, HotelTrave
                                 onClick={() => setPreferredTravelMode(mode)}
                                 whileTap={{ scale: 0.98 }}
                                 className={`
-                                    flex flex-col items-center justify-center gap-2 px-4 py-6 rounded-3xl font-semibold text-sm transition-all border min-h-[100px]
+                                    flex flex-col items-center justify-center gap-2 px-4 rounded-3xl font-semibold text-sm transition-all border min-h-[80px]
                                     ${preferredTravelMode === mode
                                         ? 'border-yellow-400 text-black bg-white shadow-sm ring-1 ring-yellow-400'
                                         : 'border-gray-200 text-black bg-white hover:border-gray-300'
@@ -162,7 +162,7 @@ export const HotelTravelModeForm = forwardRef<HotelTravelModeFormRef, HotelTrave
                                 onClick={() => setNeedReturnTicket(value)}
                                 whileTap={{ scale: 0.98 }}
                                 className={`
-                                    flex-1 px-4 py-3.5 rounded-[30px] font-semibold text-sm transition-all border
+                                    flex-1 px-4 py-2 rounded-3xl font-semibold text-sm transition-all border
                                     ${needReturnTicket === value
                                         ? 'border-yellow-400 text-black bg-yellow-400 shadow-sm'
                                         : 'border-gray-200 text-black bg-white hover:border-gray-300'

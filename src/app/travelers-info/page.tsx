@@ -96,8 +96,7 @@ export default function TravelersInfoPage() {
                     onClick={handleContinue}
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
-                    className="w-full bg-yellow-400 text-black font-bold py-4 rounded-[30px] shadow-none hover:bg-yellow-500 transition-colors flex items-center justify-center gap-2"
-                    style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
+                    className="w-full bg-yellow-400 text-black font-bold py-3 rounded-3xl shadow-none hover:bg-yellow-500 transition-colors flex items-center justify-center gap-2 text-sm"
                 >
                     {currentStep === 3 ? 'Submit' : 'Continue'}
                     {currentStep !== 3 && <ArrowRightIcon className="w-4 h-4" />}
