@@ -52,24 +52,29 @@ export const HotelTravelModeForm = forwardRef<HotelTravelModeFormRef, HotelTrave
                 <label className="block text-sm font-bold text-black mb-3" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
                     Hotel Category
                 </label>
-                <div className="flex gap-2">
-                    {hotelCategories.map((category) => (
-                        <motion.button
-                            key={category}
-                            onClick={() => setHotelCategory(category)}
-                            whileTap={{ scale: 0.98 }}
-                            className={`
-                                flex-1 px-4 py-3.5 rounded-[30px] font-semibold text-sm transition-all border
-                                ${hotelCategory === category
-                                    ? 'border-yellow-400 text-black bg-yellow-400 shadow-sm'
-                                    : 'border-gray-200 text-black bg-white hover:border-gray-300'
-                                }
-                            `}
-                            style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
-                        >
-                            {category}
-                        </motion.button>
-                    ))}
+                <div className="flex border border-gray-200 rounded-[30px] overflow-hidden bg-white p-1">
+                    {hotelCategories.map((category) => {
+                        const isSelected = hotelCategory === category;
+                        
+                        return (
+                            <motion.button
+                                key={category}
+                                onClick={() => setHotelCategory(category)}
+                                whileTap={{ scale: 0.98 }}
+                                className={`
+                                    flex-1 px-4 py-3.5 font-semibold text-sm transition-all relative
+                                    ${isSelected ? 'rounded-[26px]' : ''}
+                                    ${isSelected
+                                        ? 'text-black bg-yellow-400'
+                                        : 'text-gray-400 bg-white hover:text-gray-600'
+                                    }
+                                `}
+                                style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
+                            >
+                                {category}
+                            </motion.button>
+                        );
+                    })}
                 </div>
             </div>
 
