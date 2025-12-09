@@ -28,6 +28,18 @@ export interface HotelTravelModeFormData {
   needReturnTicket: boolean;
 }
 
+export interface TravelStylePreferences {
+  relaxation: number;
+  nightlife: number;
+  heritage: number;
+  adventure: number;
+}
+
+export interface TravelStyleActivitiesFormData {
+  travelStylePreferences: TravelStylePreferences;
+  selectedActivities: string[];
+}
+
 interface TravelersInfoStore {
   // Current step
   currentStep: number;
@@ -44,6 +56,10 @@ interface TravelersInfoStore {
   roomType: RoomType;
   preferredTravelMode: TravelMode;
   needReturnTicket: boolean;
+
+  // Step 3: Travel Style & Activities Form data
+  travelStylePreferences: TravelStylePreferences;
+  selectedActivities: string[];
 
   // Step navigation actions
   setCurrentStep: (step: number) => void;
@@ -65,6 +81,11 @@ interface TravelersInfoStore {
   setPreferredTravelMode: (mode: TravelMode) => void;
   setNeedReturnTicket: (need: boolean) => void;
   getHotelTravelModeData: () => HotelTravelModeFormData;
+
+  // Step 3 Actions
+  setTravelStylePreference: (key: keyof TravelStylePreferences, value: number) => void;
+  toggleActivity: (activity: string) => void;
+  getTravelStyleActivitiesData: () => TravelStyleActivitiesFormData;
 
   // Reset
   resetForm: () => void;
@@ -91,10 +112,17 @@ export const useTravelersInfoStore = create<TravelersInfoStore>()(
         roomType: 'Double Room',
         preferredTravelMode: 'Flight',
         needReturnTicket: true,
+        travelStylePreferences: {
+          relaxation: 0,
+          nightlife: 0,
+          heritage: 0,
+          adventure: 0,
+        },
+        selectedActivities: [],
 
         // Step navigation actions
         setCurrentStep: (step) => set({ currentStep: step }),
-        nextStep: () => set((state) => ({ currentStep: Math.min(state.currentStep + 1, 3) })),
+        nextStep: () => set((state) => ({ currentStep: Math.min(state.currentStep + 1, 4) })),
         previousStep: () => set((state) => ({ currentStep: Math.max(state.currentStep - 1, 1) })),
 
         // Step 1 Actions
@@ -136,6 +164,28 @@ export const useTravelersInfoStore = create<TravelersInfoStore>()(
           };
         },
 
+        // Step 3 Actions
+        setTravelStylePreference: (key, value) =>
+          set((state) => ({
+            travelStylePreferences: {
+              ...state.travelStylePreferences,
+              [key]: Math.max(0, Math.min(100, value)),
+            },
+          })),
+        toggleActivity: (activity) =>
+          set((state) => ({
+            selectedActivities: state.selectedActivities.includes(activity)
+              ? state.selectedActivities.filter((a) => a !== activity)
+              : [...state.selectedActivities, activity],
+          })),
+        getTravelStyleActivitiesData: () => {
+          const state = get();
+          return {
+            travelStylePreferences: state.travelStylePreferences,
+            selectedActivities: state.selectedActivities,
+          };
+        },
+
         // Reset
         resetForm: () =>
           set({
@@ -149,6 +199,13 @@ export const useTravelersInfoStore = create<TravelersInfoStore>()(
             roomType: 'Double Room',
             preferredTravelMode: 'Flight',
             needReturnTicket: true,
+            travelStylePreferences: {
+              relaxation: 0,
+              nightlife: 0,
+              heritage: 0,
+              adventure: 0,
+            },
+            selectedActivities: [],
           }),
       }),
       {
@@ -165,6 +222,8 @@ export const useTravelersInfoStore = create<TravelersInfoStore>()(
           roomType: state.roomType,
           preferredTravelMode: state.preferredTravelMode,
           needReturnTicket: state.needReturnTicket,
+          travelStylePreferences: state.travelStylePreferences,
+          selectedActivities: state.selectedActivities,
         }),
         // Custom storage with Date deserialization
         storage: {
