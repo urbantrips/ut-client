@@ -3,7 +3,7 @@
 import { forwardRef, useImperativeHandle } from 'react';
 import { motion } from 'framer-motion';
 import { useTravelersInfoStore, type HotelCategory, type TravelMode, type RoomType, type HotelTravelModeFormData } from '@/store/travelers-info-store';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Plane, Train, Bus, Car } from 'lucide-react';
 
 export type { HotelTravelModeFormData };
 
@@ -33,6 +33,13 @@ export const HotelTravelModeForm = forwardRef<HotelTravelModeFormRef, HotelTrave
     const hotelCategories: HotelCategory[] = ['Budget', 'Mid', 'Luxury'];
     const roomTypes: RoomType[] = ['Single Room', 'Double Room', 'Twin Room', 'Suite', 'Family Room'];
     const travelModes: TravelMode[] = ['Flight', 'Train', 'Bus', 'Self-drive'];
+    
+    const travelModeIcons = {
+        'Flight': Plane,
+        'Train': Train,
+        'Bus': Bus,
+        'Self-drive': Car,
+    };
 
     const handleContinue = () => {
         const formData = getHotelTravelModeData();
@@ -106,23 +113,27 @@ export const HotelTravelModeForm = forwardRef<HotelTravelModeFormRef, HotelTrave
                     Preferred Travel Mode
                 </label>
                 <div className="grid grid-cols-2 gap-3">
-                    {travelModes.map((mode) => (
-                        <motion.button
-                            key={mode}
-                            onClick={() => setPreferredTravelMode(mode)}
-                            whileTap={{ scale: 0.98 }}
-                            className={`
-                                px-4 py-3.5 rounded-[30px] font-semibold text-sm transition-all border
-                                ${preferredTravelMode === mode
-                                    ? 'border-yellow-400 text-black bg-white shadow-sm ring-1 ring-yellow-400'
-                                    : 'border-gray-200 text-black bg-white hover:border-gray-300'
-                                }
-                            `}
-                            style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
-                        >
-                            {mode}
-                        </motion.button>
-                    ))}
+                    {travelModes.map((mode) => {
+                        const Icon = travelModeIcons[mode];
+                        return (
+                            <motion.button
+                                key={mode}
+                                onClick={() => setPreferredTravelMode(mode)}
+                                whileTap={{ scale: 0.98 }}
+                                className={`
+                                    flex flex-col items-center justify-center gap-2 px-4 py-6 rounded-3xl font-semibold text-sm transition-all border min-h-[100px]
+                                    ${preferredTravelMode === mode
+                                        ? 'border-yellow-400 text-black bg-white shadow-sm ring-1 ring-yellow-400'
+                                        : 'border-gray-200 text-black bg-white hover:border-gray-300'
+                                    }
+                                `}
+                                style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
+                            >
+                                <Icon className="w-8 h-8" />
+                                <span>{mode}</span>
+                            </motion.button>
+                        );
+                    })}
                 </div>
             </div>
 
