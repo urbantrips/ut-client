@@ -109,8 +109,8 @@ export default function TravelersInfoPage() {
                     className="w-full bg-yellow-400 text-black font-bold py-3 rounded-3xl shadow-none hover:bg-yellow-500 transition-colors flex items-center justify-center gap-2 text-sm"
                     style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
                 >
-                    {currentStep === 4 ? 'Generate My Trip' : 'Continue'}
-                    {currentStep !== 4 && <ArrowRightIcon className="w-4 h-4" />}
+                    {currentStep === 3 ? 'Generate My Trip' : currentStep === 4 ? 'Submit' : 'Continue'}
+                    {currentStep !== 3 && currentStep !== 4 && <ArrowRightIcon className="w-4 h-4" />}
                 </motion.button>
             </div>
         </div>
