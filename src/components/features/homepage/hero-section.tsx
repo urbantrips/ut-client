@@ -78,7 +78,7 @@ export const HeroSection = () => {
               placeholder="Where would you like to visit?"
               readOnly
               onClick={handleSearch}
-              className="w-full px-3.5 sm:px-6 py-2 placeholder:text-[12px] sm:py-4 pr-[56px] sm:pr-[70px] rounded-[30px] border-2 sm:border-4 border-[rgb(var(--primary))] text-gray-900 placeholder:italic focus:outline-none focus:ring-2 sm:focus:ring-4 focus:ring-[rgb(var(--primary))]/30 text-sm sm:text-base md:text-lg cursor-pointer"
+              className="w-full px-3.5 sm:px-6 py-2 placeholder:text-[16px] placeholder:text-[12px] sm:py-4 pr-[56px] sm:pr-[70px] rounded-[30px] border-2 sm:border-4 border-[rgb(var(--primary))] text-gray-900 placeholder:italic focus:outline-none focus:ring-2 sm:focus:ring-4 focus:ring-[rgb(var(--primary))]/30 text-sm sm:text-base md:text-lg cursor-pointer"
             />
             <Button
               variant="primary"
