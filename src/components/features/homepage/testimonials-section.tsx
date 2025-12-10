@@ -1,5 +1,7 @@
+'use client';
+
 import { testimonials } from '@/data/testimonials';
-import Image from 'next/image';
+import { CustomerAvatar } from '@/components/ui/customer-avatar';
 
 export function TestimonialsSection() {
   const firstRow = testimonials.slice(0, 3);
@@ -18,16 +20,11 @@ export function TestimonialsSection() {
         }}
       >
         {/* Avatar/Image */}
-        <div className="flex-shrink-0 w-[40px] h-[40px] md:w-[60px] md:h-[60px] rounded-[8px] md:rounded-[12px] overflow-hidden relative">
-          <Image
-            src={testimonial.image}
-            alt={testimonial.name}
-            fill
-            className="object-cover"
-            quality={85}
-            loading="lazy"
-          />
-        </div>
+        <CustomerAvatar
+          name={testimonial.name}
+          image={testimonial.image}
+          size="medium"
+        />
         
         {/* Text Content */}
         <div className="flex-1 flex flex-col justify-center min-w-0">

@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Send } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import { testimonials } from '@/data/testimonials';
+import { CustomerAvatar } from '@/components/ui/customer-avatar';
 
 export const HeroSection = () => {
   const popularDestinations = ['Paris', 'Tokyo', 'Bali', 'New York', 'Dubai'];
@@ -76,13 +78,13 @@ export const HeroSection = () => {
               placeholder="Where would you like to visit?"
               readOnly
               onClick={handleSearch}
-              className="w-full px-3.5 sm:px-6 py-2.5 sm:py-4 pr-[56px] sm:pr-[70px] rounded-[30px] border-2 sm:border-4 border-[rgb(var(--primary))] text-gray-900 placeholder-black placeholder:italic focus:outline-none focus:ring-2 sm:focus:ring-4 focus:ring-[rgb(var(--primary))]/30 text-sm sm:text-base md:text-lg cursor-pointer"
+              className="w-full px-3.5 sm:px-6 py-2 placeholder:text-[16px] placeholder:text-[12px] sm:py-4 pr-[56px] sm:pr-[70px] rounded-[30px] border-2 sm:border-4 border-[rgb(var(--primary))] text-gray-900 placeholder:italic focus:outline-none focus:ring-2 sm:focus:ring-4 focus:ring-[rgb(var(--primary))]/30 text-sm sm:text-base md:text-lg cursor-pointer"
             />
             <Button
               variant="primary"
               size="lg"
               onClick={handleSearch}
-              className="absolute right-[10px] sm:right-[12px] inset-y-[4px] sm:inset-y-[10px] h-[36px] sm:h-[48px] w-[36px] sm:w-[48px] p-0 rounded-full flex items-center justify-center"
+              className="absolute right-[10px] sm:right-[12px] inset-y-[2px] sm:inset-y-[10px] h-[35px] sm:h-[48px] w-[36px] sm:w-[48px] p-0 rounded-full flex items-center justify-center"
             >
               <Send className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
             </Button>
@@ -128,10 +130,12 @@ export const HeroSection = () => {
       </div>
       <div className="absolute bottom-0 right-0 sm:bottom-0 sm:right-1 md:bottom-1 md:right-1 flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-2 md:gap-2.5 pr-1 sm:pr-1 md:pr-0 translate-y-[12px] sm:translate-y-0 md:translate-y-0">
         <div className="flex -space-x-1.5 sm:-space-x-4 md:-space-x-5">
-          {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="w-4 h-4 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full bg-gray-300 border border-white sm:border-2 shadow-sm"
+          {testimonials.slice(0, 4).map((testimonial) => (
+            <CustomerAvatar
+              key={testimonial.name}
+              name={testimonial.name}
+              image={testimonial.image}
+              size="small"
             />
           ))}
         </div>
