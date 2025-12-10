@@ -97,20 +97,20 @@ const config: Config = {
   			]
   		},
   		colors: {
-  			primary: {
-  				'50': 'rgba(255, 250, 230, 1)',
-  				'100': 'rgba(255, 245, 204, 1)',
-  				'200': 'rgba(255, 240, 179, 1)',
-  				'300': 'rgba(255, 235, 153, 1)',
-  				'400': 'rgba(255, 230, 128, 1)',
-  				'500': 'rgba(255, 220, 46, 1)',
-  				'600': 'rgba(230, 198, 41, 1)',
-  				'700': 'rgba(204, 176, 37, 1)',
-  				'800': 'rgba(179, 154, 32, 1)',
-  				'900': 'rgba(153, 132, 28, 1)',
-  				DEFAULT: 'hsl(var(--primary))',
-  				foreground: 'hsl(var(--primary-foreground))'
-  			},
+			primary: {
+				'50': 'rgba(255, 250, 230, 1)',
+				'100': 'rgba(255, 245, 204, 1)',
+				'200': 'rgba(255, 240, 179, 1)',
+				'300': 'rgba(255, 235, 153, 1)',
+				'400': 'rgba(255, 230, 128, 1)',
+				'500': 'rgba(255, 220, 46, 1)',
+				'600': 'rgba(230, 198, 41, 1)',
+				'700': 'rgba(204, 176, 37, 1)',
+				'800': 'rgba(179, 154, 32, 1)',
+				'900': 'rgba(153, 132, 28, 1)',
+				DEFAULT: 'rgba(255, 220, 46, 1)',
+				foreground: 'hsl(var(--primary-foreground))'
+			},
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

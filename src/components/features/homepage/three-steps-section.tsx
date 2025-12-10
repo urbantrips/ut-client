@@ -48,7 +48,7 @@ export function ThreeStepsSection() {
                   maxHeight: '390px'
                 }}
               >
-                <div className="w-full h-full bg-white border-2 border-primary rounded-[30px] shadow-lg overflow-hidden">
+                <div className="w-full h-full bg-white border-2 border-primary-500 rounded-[30px] shadow-lg overflow-hidden">
                   <Image
                     src="/assets/3-step-plan/image1.webp"
                     alt="Step 1"
@@ -74,7 +74,7 @@ export function ThreeStepsSection() {
                   transform: 'translateY(-60px) translateX(90px)'
                 }}
               >
-                <div className="w-full h-full bg-white border-2 border-primary rounded-[30px] shadow-lg overflow-hidden">
+                <div className="w-full h-full bg-white border-2 border-primary-500 rounded-[30px] shadow-lg overflow-hidden">
                   <Image
                     src="/assets/3-step-plan/image2.webp"
                     alt="Step 2"
@@ -111,10 +111,10 @@ export function ThreeStepsSection() {
                     transition={{ duration: 0.6 }}
                   >
                     {/* Outer yellow ring (thinner) */}
-                    <div className="absolute inset-0 rounded-full border border-primary" />
+                      <div className="absolute inset-0 rounded-full border border-primary-500 " />
 
                     {/* Inner yellow ring (thicker/bolder) with gap from outer ring */}
-                    <div className="absolute inset-[3px] sm:inset-[4px] md:inset-[5px] lg:inset-[6px] rounded-full border-[3px] sm:border-[4px] md:border-[5px] lg:border-[6px] border-primary" />
+                    <div className="absolute inset-[3px] sm:inset-[4px] md:inset-[5px] lg:inset-[6px] rounded-full border-[3px] sm:border-[4px] md:border-[5px] lg:border-[6px] border-primary-500" />
 
                     {/* White circle with number - with gap from inner ring */}
                     <div className="relative w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 lg:w-12 lg:h-12 rounded-full bg-white flex items-center justify-center">

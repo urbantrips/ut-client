@@ -50,7 +50,7 @@ export const HeroSection = () => {
               whileHover={{ scale: 1.05 }}
             >
               <motion.span 
-                className="px-2 sm:px-2.5 md:px-4 py-0.5 sm:py-1 md:py-2 bg-primary/20 backdrop-blur-sm border border-primary/30 rounded-full text-primary text-[8px] sm:text-[10px] md:text-sm font-semibold inline-block"
+                className="px-2 sm:px-2.5 md:px-4 py-0.5 sm:py-1 md:py-2 bg-primary-500/20 backdrop-blur-sm border border-primary-500 rounded-full text-primary-500 text-[8px] sm:text-[10px] md:text-sm font-semibold inline-block"
                 animate={{ 
                   boxShadow: [
                     '0 0 0px rgba(255, 220, 46, 0)',
@@ -81,7 +81,7 @@ export const HeroSection = () => {
               className="w-full px-3.5 sm:px-6 py-2 placeholder:text-[16px] placeholder:text-[12px] sm:py-4 pr-[56px] sm:pr-[70px] rounded-[30px] border-2 sm:border-4 border-[rgb(var(--primary))] text-gray-900 placeholder:italic focus:outline-none focus:ring-2 sm:focus:ring-4 focus:ring-[rgb(var(--primary))]/30 text-sm sm:text-base md:text-lg cursor-pointer"
             />
             <Button
-              variant="primary"
+              variant="default"
               size="lg"
               onClick={handleSearch}
               className="absolute right-[10px] sm:right-[12px] inset-y-[2px] sm:inset-y-[10px] h-[35px] sm:h-[48px] w-[36px] sm:w-[48px] p-0 rounded-full flex items-center justify-center"
