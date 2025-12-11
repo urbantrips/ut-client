@@ -1,11 +1,24 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { Star } from 'lucide-react';
 import { CustomerAvatar } from '@/components/ui/customer-avatar';
+import { testimonials } from '@/data/testimonials';
+import { useState, useEffect } from 'react';
 
 export function ForCouplesSection() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Auto-play slideshow
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+    }, 5000); // Change slide every 5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <section className="w-full mx-auto px-4 sm:px-6 lg:px-8 pt-12 md:pt-16">
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-stretch justify-center">
@@ -17,7 +30,7 @@ export function ForCouplesSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
             className="mb-8"
-          >
+          > 
             <h2 className="text-left">
               For Couples Who Want
               <br />
@@ -68,7 +81,7 @@ export function ForCouplesSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <div className="relative rounded-3xl overflow-hidden h-64 lg:h-[350px] w-full group">
+          <div className="relative rounded-3xl overflow-hidden h-64 lg:h-[350px] w-full group flex flex-col">
             {/* Background Image - Using a cave-like or dark nature image if possible, acting as the 'cave' from screenshot */}
             <Image
               src="/assets/destinations/must-visit/Meghalaya.webp"
@@ -80,27 +93,39 @@ export function ForCouplesSection() {
             {/* Dark overlay for text readability */}
             {/* <div className="absolute inset-0 bg-black/20" /> */}
 
-            {/* Review Card Overlay at Bottom */}
-            <div className="absolute bottom-4 left-4 right-4 bg-white rounded-2xl p-4 shadow-xl">
-              <div className="flex items-center gap-3 mb-2">
-                <CustomerAvatar
-                  name="Rahul Menon"
-                  image="/assets/reviews/Mubashir.webp" // Reusing available avatar or placeholder
-                  size="medium"
-                  className="w-10 h-10"
-                />
-                <div>
-                  <h4 className="text-sm font-bold text-black">Rahul Menon</h4>
-                  <div className="flex text-yellow-500">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-3 h-3 fill-current" />
-                    ))}
+            {/* Review Card Overlay at Bottom - Slideshow */}
+            <div className="mt-auto mb-4 mx-4 bg-white rounded-2xl p-4 shadow-xl relative overflow-hidden z-10">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentIndex}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <CustomerAvatar
+                      name={testimonials[currentIndex].name}
+                      image={testimonials[currentIndex].image}
+                      size="medium"
+                      className="w-10 h-10"
+                    />
+                    <div>
+                      <h4 className="text-sm font-bold text-black">
+                        {testimonials[currentIndex].name}
+                      </h4>
+                      <div className="flex text-yellow-500">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className="w-3 h-3 fill-current" />
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
-                Had a great international trip with UrbanTrips. Everything was well organized, and the team was really helpful. Loved the experience! ✈️
-              </p>
+                  <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
+                    {testimonials[currentIndex].review}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
             </div>
           </div>
         </motion.div>
