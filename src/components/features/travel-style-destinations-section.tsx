@@ -30,7 +30,7 @@ export function TravelStyleDestinationsSection({
           </h2>
         </div>
 
-        <div className="flex overflow-x-auto gap-4 sm:gap-6 md:justify-center lg:justify-between scrollbar-hide pb-4">
+        <div className="grid grid-cols-3 sm:flex sm:overflow-x-auto gap-2 sm:gap-4 md:gap-6 md:justify-center lg:justify-between scrollbar-hide pb-4">
           {displayDestinations.map((destination, index) => (
             <TravelStyleDestinationCard
               key={`${destination.title}-${index}`}

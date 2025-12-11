@@ -18,15 +18,35 @@ export function TravelStyleDestinationCard({ destination, index }: TravelStyleDe
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
+  const handleCardClick = () => {
+    // Handle card click - navigate to destination details or similar
+    console.log('Card clicked:', destination.title);
+  };
+
+  const handlePhoneClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    // Handle phone call action
+    console.log('Phone clicked for:', destination.title);
+    // You can add actual phone call logic here
+  };
+
+  const handlePlanTripClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    // Handle plan trip action
+    console.log('Plan trip clicked for:', destination.title);
+    // You can add navigation or modal logic here
+  };
+
   return (
     <motion.div
-      className="flex flex-col cursor-pointer group flex-shrink-0"
+      className="flex flex-col cursor-pointer group flex-shrink-0 w-full sm:w-auto"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.4, delay: index * 0.1 }}
+      onClick={handleCardClick}
     >
-      <div className="w-[200px] sm:w-[220px] md:w-[240px] lg:w-[260px] h-[280px] sm:h-[300px] md:h-[320px] lg:h-[340px] rounded-2xl sm:rounded-3xl mb-4 overflow-hidden relative shadow-lg transition-shadow duration-300 bg-gray-200">
+      <div className="w-full sm:w-[220px] md:w-[240px] lg:w-[260px] h-[140px] sm:h-[300px] md:h-[320px] lg:h-[340px] rounded-2xl sm:rounded-3xl mb-2 sm:mb-4 overflow-hidden relative shadow-lg transition-shadow duration-300 bg-gray-200">
         {!imageError ? (
           <>
             <Image
@@ -34,7 +54,7 @@ export function TravelStyleDestinationCard({ destination, index }: TravelStyleDe
               alt={destination.title}
               fill
               className={`object-cover group-hover:scale-105 transition-transform duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
-              sizes="(max-width: 640px) 200px, (max-width: 768px) 220px, (max-width: 1024px) 240px, 260px"
+              sizes="(max-width: 640px) 33vw, (max-width: 768px) 220px, (max-width: 1024px) 240px, 260px"
               onError={() => setImageError(true)}
               onLoad={() => setImageLoaded(true)}
               loading="lazy"
@@ -55,19 +75,29 @@ export function TravelStyleDestinationCard({ destination, index }: TravelStyleDe
       </div>
       
       {/* Destination Info */}
-      <div className="px-2">
-        <p className="text-sm sm:text-base md:text-lg font-bold text-black text-center mb-2">
+      <div className="px-1 sm:px-2 min-w-0">
+        <p className="text-xs sm:text-base md:text-lg font-bold text-black text-center mb-1 sm:mb-2 truncate">
           {destination.title}
         </p>
-        <p className="text-xs sm:text-sm md:text-base text-gray-600 text-center mb-3">
+        <p className="text-[10px] sm:text-sm md:text-base text-gray-600 text-center mb-1.5 sm:mb-3 truncate">
           {destination.price}
         </p>
-        <div className="flex gap-2">
-          <button className="flex-1 bg-primary text-gray-900 rounded-lg sm:rounded-xl py-2 sm:py-2.5 flex items-center justify-center font-semibold text-xs sm:text-sm hover:bg-primary/90 transition-colors duration-300">
-            <Phone className="w-3 h-3 sm:w-4 sm:h-4" />
+        <div className="flex gap-1 sm:gap-2 min-w-0">
+          <button
+            onClick={handlePhoneClick}
+            className="flex-shrink-0 w-10 sm:w-12 bg-primary text-gray-900 rounded-lg sm:rounded-xl py-1.5 sm:py-2.5 flex items-center justify-center font-semibold text-[10px] sm:text-sm hover:bg-primary/90 active:bg-primary/80 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            aria-label={`Call about ${destination.title}`}
+            type="button"
+          >
+            <Phone className="w-2.5 h-2.5 sm:w-4 sm:h-4" />
           </button>
-          <button className="flex-1 bg-primary text-gray-900 rounded-lg sm:rounded-xl py-2 sm:py-2.5 flex items-center justify-center font-semibold text-xs sm:text-sm hover:bg-primary/90 transition-colors duration-300">
-            Plan Trip
+          <button
+            onClick={handlePlanTripClick}
+            className="flex-1 min-w-0 bg-primary text-gray-900 rounded-lg sm:rounded-xl py-1.5 sm:py-2.5 flex items-center justify-center font-semibold text-[10px] sm:text-sm hover:bg-primary/90 active:bg-primary/80 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            aria-label={`Plan trip to ${destination.title}`}
+            type="button"
+          >
+            <span className="truncate">Plan Trip</span>
           </button>
         </div>
       </div>

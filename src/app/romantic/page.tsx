@@ -17,12 +17,12 @@ export default function TravelStylePage() {
       <TravelStyleDestinationsSection
         title="Experience love in the world's most romantic places."
         destinations={romanticDestinations}
-        cardCount={5}
+        cardCount={3}
       />
       <TravelStyleDestinationsSection
         title="Top Honeymoon Destinations In India"
         destinations={honeymoonDestinationsIndia}
-        cardCount={5}
+        cardCount={3}
       />
       <DestinationPosterSection />
       <Footer />
