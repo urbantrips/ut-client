@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { HeartHandshake, Waves, Compass, Building2, Crown } from 'lucide-react';
 
 const travelStyles = [
@@ -52,8 +53,9 @@ export function TravelStyleSection() {
           {travelStyles.map((style, index) => {
             const IconComponent = style.icon;
             return (
-              <div
+              <Link
                 key={style.id}
+                href={`/travel-style?style=${encodeURIComponent(style.name.toLowerCase())}`}
                 className={`relative flex flex-col items-center justify-between bg-primary-50 border-2 border-primary-200 p-4 cursor-pointer hover:border-primary-400 w-[83px] h-[95px] sm:w-[83px] sm:h-[95px] md:w-[180px] md:h-[208px] lg:w-[180px] lg:h-[208px] rounded-[15px] flex-shrink-0 ${index < travelStyles.length - 1 ? 'md:mr-4' : ''}`}
               >
                 {/* Circular Icon Area */}
@@ -74,7 +76,7 @@ export function TravelStyleSection() {
                 <div className="text-[10px] sm:text-[10px] md:text-base font-semibold text-gray-900">
                   {style.name}
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>
