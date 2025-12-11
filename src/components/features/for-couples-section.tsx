@@ -18,7 +18,7 @@ export function ForCouplesSection() {
             transition={{ duration: 0.6 }}
             className="mb-8"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-black leading-tight inline-block relative">
+            <h2 className="text-left">
               For Couples Who Want
               <br />
               More Than a Vacation
