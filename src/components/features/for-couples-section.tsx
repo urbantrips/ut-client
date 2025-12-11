@@ -7,80 +7,103 @@ import { CustomerAvatar } from '@/components/ui/customer-avatar';
 
 export function ForCouplesSection() {
   return (
-    <section className="w-full px-4 sm:px-6 md:px-8 lg:px-12 py-8 sm:py-12 md:py-16 bg-white">
-      <div
-        className="flex gap-4"
-        style={{ width: '652px', height: '442px' }}
-      >
-        {/* Left Side - Heading */}
-        <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <h2 >
-            For Couples Who Want More Than A Vacation
-          </h2>
+    <section className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start justify-center">
+        {/* Left Side - Heading & Tour Card */}
+        <div className="flex-1 w-full max-w-2xl">
           <motion.div
-            className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg border border-gray-100"
-            style={{ width: '686px', height: '227px' }}
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="mb-8"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-black leading-tight inline-block relative">
+              For Couples Who Want
+              <br />
+              More Than a Vacation
+              <span className="absolute bottom-1 left-0 w-full h-1 rounded-full opacity-80"></span>
+            </h2>
+          </motion.div>
+
+          <motion.div
+            className="bg-white rounded-3xl overflow-hidden shadow-lg border border-gray-100 flex flex-row h-48 sm:h-56"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <div className="flex flex-col h-full">
-              <div className="relative w-full h-[140px] flex-shrink-0">
-                <Image
-                  src="/assets/destinations/weekend/Muannar.webp"
-                  alt="Romantic Tour"
-                  fill
-                  className="object-cover"
-                  sizes="686px"
-                />
-              </div>
-              <div className="p-4 flex-1 relative">
-                <div className="text-xs text-gray-500 absolute top-4 right-4">SD/M</div>
-                <h3 className="text-sm font-bold text-black mb-2 pr-8">
-                  Kerala Couple Tour With<br />Candlelight Dinner
-                </h3>
-                <div className="h-6 bg-yellow-100 rounded" />
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
-        {/* Right Side - Cards (Horizontal Side by Side) */}
-        <div>
-          {/* Testimonial Card */}
-          <motion.div
-            className="bg-blue-50 rounded-2xl sm:rounded-3xl p-4 shadow-lg flex flex-col"
-            style={{ width: '609px', height: '196px' }}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <div className="flex items-start gap-3 mb-3">
-              <CustomerAvatar
-                name="Rahul Menon"
-                image="/assets/reviews/Mubashir.webp"
-                size="medium"
+            {/* Image Side - approx 40% width */}
+            <div className="relative w-[40%] h-full">
+              <Image
+                src="/assets/destinations/weekend/Muannar.webp"
+                alt="Romantic Kerala Tour"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 40vw, 33vw"
               />
-              <div>
-                <p className="text-xs font-semibold text-black mb-1">Rahul Menon</p>
-                <div className="flex items-center gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-              </div>
             </div>
-            <p className="text-xs text-gray-700 leading-relaxed">
-              Had a great International trip with UrbanTrips. Everything was well organized, and the team was really helpful. Loved the experience! 💯
-            </p>
+
+            {/* Content Side */}
+            <div className="flex-1 p-5 sm:p-6 flex flex-col justify-between relative">
+              <div className="absolute top-4 right-4 font-bold text-sm">5D/4N</div>
+
+              <div className="mt-2">
+                <h3 className="text-lg sm:text-xl font-bold text-black leading-snug max-w-[85%]">
+                  Kerala Couple Tour With Candlelight Dinner
+                </h3>
+              </div>
+
+              {/* Yellow decorative bar */}
+              <div className="w-full h-12 bg-[#FFFDE7] rounded-xl mt-auto" />
+            </div>
           </motion.div>
         </div>
+
+        {/* Right Side - Testimonial Card */}
+        <motion.div
+          className="w-full lg:w-auto flex-shrink-0"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
+          <div className="relative rounded-3xl overflow-hidden h-64 lg:h-[350px] w-full lg:w-[480px] group">
+            {/* Background Image - Using a cave-like or dark nature image if possible, acting as the 'cave' from screenshot */}
+            <Image
+              src="/assets/destinations/must-visit/Meghalaya.webp"
+              alt="Testimonial Background"
+              fill
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+            />
+            {/* Dark overlay for text readability */}
+            {/* <div className="absolute inset-0 bg-black/20" /> */}
+
+            {/* Review Card Overlay at Bottom */}
+            <div className="absolute bottom-4 left-4 right-4 bg-white rounded-2xl p-4 shadow-xl">
+              <div className="flex items-center gap-3 mb-2">
+                <CustomerAvatar
+                  name="Rahul Menon"
+                  image="/assets/reviews/Mubashir.webp" // Reusing available avatar or placeholder
+                  size="medium"
+                  className="w-10 h-10"
+                />
+                <div>
+                  <h4 className="text-sm font-bold text-black">Rahul Menon</h4>
+                  <div className="flex text-yellow-500">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-3 h-3 fill-current" />
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
+                Had a great international trip with UrbanTrips. Everything was well organized, and the team was really helpful. Loved the experience! ✈️
+              </p>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
