@@ -22,7 +22,7 @@ export default function TravelStylePage() {
         <TravelStyleDestinationsSection
           title="Experience love in the world's most romantic places."
           destinations={romanticDestinations}
-          cardCount={3}
+          cardCount={5}
         />
       </div>
       {/* Second Cards Section - order-2 on mobile, order-3 on desktop */}
@@ -30,7 +30,7 @@ export default function TravelStylePage() {
         <TravelStyleDestinationsSection
           title="Top Honeymoon Destinations In India"
           destinations={honeymoonDestinationsIndia}
-          cardCount={3}
+          cardCount={5}
         />
       </div>
       {/* Destination Poster - order-4 on all screens */}

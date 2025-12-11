@@ -79,8 +79,15 @@ export function TravelStyleDestinationCard({ destination, index }: TravelStyleDe
         <p className="text-xs sm:text-base md:text-lg font-bold text-black text-center mb-1 sm:mb-2 truncate">
           {destination.title}
         </p>
-        <p className="text-[10px] sm:text-sm md:text-base text-gray-600 text-center mb-1.5 sm:mb-3 truncate">
-          {destination.price}
+        <p className="text-[10px] sm:text-sm md:text-base text-black text-center mb-1.5 sm:mb-3 truncate">
+          {destination.price.includes('Starting From') ? (
+            <>
+              <span className="font-normal">Starting From </span>
+              <span className="font-bold">{destination.price.replace('Starting From ', '')}</span>
+            </>
+          ) : (
+            <span className="font-bold">{destination.price}</span>
+          )}
         </p>
         <div className="flex gap-1 sm:gap-2 min-w-0">
           <button

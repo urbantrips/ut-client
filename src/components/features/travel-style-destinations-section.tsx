@@ -19,6 +19,7 @@ export function TravelStyleDestinationsSection({
   destinations, 
   cardCount = 5 
 }: TravelStyleDestinationsSectionProps) {
+  // Always show 5 cards on desktop, but only show 3 on mobile
   const displayDestinations = destinations.slice(0, cardCount);
 
   return (
@@ -32,11 +33,15 @@ export function TravelStyleDestinationsSection({
 
         <div className="grid grid-cols-3 sm:flex sm:overflow-x-auto gap-2 sm:gap-4 md:gap-6 md:justify-center lg:justify-between scrollbar-hide pb-4">
           {displayDestinations.map((destination, index) => (
-            <TravelStyleDestinationCard
+            <div
               key={`${destination.title}-${index}`}
-              destination={destination}
-              index={index}
-            />
+              className={index >= 3 ? 'hidden sm:block' : ''}
+            >
+              <TravelStyleDestinationCard
+                destination={destination}
+                index={index}
+              />
+            </div>
           ))}
         </div>
       </div>
