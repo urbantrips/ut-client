@@ -8,9 +8,9 @@ import { CustomerAvatar } from '@/components/ui/customer-avatar';
 export function ForCouplesSection() {
   return (
     <section className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start justify-center">
+      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-stretch justify-center">
         {/* Left Side - Heading & Tour Card */}
-        <div className="flex-1 w-full max-w-2xl">
+        <div className="w-full lg:w-1/2 flex flex-col">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -27,7 +27,7 @@ export function ForCouplesSection() {
           </motion.div>
 
           <motion.div
-            className="bg-white rounded-3xl overflow-hidden shadow-lg border border-gray-100 flex flex-row h-48 sm:h-56"
+            className="bg-white rounded-3xl overflow-hidden shadow-lg border border-gray-100 flex flex-row h-48 sm:h-56 lg:h-full flex-1"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -62,13 +62,13 @@ export function ForCouplesSection() {
 
         {/* Right Side - Testimonial Card */}
         <motion.div
-          className="w-full lg:w-auto flex-shrink-0"
+          className="w-full lg:w-1/2"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <div className="relative rounded-3xl overflow-hidden h-64 lg:h-[350px] w-full lg:w-[480px] group">
+          <div className="relative rounded-3xl overflow-hidden h-64 lg:h-[350px] w-full group">
             {/* Background Image - Using a cave-like or dark nature image if possible, acting as the 'cave' from screenshot */}
             <Image
               src="/assets/destinations/must-visit/Meghalaya.webp"
