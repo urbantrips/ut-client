@@ -85,7 +85,7 @@ export function TravelStyleDestinationCard({ destination, index }: TravelStyleDe
         <div className="flex gap-1 sm:gap-2 min-w-0">
           <button
             onClick={handlePhoneClick}
-            className="flex-shrink-0 w-10 sm:w-12 bg-primary text-gray-900 rounded-lg sm:rounded-xl py-1.5 sm:py-2.5 flex items-center justify-center font-semibold text-[10px] sm:text-sm hover:bg-primary/90 active:bg-primary/80 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            className="flex-shrink-0 w-10 sm:w-12 border-2 border-primary text-primary bg-transparent rounded-lg sm:rounded-xl py-1.5 sm:py-2.5 flex items-center justify-center font-semibold text-[10px] sm:text-sm hover:bg-primary/10 active:bg-primary/20 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
             aria-label={`Call about ${destination.title}`}
             type="button"
           >
