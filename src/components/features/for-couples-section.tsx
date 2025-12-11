@@ -7,7 +7,7 @@ import { CustomerAvatar } from '@/components/ui/customer-avatar';
 
 export function ForCouplesSection() {
   return (
-    <section className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+    <section className="w-full mx-auto px-4 sm:px-6 lg:px-8 pt-12 md:pt-16">
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-stretch justify-center">
         {/* Left Side - Heading & Tour Card */}
         <div className="w-full lg:w-1/2 flex flex-col">

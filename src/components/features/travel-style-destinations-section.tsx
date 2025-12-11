@@ -22,7 +22,7 @@ export function TravelStyleDestinationsSection({
   const displayDestinations = destinations.slice(0, cardCount);
 
   return (
-    <section className="w-full px-4 sm:px-6 md:px-8 lg:px-12 py-8 sm:py-12 md:py-16 bg-white">
+    <section className="w-full px-4 sm:px-6 md:px-8 lg:px-12 pt-8 sm:pt-12 md:pt-16 bg-white">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8 sm:mb-12 md:mb-16">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black mb-4">
