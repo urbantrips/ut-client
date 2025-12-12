@@ -39,7 +39,7 @@ export function TravelStyleDestinationCard({ destination, index }: TravelStyleDe
 
   return (
     <motion.div
-      className="flex flex-col cursor-pointer group flex-shrink-0 w-full sm:w-auto"
+      className="flex flex-col cursor-pointer group flex-shrink-0 w-full sm:w-[220px] md:w-[240px] lg:w-[260px] max-w-full"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -75,11 +75,11 @@ export function TravelStyleDestinationCard({ destination, index }: TravelStyleDe
       </div>
       
       {/* Destination Info */}
-      <div className="px-1 sm:px-2 min-w-0">
-        <p className="text-xs sm:text-base md:text-lg font-bold text-black text-center mb-1 sm:mb-2 truncate">
+      <div className="px-1 sm:px-2 min-w-0 w-full sm:w-[220px] md:w-[240px] lg:w-[260px]">
+        <p className="text-xs sm:text-base md:text-lg font-bold text-black text-center mb-1 sm:mb-2 truncate max-w-full" title={destination.title}>
           {destination.title}
         </p>
-        <p className="text-[10px] sm:text-sm md:text-base text-black text-center mb-1.5 sm:mb-3 truncate">
+        <p className="text-[10px] sm:text-sm md:text-base text-black text-center mb-1.5 sm:mb-3 truncate max-w-full" title={destination.price}>
           {destination.price.includes('Starting From') ? (
             <>
               <span className="font-normal">Starting From </span>
