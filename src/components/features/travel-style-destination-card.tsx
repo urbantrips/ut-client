@@ -39,14 +39,14 @@ export function TravelStyleDestinationCard({ destination, index }: TravelStyleDe
 
   return (
     <motion.div
-      className="flex flex-col cursor-pointer group flex-shrink-0 w-full sm:w-[220px] md:w-[240px] lg:w-[260px] max-w-full"
+      className="flex flex-col cursor-pointer group flex-shrink-0 w-[calc(33.333%-0.5rem)] sm:w-[220px] md:w-[240px] lg:w-[260px]"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.4, delay: index * 0.1 }}
       onClick={handleCardClick}
     >
-      <div className="w-full sm:w-[220px] md:w-[240px] lg:w-[260px] h-[140px] sm:h-[300px] md:h-[320px] lg:h-[340px] rounded-2xl sm:rounded-3xl mb-2 sm:mb-4 overflow-hidden relative shadow-lg transition-shadow duration-300 bg-gray-200">
+      <div className="w-full h-[140px] sm:h-[300px] md:h-[320px] lg:h-[340px] rounded-2xl sm:rounded-3xl mb-2 sm:mb-4 overflow-hidden relative shadow-lg transition-shadow duration-300 bg-gray-200">
         {!imageError ? (
           <>
             <Image
@@ -75,7 +75,7 @@ export function TravelStyleDestinationCard({ destination, index }: TravelStyleDe
       </div>
       
       {/* Destination Info */}
-      <div className="px-1 sm:px-2 min-w-0 w-full sm:w-[220px] md:w-[240px] lg:w-[260px]">
+      <div className="px-1 sm:px-2 min-w-0 w-full max-w-full">
         <p className="text-xs sm:text-base md:text-lg font-bold text-black text-center mb-1 sm:mb-2 truncate max-w-full" title={destination.title}>
           {destination.title}
         </p>

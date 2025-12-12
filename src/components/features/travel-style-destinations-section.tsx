@@ -31,17 +31,13 @@ export function TravelStyleDestinationsSection({
           </h2>
         </div>
 
-        <div className="grid grid-cols-3 sm:flex sm:overflow-x-auto gap-2 sm:gap-4 md:gap-6 md:justify-center lg:justify-between scrollbar-hide pb-4">
+        <div className="flex overflow-x-auto gap-2 sm:gap-4 md:gap-6 pb-4 scrollbar-hide">
           {displayDestinations.map((destination, index) => (
-            <div
+            <TravelStyleDestinationCard
               key={`${destination.title}-${index}`}
-              className={index >= 3 ? 'hidden sm:block' : ''}
-            >
-              <TravelStyleDestinationCard
-                destination={destination}
-                index={index}
-              />
-            </div>
+              destination={destination}
+              index={index}
+            />
           ))}
         </div>
       </div>
