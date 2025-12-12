@@ -5,15 +5,26 @@ import Image from 'next/image';
 import { Star } from 'lucide-react';
 import { CustomerAvatar } from '@/components/ui/customer-avatar';
 import { testimonials } from '@/data/testimonials';
+import { couplePackages } from '@/data/couple-packages';
 import { useState, useEffect } from 'react';
 
 export function ForCouplesSection() {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
+  const [currentPackageIndex, setCurrentPackageIndex] = useState(0);
 
-  // Auto-play slideshow
+  // Auto-play slideshow for testimonials
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+      setCurrentTestimonialIndex((prev) => (prev + 1) % testimonials.length);
+    }, 5000); // Change slide every 5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Auto-play slideshow for packages
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentPackageIndex((prev) => (prev + 1) % couplePackages.length);
     }, 5000); // Change slide every 5 seconds
 
     return () => clearInterval(interval);
@@ -39,38 +50,49 @@ export function ForCouplesSection() {
             </h2>
           </motion.div>
 
-          <motion.div
-            className="bg-white rounded-3xl overflow-hidden shadow-lg border border-gray-100 flex flex-row h-48 sm:h-56 lg:h-full flex-1"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            {/* Image Side - approx 40% width */}
-            <div className="relative w-[40%] h-full">
-              <Image
-                src="/assets/destinations/weekend/Muannar.webp"
-                alt="Romantic Kerala Tour"
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 40vw, 33vw"
-              />
-            </div>
+          <div className="relative h-48 sm:h-56 lg:h-full flex-1">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentPackageIndex}
+                className="bg-white rounded-3xl overflow-hidden shadow-lg border border-gray-100 flex flex-row h-full w-full"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.4 }}
+              >
+                {/* Image Side - approx 40% width */}
+                <div className="relative w-[40%] h-full">
+                  <Image
+                    src={couplePackages[currentPackageIndex].image}
+                    alt={couplePackages[currentPackageIndex].title}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 40vw, 33vw"
+                  />
+                </div>
 
-            {/* Content Side */}
-            <div className="flex-1 p-5 sm:p-6 flex flex-col justify-between relative">
-              <div className="absolute top-4 right-4 font-bold text-sm">5D/4N</div>
+                {/* Content Side */}
+                <div className="flex-1 p-5 sm:p-6 flex flex-col justify-between relative">
+                  <div className="absolute top-4 right-4 font-bold text-sm">
+                    {couplePackages[currentPackageIndex].duration}
+                  </div>
 
-              <div className="mt-2">
-                <h3 className="text-lg sm:text-xl font-bold text-black leading-snug max-w-[85%]">
-                  Kerala Couple Tour With Candlelight Dinner
-                </h3>
-              </div>
+                  <div className="mt-2">
+                    <h3 className="text-lg sm:text-xl font-bold text-black leading-snug max-w-[85%] line-clamp-2">
+                      {couplePackages[currentPackageIndex].title}
+                    </h3>
+                  </div>
 
-              {/* Yellow decorative bar */}
-              <div className="w-full h-12 bg-[#FFFDE7] rounded-xl mt-auto" />
-            </div>
-          </motion.div>
+                  {/* Yellow decorative bar with price */}
+                  <div className="w-full h-12 bg-[#FFFDE7] rounded-xl mt-auto flex items-center px-4">
+                    <p className="text-sm sm:text-base font-bold text-black">
+                      {couplePackages[currentPackageIndex].price}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
 
         {/* Right Side - Testimonial Card */}
@@ -97,7 +119,7 @@ export function ForCouplesSection() {
             <div className="mt-auto mb-4 mx-4 bg-white rounded-2xl p-4 shadow-xl relative overflow-hidden z-10">
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={currentIndex}
+                  key={currentTestimonialIndex}
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
@@ -105,14 +127,14 @@ export function ForCouplesSection() {
                 >
                   <div className="flex items-center gap-3 mb-2">
                     <CustomerAvatar
-                      name={testimonials[currentIndex].name}
-                      image={testimonials[currentIndex].image}
+                      name={testimonials[currentTestimonialIndex].name}
+                      image={testimonials[currentTestimonialIndex].image}
                       size="medium"
                       className="w-10 h-10"
                     />
                     <div>
                       <h4 className="text-sm font-bold text-black">
-                        {testimonials[currentIndex].name}
+                        {testimonials[currentTestimonialIndex].name}
                       </h4>
                       <div className="flex text-yellow-500">
                         {[...Array(5)].map((_, i) => (
@@ -122,7 +144,7 @@ export function ForCouplesSection() {
                     </div>
                   </div>
                   <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
-                    {testimonials[currentIndex].review}
+                    {testimonials[currentTestimonialIndex].review}
                   </p>
                 </motion.div>
               </AnimatePresence>
