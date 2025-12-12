@@ -1,3 +1,5 @@
+import { destinationsByCategory } from './destinations';
+
 export interface TravelStyleDestination {
   name: string;
   duration: string;
@@ -12,6 +14,213 @@ export interface TravelStyleCategory {
 export interface TravelStyle {
   style: 'Romantic' | 'Beach' | 'Adventure' | 'Heritage' | 'Luxury';
   categories: TravelStyleCategory[];
+}
+
+export interface TransformedDestination {
+  title: string;
+  image: string;
+  price: string;
+}
+
+export type TravelStyleType = 'Romantic' | 'Beach' | 'Adventure' | 'Heritage' | 'Luxury';
+
+// Helper function to extract main destination name from formatted string
+export function extractDestinationName(formattedName: string): string {
+  // Extract the main destination name (before the em dash or dash)
+  const match = formattedName.match(/^([^–—\-]+)/);
+  return match ? match[1].trim() : formattedName;
+}
+
+// Helper function to find image path for a destination
+export function getDestinationImage(destinationName: string): string {
+  const cleanName = extractDestinationName(destinationName);
+  
+  // Try to find in existing destinations data
+  const allDestinations = Object.values(destinationsByCategory).flat();
+  const matchingDest = allDestinations.find(
+    dest => dest.title.toLowerCase() === cleanName.toLowerCase() ||
+            dest.title.toLowerCase().includes(cleanName.toLowerCase()) ||
+            cleanName.toLowerCase().includes(dest.title.toLowerCase())
+  );
+  
+  if (matchingDest) {
+    return matchingDest.image;
+  }
+  
+  // Try common variations
+  const nameVariations: Record<string, string> = {
+    'udaipur': '/assets/destinations/must-visit/Jaisalmer.webp', // Using similar destination
+    'malaysia': '/assets/destinations/quick-visa/Malaysia.webp',
+    'manali': '/assets/destinations/weekend/Muannar.webp', // Using similar hill station
+    'kashmir': '/assets/destinations/must-visit/Ladakh.webp',
+    'ooty': '/assets/destinations/weekend/Ooty.webp',
+    'pondicherry': '/assets/destinations/weekend/Varkala.webp',
+    'munnar': '/assets/destinations/weekend/Muannar.webp',
+    'andaman': '/assets/destinations/must-visit/Andaman.webp',
+    'shimla': '/assets/destinations/must-visit/darjeeling.webp',
+    'alleppey': '/assets/destinations/weekend/Muannar.webp',
+    'darjeeling': '/assets/destinations/must-visit/darjeeling.webp',
+    'nainital': '/assets/destinations/weekend/Ooty.webp',
+    'pahalgam': '/assets/destinations/must-visit/Ladakh.webp',
+    'maldives': '/assets/destinations/trending/maldives.webp',
+    'bali': '/assets/destinations/trending/Bali.webp',
+    'paris': '/assets/destinations/trending/Japan.webp',
+    'turkey': '/assets/destinations/trending/Turkey.webp',
+    'mauritius': '/assets/destinations/trending/maldives.webp',
+    'vietnam': '/assets/destinations/trending/Vietnam.webp',
+    'goa': '/assets/destinations/just-for-you/Goa.webp',
+    'kovalam': '/assets/destinations/weekend/Varkala.webp',
+    'bekal': '/assets/destinations/weekend/Varkala.webp',
+    'varkala': '/assets/destinations/weekend/Varkala.webp',
+    'gokarna': '/assets/destinations/weekend/Gokarna.webp',
+    'lakshadweep': '/assets/destinations/must-visit/Lakshadweep.webp',
+    'thailand': '/assets/destinations/quick-visa/Thailand.webp',
+    'sri lanka': '/assets/destinations/quick-visa/Sri Lanka.webp',
+    'indonesia': '/assets/destinations/trending/Bali.webp',
+    'fiji': '/assets/destinations/trending/maldives.webp',
+    'alibaug': '/assets/destinations/weekend/Gokarna.webp',
+    'kannur': '/assets/destinations/weekend/Varkala.webp',
+    'daman': '/assets/destinations/weekend/Gokarna.webp',
+    'kakkadampoyil': '/assets/destinations/weekend/Wayanad.webp',
+    'madikeri': '/assets/destinations/weekend/Coorg.webp',
+    'puri': '/assets/destinations/must-visit/Agra.webp',
+    'karwar': '/assets/destinations/weekend/Gokarna.webp',
+    'calicut': '/assets/destinations/weekend/Varkala.webp',
+    'gavi': '/assets/destinations/weekend/Wayanad.webp',
+    'vagamon': '/assets/destinations/weekend/Vagamon.webp',
+    'thekkady': '/assets/destinations/weekend/Muannar.webp',
+    'kolukkumalai': '/assets/destinations/weekend/Muannar.webp',
+    'rishikesh': '/assets/destinations/must-visit/Ladakh.webp',
+    'ladakh': '/assets/destinations/must-visit/Ladakh.webp',
+    'kasol': '/assets/destinations/must-visit/Ladakh.webp',
+    'kheerganga': '/assets/destinations/must-visit/Ladakh.webp',
+    'zanskar': '/assets/destinations/must-visit/Ladakh.webp',
+    'nagaland': '/assets/destinations/must-visit/Meghalaya.webp',
+    'bir billing': '/assets/destinations/must-visit/Ladakh.webp',
+    'meghalaya': '/assets/destinations/must-visit/Meghalaya.webp',
+    'spiti': '/assets/destinations/must-visit/Spiti.webp',
+    'tawang': '/assets/destinations/must-visit/Tawang.webp',
+    'chopta': '/assets/destinations/must-visit/Ladakh.webp',
+    'tungnath': '/assets/destinations/must-visit/Ladakh.webp',
+    'kodaikanal': '/assets/destinations/weekend/Kodaikanal.webp',
+    'araku valley': '/assets/destinations/must-visit/Meghalaya.webp',
+    'solang valley': '/assets/destinations/must-visit/Ladakh.webp',
+    'coorg': '/assets/destinations/weekend/Coorg.webp',
+    'har ki dun': '/assets/destinations/must-visit/Ladakh.webp',
+    'chikmagalur': '/assets/destinations/weekend/Chikmagalur.webp',
+    'rajmachi': '/assets/destinations/weekend/Hampi.webp',
+    'golden triangle': '/assets/destinations/must-visit/Agra.webp',
+    'rajasthan triangle': '/assets/destinations/just-for-you/Rajasthan.webp',
+    'kerala': '/assets/destinations/weekend/Muannar.webp',
+    'varanasi': '/assets/destinations/must-visit/Agra.webp',
+    'amritsar': '/assets/destinations/must-visit/Agra.webp',
+    'mahabalipuram': '/assets/destinations/must-visit/Agra.webp',
+    'jaisalmer': '/assets/destinations/must-visit/Jaisalmer.webp',
+    'hampi': '/assets/destinations/weekend/Hampi.webp',
+    'khajuraho': '/assets/destinations/must-visit/Agra.webp',
+    'orchha': '/assets/destinations/must-visit/Agra.webp',
+    'agra': '/assets/destinations/must-visit/Agra.webp',
+    'mysore': '/assets/destinations/weekend/Mysore.webp',
+    'ujjain': '/assets/destinations/must-visit/Agra.webp',
+    'madurai': '/assets/destinations/must-visit/Agra.webp',
+    'bikaner': '/assets/destinations/must-visit/Jaisalmer.webp',
+    'fort kochi': '/assets/destinations/weekend/Muannar.webp',
+    'kumbhalgarh': '/assets/destinations/must-visit/Jaisalmer.webp',
+    'konark': '/assets/destinations/must-visit/Agra.webp',
+    'chettinad': '/assets/destinations/weekend/Muannar.webp',
+    'lucknow': '/assets/destinations/must-visit/Agra.webp',
+    'mussoorie': '/assets/destinations/must-visit/darjeeling.webp',
+    'taj madikeri': '/assets/destinations/weekend/Coorg.webp',
+    'singapore': '/assets/destinations/quick-visa/Singapore.webp',
+    'dubai': '/assets/destinations/trending/dubai.webp',
+    'switzerland': '/assets/destinations/trending/Japan.webp',
+    'japan': '/assets/destinations/trending/Japan.webp',
+    'qatar': '/assets/destinations/quick-visa/Qatar.webp',
+    'new zealand': '/assets/destinations/trending/Japan.webp',
+    'jaipur': '/assets/destinations/must-visit/Jaisalmer.webp',
+    'wayanad': '/assets/destinations/weekend/Wayanad.webp',
+    'jibhi': '/assets/destinations/must-visit/Ladakh.webp',
+    'kumarakom': '/assets/destinations/weekend/Muannar.webp',
+    'mumbai': '/assets/destinations/weekend/Gokarna.webp',
+    'hyderabad': '/assets/destinations/must-visit/Agra.webp',
+  };
+  
+  const lowerName = cleanName.toLowerCase();
+  for (const [key, imagePath] of Object.entries(nameVariations)) {
+    if (lowerName.includes(key)) {
+      return imagePath;
+    }
+  }
+  
+  // Default fallback image
+  return '/assets/destinations/must-visit/Agra.webp';
+}
+
+// Transform travel style destinations to component format
+export function transformDestinations(
+  styleDestinations: TravelStyle
+): TransformedDestination[] {
+  const transformed: TransformedDestination[] = [];
+  
+  styleDestinations.categories.forEach(category => {
+    category.destinations.forEach(dest => {
+      transformed.push({
+        title: dest.name,
+        image: getDestinationImage(dest.name),
+        price: `${dest.duration} • ${dest.price}`,
+      });
+    });
+  });
+  
+  return transformed;
+}
+
+// Map URL style to data style
+export const styleMap: Record<string, TravelStyleType> = {
+  romantic: 'Romantic',
+  beach: 'Beach',
+  adventure: 'Adventure',
+  heritage: 'Heritage',
+  luxury: 'Luxury',
+};
+
+// Determine section titles based on style
+export function getSectionTitles(
+  style: TravelStyleType,
+  mustVisitCategoryTitle?: string
+): { first: string; second: string } {
+  switch (style) {
+    case 'Romantic':
+      return {
+        first: "Experience love in the world's most romantic places.",
+        second: "Top Honeymoon Destinations In India",
+      };
+    case 'Beach':
+      return {
+        first: "Discover Paradise on Earth",
+        second: "Island Hopping Adventures",
+      };
+    case 'Adventure':
+      return {
+        first: "Embrace the Thrill of Adventure",
+        second: "Best of India Adventures",
+      };
+    case 'Heritage':
+      return {
+        first: "Journey Through Time and Culture",
+        second: "Must Visit Heritage Sites",
+      };
+    case 'Luxury':
+      return {
+        first: "Indulge in Unparalleled Luxury",
+        second: mustVisitCategoryTitle === 'Domestic Luxury' ? "Domestic Luxury Escapes" : "International Luxury Escapes",
+      };
+    default:
+      return {
+        first: "Explore Amazing Destinations",
+        second: "Featured Destinations",
+      };
+  }
 }
 
 export const travelStyleDestinations: TravelStyle[] = [
