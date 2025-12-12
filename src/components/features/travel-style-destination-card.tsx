@@ -79,20 +79,23 @@ export function TravelStyleDestinationCard({ destination, index }: TravelStyleDe
         <p className="text-xs sm:text-base md:text-lg font-bold text-black text-center mb-1 sm:mb-2 truncate max-w-full" title={destination.title}>
           {destination.title}
         </p>
-        <p className="text-[10px] sm:text-sm md:text-base text-black text-center mb-1.5 sm:mb-3 truncate max-w-full" title={destination.price}>
-          {destination.price.includes('Starting From') ? (
-            <>
-              <span className="font-normal">Starting From </span>
-              <span className="font-bold">{destination.price.replace('Starting From ', '')}</span>
-            </>
-          ) : (
-            <span className="font-bold">{destination.price}</span>
-          )}
+        <p className="text-[10px] sm:text-sm md:text-base text-black text-center mb-1.5 sm:mb-3 truncate max-w-full">
+          <span className="font-normal">From </span>
+          <span className="font-bold">
+            {(() => {
+              let priceText = destination.price.includes('•') 
+                ? destination.price.split('•')[1]?.trim() || destination.price
+                : destination.price;
+              // Remove "Starting From" or "From" from the price text
+              priceText = priceText.replace(/Starting\s+From\s+/gi, '').replace(/From\s+/gi, '').trim();
+              return priceText;
+            })()}
+          </span>
         </p>
         <div className="flex gap-1 sm:gap-2 min-w-0">
           <button
             onClick={handlePhoneClick}
-            className="flex-shrink-0 w-10 sm:w-12 border-2 border-primary text-primary bg-transparent rounded-lg sm:rounded-xl py-1.5 sm:py-2.5 flex items-center justify-center font-semibold text-[10px] sm:text-sm hover:bg-primary/10 active:bg-primary/20 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            className="flex-shrink-0 w-8 sm:w-12 border-2 border-primary text-primary bg-transparent rounded-lg sm:rounded-xl py-1.5 sm:py-2.5 flex items-center justify-center font-semibold text-[10px] sm:text-sm hover:bg-primary/10 active:bg-primary/20 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
             aria-label={`Call about ${destination.title}`}
             type="button"
           >
@@ -100,7 +103,7 @@ export function TravelStyleDestinationCard({ destination, index }: TravelStyleDe
           </button>
           <button
             onClick={handlePlanTripClick}
-            className="flex-1 min-w-0 bg-primary text-gray-900 rounded-lg sm:rounded-xl py-1.5 sm:py-2.5 flex items-center justify-center font-semibold text-[10px] sm:text-sm hover:bg-primary/90 active:bg-primary/80 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            className="flex-1 min-w-0 bg-primary text-gray-900 rounded-lg sm:rounded-xl py-2 sm:py-2.5 flex items-center justify-center font-semibold text-[10px] sm:text-sm hover:bg-primary/90 active:bg-primary/80 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
             aria-label={`Plan trip to ${destination.title}`}
             type="button"
           >
