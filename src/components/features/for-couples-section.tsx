@@ -34,7 +34,7 @@ export function ForCouplesSection() {
     <section className="w-full mx-auto px-4 sm:px-6 lg:px-8 pt-12 md:pt-16">
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-stretch justify-center">
         {/* Left Side - Heading & Tour Card */}
-        <div className="w-full lg:w-1/2 flex flex-col">
+        <div className="hidden lg:flex w-full lg:w-1/2 flex-col">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
