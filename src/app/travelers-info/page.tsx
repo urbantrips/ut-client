@@ -2,6 +2,7 @@
 
 import { useRef } from 'react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { TravelersInfoForm, type TravelersInfoFormRef } from '@/components/features/travelers-info/travelers-info-form';
 import { HotelTravelModeForm, type HotelTravelModeFormRef } from '@/components/features/travelers-info/hotel-travel-mode-form';
 import { TravelStyleActivitiesForm, type TravelStyleActivitiesFormRef } from '@/components/features/travelers-info/travel-style-activities-form';
@@ -11,6 +12,7 @@ import { useTravelersInfoStore } from '@/store/travelers-info-store';
 import { ArrowRightIcon, ArrowLeftIcon } from 'lucide-react';
 
 export default function TravelersInfoPage() {
+    const router = useRouter();
     const step1FormRef = useRef<TravelersInfoFormRef>(null);
     const step2FormRef = useRef<HotelTravelModeFormRef>(null);
     const step3FormRef = useRef<TravelStyleActivitiesFormRef>(null);
@@ -46,7 +48,8 @@ export default function TravelersInfoPage() {
                 step3: getTravelStyleActivitiesData(),
             });
             step3FormRef.current?.handleContinue();
-            nextStep();
+            // Navigate to generate-trip page
+            router.push('/generate-trip');
         } else if (currentStep === 4) {
             // Step 4 - OTP Verification (handled by form component)
             step4FormRef.current?.handleContinue();
