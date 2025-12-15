@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { fetchDestinationImage, extractDestinationFromItinerary } from '@/lib/image-fetcher';
 
 interface GenerateItineraryRequest {
   departureCity: string;
@@ -213,11 +214,18 @@ Return ONLY valid JSON, no markdown formatting, no code blocks, just the JSON ar
       }
     }
 
-    // Fetch images for each day using Gemini-suggested keywords
+    // Fetch images for each day using production-grade approach
+    // Production apps typically: 1) Use CDN + curated images, 2) Cache aggressively, 
+    // 3) Use licensed APIs (Pexels/Unsplash), 4) Fallback to local assets
     console.log('=== Generating Image URLs ===');
     const itineraryWithImages = await Promise.all(
       itinerary.map(async (day) => {
-        let imageUrl = '';
+        // Extract destination name for local image lookup
+        const destinationName = extractDestinationFromItinerary(
+          day.title,
+          day.activities,
+          body.departureCity
+        );
         
         // Use Gemini-provided imageKeywords if available, otherwise extract from title/activities
         let searchQuery = '';
@@ -225,9 +233,9 @@ Return ONLY valid JSON, no markdown formatting, no code blocks, just the JSON ar
         console.log(`\nDay ${day.day}:`);
         console.log('  Title:', day.title);
         console.log('  ImageKeywords from Gemini:', day.imageKeywords);
+        console.log('  Extracted destination:', destinationName);
         
         if (day.imageKeywords && day.imageKeywords.trim()) {
-          // Use Gemini's suggested keywords
           searchQuery = day.imageKeywords.trim();
           console.log('  Using Gemini keywords:', searchQuery);
         } else {
@@ -259,30 +267,8 @@ Return ONLY valid JSON, no markdown formatting, no code blocks, just the JSON ar
           console.log('  Extracted keywords:', searchQuery);
         }
         
-        try {
-          // Use multiple image sources - try Unsplash first, fallback to others
-          const keywordsArray = searchQuery.split(',').map(k => k.trim()).filter(k => k.length > 0);
-          const primaryKeyword = keywordsArray[0] || 'travel';
-          
-          // Try multiple sources in order of preference
-          // Option 1: Unsplash Source API (keyword-based, but may have rate limits)
-          imageUrl = `https://source.unsplash.com/featured/800x600/?${encodeURIComponent(searchQuery)}`;
-          
-          // If Unsplash fails, we can fallback to:
-          // Option 2: Picsum Photos with seed (consistent per day/keyword)
-          // const seed = `${day.day}-${primaryKeyword}`.replace(/[^a-z0-9]/gi, '');
-          // imageUrl = `https://picsum.photos/seed/${seed}/800/600`;
-          
-          // Option 3: LoremFlickr (keyword-based images)
-          // imageUrl = `https://loremflickr.com/800/600/${encodeURIComponent(primaryKeyword)}`;
-          
-          console.log('  Generated image URL:', imageUrl);
-        } catch (error) {
-          console.error('  Error generating image URL:', error);
-          // Fallback to Picsum with day-based seed
-          const seed = `travel-day-${day.day}`;
-          imageUrl = `https://picsum.photos/seed/${seed}/800/600`;
-        }
+        // Use production-grade image fetcher with multiple fallbacks
+        const imageUrl = await fetchDestinationImage(searchQuery, destinationName);
         
         const result = {
           ...day,
