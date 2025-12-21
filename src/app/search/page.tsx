@@ -64,7 +64,7 @@ export default function SearchDestinationPage() {
                         placeholder="Search Destination..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full px-6 py-4 rounded-[30px] border placeholder:italic placeholder:text-sm md:placeholder:text-base border-primary-500 outline-none placeholder-gray-500 text-base font-medium shadow-sm focus:ring-1 focus:ring-primary-500"
+                        className="w-full px-6 py-4 rounded-[30px] border placeholder:italic placeholder:text-sm md:placeholder:text-base border-primary-500 outline-none placeholder-gray-500 bg-white text-gray-900 text-base font-medium shadow-sm focus:ring-1 focus:ring-primary-500"
                         style={{ borderRadius: '25px', fontFamily: 'var(--font-montserrat), sans-serif' }}
                     />
                 </div>
