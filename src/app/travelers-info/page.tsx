@@ -48,13 +48,17 @@ export default function TravelersInfoPage() {
                 step3: getTravelStyleActivitiesData(),
             });
             step3FormRef.current?.handleContinue();
-            // Navigate to generate-trip page
-            router.push('/generate-trip');
+            // Navigate to step 4 (OTP form)
+            nextStep();
         } else if (currentStep === 4) {
             // Step 4 - OTP Verification (handled by form component)
             step4FormRef.current?.handleContinue();
-            // After verification, you can navigate to success page or itinerary
         }
+    };
+
+    const handleOtpVerificationSuccess = () => {
+        // After OTP verification, navigate to generate-trip page
+        router.push('/generate-trip');
     };
 
     const handleBack = () => {
@@ -79,7 +83,7 @@ export default function TravelersInfoPage() {
 
                 {/* White Card Section (Lower Half) */}
                 <div className="bg-white rounded-t-[30px] px-6 pt-6 pb-8 mt-auto" style={{ minHeight: '55%' }}>
-                    <OtpVerificationForm ref={step4FormRef} />
+                    <OtpVerificationForm ref={step4FormRef} onContinue={handleOtpVerificationSuccess} />
                 </div>
             </div>
         );
@@ -135,8 +139,8 @@ export default function TravelersInfoPage() {
                     className="w-full bg-yellow-400 text-black font-bold py-3 rounded-3xl shadow-none hover:bg-yellow-500 transition-colors flex items-center justify-center gap-2 text-sm"
                     style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
                 >
-                    {currentStep === 3 ? 'Generate My Trip' : 'Continue'}
-                    {currentStep !== 3 && <ArrowRightIcon className="w-4 h-4" />}
+                    Continue
+                    <ArrowRightIcon className="w-4 h-4" />
                 </motion.button>
             </div>
         </div>

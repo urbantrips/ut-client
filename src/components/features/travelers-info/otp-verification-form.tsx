@@ -30,6 +30,9 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
         const [otp, setOtp] = useState<string[]>(['', '', '', '', '', '']);
         const [isOtpSent, setIsOtpSent] = useState(false);
         const [isResending, setIsResending] = useState(false);
+        const [isSending, setIsSending] = useState(false);
+        const [isVerifying, setIsVerifying] = useState(false);
+        const [error, setError] = useState<string | null>(null);
         const otpInputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
         const selectedCountry = useMemo(() => {
@@ -44,18 +47,64 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
                 return;
             }
             
-            // Simulate OTP sending
-            setIsOtpSent(true);
-            // In a real app, you would call an API here
+            setIsSending(true);
+            setError(null);
+            
+            try {
+                const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+                const response = await fetch(`${apiUrl}/auth/phone/send-otp`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        phoneNumber: verificationPhone,
+                        countryCode: dialCode,
+                    }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to send OTP');
+                }
+
+                setIsOtpSent(true);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'Failed to send OTP. Please try again.');
+                console.error('Error sending OTP:', err);
+            } finally {
+                setIsSending(false);
+            }
         };
 
         const handleResendOtp = async () => {
             setIsResending(true);
+            setError(null);
             setOtp(['', '', '', '', '', '']);
-            // Simulate resending OTP
-            setTimeout(() => {
+            
+            try {
+                const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+                const response = await fetch(`${apiUrl}/auth/phone/resend-otp`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        phoneNumber: verificationPhone,
+                        countryCode: dialCode,
+                    }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to resend OTP');
+                }
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'Failed to resend OTP. Please try again.');
+                console.error('Error resending OTP:', err);
+            } finally {
                 setIsResending(false);
-            }, 1000);
+            }
         };
 
         const handleOtpChange = (index: number, value: string) => {
@@ -96,7 +145,7 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
             }
         };
 
-        const handleContinue = () => {
+        const handleContinue = async () => {
             if (!isOtpSent) {
                 handleSendOtp();
                 return;
@@ -107,15 +156,45 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
                 return;
             }
 
-            const formData = {
-                name: verificationName,
-                phone: verificationPhone,
-                countryCode: dialCode,
-                otp: otpString,
-            };
+            setIsVerifying(true);
+            setError(null);
 
-            console.log('OTP Verification data:', formData);
-            onContinue?.(formData);
+            try {
+                const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+                const response = await fetch(`${apiUrl}/auth/phone/verify-otp`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        phoneNumber: verificationPhone,
+                        countryCode: dialCode,
+                        otp: otpString,
+                    }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to verify OTP');
+                }
+
+                const authData = await response.json();
+                console.log('OTP Verification successful:', authData);
+
+                const formData = {
+                    name: verificationName,
+                    phone: verificationPhone,
+                    countryCode: dialCode,
+                    otp: otpString,
+                };
+
+                onContinue?.(formData);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'Failed to verify OTP. Please try again.');
+                console.error('Error verifying OTP:', err);
+            } finally {
+                setIsVerifying(false);
+            }
         };
 
         useImperativeHandle(ref, () => ({
@@ -189,17 +268,24 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
                         </div>
                     </div>
 
+                    {/* Error Message */}
+                    {error && (
+                        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
+                            {error}
+                        </div>
+                    )}
+
                     {/* Send OTP Button (shown when OTP not sent) */}
                     {!isOtpSent && (
                         <motion.button
                             onClick={handleSendOtp}
-                            disabled={!verificationName.trim() || !verificationPhone.trim() || verificationPhone.length !== 10}
+                            disabled={!verificationName.trim() || !verificationPhone.trim() || verificationPhone.length !== 10 || isSending}
                             whileHover={{ scale: 1.01 }}
                             whileTap={{ scale: 0.99 }}
                             className="w-full bg-yellow-400 text-black font-bold py-3 rounded-3xl shadow-none hover:bg-yellow-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm mb-6"
                             style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
                         >
-                            Send OTP
+                            {isSending ? 'Sending OTP...' : 'Send OTP'}
                         </motion.button>
                     )}
 
@@ -255,14 +341,14 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
                     {isOtpSent && (
                         <motion.button
                             onClick={handleContinue}
-                            disabled={otp.join('').length !== 6}
+                            disabled={otp.join('').length !== 6 || isVerifying}
                             whileHover={{ scale: 1.01 }}
                             whileTap={{ scale: 0.99 }}
                             className="w-full bg-yellow-400 text-black font-bold py-3 rounded-3xl shadow-none hover:bg-yellow-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
                             style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
                         >
-                            Verify & Continue
-                            <ArrowRightIcon className="w-4 h-4" />
+                            {isVerifying ? 'Verifying...' : 'Verify & Continue'}
+                            {!isVerifying && <ArrowRightIcon className="w-4 h-4" />}
                         </motion.button>
                     )}
                 </div>
