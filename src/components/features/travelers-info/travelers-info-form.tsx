@@ -175,7 +175,7 @@ export const TravelersInfoForm = forwardRef<TravelersInfoFormRef, TravelersInfoF
                             setDepartureCity(e.target.value);
                             handleFieldChange('departureCity');
                         }}
-                        className={`w-full px-6 py-2 rounded-3xl border outline-none focus:ring-1 transition-all text-sm italic placeholder:text-gray-400 ${
+                        className={`w-full px-6 py-2 rounded-3xl border outline-none focus:ring-1 transition-all text-sm italic placeholder:text-gray-400 bg-white text-black ${
                             errors.departureCity
                                 ? 'border-red-400 focus:border-red-400 focus:ring-red-400'
                                 : 'border-gray-300 focus:border-yellow-400 focus:ring-yellow-400'

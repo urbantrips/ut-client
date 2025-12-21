@@ -24,7 +24,7 @@ export interface TravelersInfoFormData {
 export interface HotelTravelModeFormData {
   hotelCategory: HotelCategory;
   roomType: RoomType;
-  preferredTravelMode: TravelMode;
+  preferredTravelMode: TravelMode | null;
   needReturnTicket: boolean;
 }
 
@@ -54,7 +54,7 @@ interface TravelersInfoStore {
   // Step 2: Hotel & Travel Mode Form data
   hotelCategory: HotelCategory;
   roomType: RoomType;
-  preferredTravelMode: TravelMode;
+  preferredTravelMode: TravelMode | null;
   needReturnTicket: boolean;
 
   // Step 3: Travel Style & Activities Form data
@@ -120,7 +120,7 @@ export const useTravelersInfoStore = create<TravelersInfoStore>()(
         travelerCounts: initialTravelerCounts,
         hotelCategory: 'Mid',
         roomType: 'Double Room',
-        preferredTravelMode: 'Flight',
+        preferredTravelMode: null,
         needReturnTicket: true,
         travelStylePreferences: {
           relaxation: 0,
@@ -215,7 +215,7 @@ export const useTravelersInfoStore = create<TravelersInfoStore>()(
             travelerCounts: initialTravelerCounts,
             hotelCategory: 'Mid',
             roomType: 'Double Room',
-            preferredTravelMode: 'Flight',
+            preferredTravelMode: null,
             needReturnTicket: true,
             travelStylePreferences: {
               relaxation: 0,
