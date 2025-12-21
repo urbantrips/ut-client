@@ -1,4 +1,4 @@
-import { findAllMatchingCategories, getDestinationsByCategory, getDestinationTag, trendingDestinations } from '@/data/all-destinations';
+import { findAllMatchingCategories, getDestinationsByCategory, getDestinationTag, trendingDestinations, popularComboDestinations, allDestinationsByRegion } from '@/data/all-destinations';
 
 export interface DestinationWithTag {
   title: string;
@@ -39,6 +39,7 @@ export function filterDestinations(
 
   const query = searchQuery.toLowerCase().trim();
   const uniqueDestinationsMap = new Map<string, DestinationWithTag>();
+  const foundCategoryNames = new Set<string>();
   
   // Check if search query matches any categories (regions or combos)
   const matchingCategories = findAllMatchingCategories(query);
@@ -46,6 +47,7 @@ export function filterDestinations(
   if (matchingCategories.length > 0) {
     // Collect destinations from all matching categories
     matchingCategories.forEach(category => {
+      foundCategoryNames.add(category);
       const categoryDestinations = getDestinationsByCategory(category);
       categoryDestinations.forEach(dest => {
         if (!uniqueDestinationsMap.has(dest)) {
@@ -64,6 +66,33 @@ export function filterDestinations(
       if (!uniqueDestinationsMap.has(dest.title)) {
         uniqueDestinationsMap.set(dest.title, dest);
       }
+      
+      // Check if this destination belongs to any category and add that category name
+      // Check combo categories
+      Object.keys(popularComboDestinations).forEach(categoryName => {
+        const categoryDestinations = popularComboDestinations[categoryName].destinations;
+        if (categoryDestinations.includes(dest.title)) {
+          foundCategoryNames.add(categoryName);
+        }
+      });
+      
+      // Check regions
+      Object.keys(allDestinationsByRegion).forEach(regionName => {
+        const regionDestinations = allDestinationsByRegion[regionName];
+        if (regionDestinations.includes(dest.title)) {
+          foundCategoryNames.add(regionName);
+        }
+      });
+    }
+  });
+  
+  // Add category names to the results
+  foundCategoryNames.forEach(categoryName => {
+    if (!uniqueDestinationsMap.has(categoryName)) {
+      uniqueDestinationsMap.set(categoryName, {
+        title: categoryName,
+        tag: getDestinationTag(categoryName)
+      });
     }
   });
   
