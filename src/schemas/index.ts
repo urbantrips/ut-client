@@ -1,3 +1,3 @@
 // Zod schemas will be exported from here
-export {};
+export * from './travelers-info-schema';
 

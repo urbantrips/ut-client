@@ -102,8 +102,8 @@ interface TravelersInfoStore {
 }
 
 const initialTravelerCounts: TravelerCounts = {
-  adults: 2,
-  children: 1,
+  adults: 0,
+  children: 0,
   infants: 0,
 };
 

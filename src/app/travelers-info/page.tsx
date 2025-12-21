@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { TravelersInfoForm, type TravelersInfoFormRef } from '@/components/features/travelers-info/travelers-info-form';
@@ -24,6 +24,26 @@ export default function TravelersInfoPage() {
     const getFormData = useTravelersInfoStore((state) => state.getFormData);
     const getHotelTravelModeData = useTravelersInfoStore((state) => state.getHotelTravelModeData);
     const getTravelStyleActivitiesData = useTravelersInfoStore((state) => state.getTravelStyleActivitiesData);
+    
+    // Track form validity for step 1
+    const [isFormValid, setIsFormValid] = useState(false);
+    
+    // Get form data to watch for changes
+    const departureCity = useTravelersInfoStore((state) => state.departureCity);
+    const travelStyle = useTravelersInfoStore((state) => state.travelStyle);
+    const startDate = useTravelersInfoStore((state) => state.startDate);
+    const endDate = useTravelersInfoStore((state) => state.endDate);
+    const travelerCounts = useTravelersInfoStore((state) => state.travelerCounts);
+    
+    // Check form validity whenever form data changes (only for step 1)
+    useEffect(() => {
+        if (currentStep === 1 && step1FormRef.current) {
+            const isValid = step1FormRef.current.isValid();
+            setIsFormValid(isValid);
+        } else {
+            setIsFormValid(true); // Enable button for other steps
+        }
+    }, [currentStep, departureCity, travelStyle, startDate, endDate, travelerCounts]);
 
     const stepTitles = ['Travelers Info', 'Hotel & Travel Mode', 'Travel Style & Activities', 'Verify Details'];
     const currentTitle = stepTitles[currentStep - 1] || 'Travelers Info';
@@ -134,9 +154,14 @@ export default function TravelersInfoPage() {
                 {/* Continue Button */}
                 <motion.button
                     onClick={handleContinue}
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                    className="w-full bg-yellow-400 text-black font-bold py-3 rounded-3xl shadow-none hover:bg-yellow-500 transition-colors flex items-center justify-center gap-2 text-sm"
+                    disabled={!isFormValid}
+                    whileHover={isFormValid ? { scale: 1.01 } : {}}
+                    whileTap={isFormValid ? { scale: 0.99 } : {}}
+                    className={`w-full font-bold py-3 rounded-3xl shadow-none transition-colors flex items-center justify-center gap-2 text-sm ${
+                        isFormValid
+                            ? 'bg-yellow-400 text-black hover:bg-yellow-500 cursor-pointer'
+                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    }`}
                     style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
                 >
                     Continue
