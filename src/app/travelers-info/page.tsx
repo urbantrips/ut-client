@@ -125,7 +125,7 @@ export default function TravelersInfoPage() {
                                 <ArrowLeftIcon className="w-6 h-6" />
                             </button>
                         )}
-                        <h1 className="text-xl font-bold text-black flex-1 text-center" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
+                        <h1 className="text-xl font-bold text-black flex-1 text-center" >
                             {currentTitle}
                         </h1>
                         <div className="w-6"></div> {/* Spacer to balance the back button */}

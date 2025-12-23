@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { User, MapPin, Menu, X } from 'lucide-react';
+import { MapPin, Menu, X } from 'lucide-react';
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
@@ -70,26 +70,6 @@ export function Header() {
           <nav className="hidden md:flex items-center gap-6">
             <motion.div whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
               <Link 
-                href="/account" 
-                className="flex items-center gap-2 text-black hover:text-primary transition-colors relative group"
-              >
-                <motion.div
-                  whileHover={{ rotate: 360 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <User className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors" />
-                </motion.div>
-                <span className="relative">
-                  My Account
-                  <motion.span
-                    className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"
-                  />
-                </span>
-              </Link>
-            </motion.div>
-            
-            <motion.div whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
-              <Link 
                 href="/trips" 
                 className="flex items-center gap-2 text-black hover:text-primary transition-colors relative group"
               >
@@ -134,20 +114,6 @@ export function Header() {
               initial={{ x: -20, opacity: 0 }}
               animate={{ x: isMobileMenuOpen ? 0 : -20, opacity: isMobileMenuOpen ? 1 : 0 }}
               transition={{ delay: 0.1 }}
-            >
-              <Link 
-                href="/account" 
-                className="flex items-center gap-2 text-black hover:text-primary transition-colors py-2"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <User className="w-4 h-4 text-gray-400" />
-                <span>My Account</span>
-              </Link>
-            </motion.div>
-            <motion.div
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: isMobileMenuOpen ? 0 : -20, opacity: isMobileMenuOpen ? 1 : 0 }}
-              transition={{ delay: 0.2 }}
             >
               <Link 
                 href="/trips" 
