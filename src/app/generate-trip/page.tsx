@@ -208,7 +208,7 @@ export default function GenerateTripPage() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <div className="sticky top-0 bg-white">
+      <div className="sticky top-0 bg-white z-10">
         <GenerateTripHeader
           isLoading={isLoading}
           hasItinerary={itinerary.length > 0}
