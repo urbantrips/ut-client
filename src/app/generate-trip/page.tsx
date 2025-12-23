@@ -210,9 +210,6 @@ export default function GenerateTripPage() {
     <div className="min-h-screen bg-white flex flex-col">
       <div className="sticky top-0 bg-white z-10">
         <GenerateTripHeader
-          isLoading={isLoading}
-          hasItinerary={itinerary.length > 0}
-          onConfirmPlan={handleConfirmPlan}
         />
         <GenerateTripTabs selectedTab={selectedTab} onTabChange={setSelectedTab} />
       </div>
