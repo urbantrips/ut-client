@@ -47,17 +47,26 @@ export function ItineraryUpdateCard({
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: 'auto', opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
-          className="px-4 pb-4 bg-white"
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+          className="px-5 py-4 bg-white border-t border-yellow-300/30"
         >
-          <ul className="space-y-2 mt-2">
+          <ul className="space-y-3">
             {day.activities.map((activity, idx) => (
-              <li
+              <motion.li
                 key={idx}
-                className="text-sm text-gray-700"
-                style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: idx * 0.05 }}
+                className="flex items-start gap-3"
               >
-                • {activity}
-              </li>
+                <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-yellow-400 mt-2" />
+                <p
+                  className="text-sm text-gray-800 leading-relaxed flex-1"
+                  style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
+                >
+                  {activity}
+                </p>
+              </motion.li>
             ))}
           </ul>
         </motion.div>

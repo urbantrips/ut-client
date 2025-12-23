@@ -34,7 +34,7 @@ export function ChatView({
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full border border-yellow-500 rounded-2xl p-4">
       <div className="flex-1 overflow-y-auto pb-32 space-y-4">
         {messages.length === 0 && !isLoading && (
           <div className="flex items-center justify-center h-full">

@@ -12,7 +12,7 @@ export function GenerateTripTabs({
     onTabChange,
 }: GenerateTripTabsProps) {
     return (
-        <div className="flex gap-2 sm:gap-4 px-2 sm:px-4 pb-3 border-b border-gray-200">
+        <div className="flex gap-2 sm:gap-4 px-2 sm:px-4 pb-3 ">
             <button
                 onClick={() => onTabChange('chat')}
                 className={`flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-t-lg transition-colors relative flex-1 ${selectedTab === 'chat'
