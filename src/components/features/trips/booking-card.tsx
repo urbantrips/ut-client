@@ -70,7 +70,7 @@ export function BookingCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
-      className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 w-full"
+      className="bg-white rounded-2xl shadow-md border border-gray-100 p-4 w-full"
     >
       {/* Top Section - Trip Details */}
       <div className="flex gap-3 mb-3">
