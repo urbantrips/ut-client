@@ -3,13 +3,17 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { getAllDestinationsIncludingCombos, getDestinationTag } from '@/data/all-destinations';
 import { getTagStyle, filterDestinations } from '@/lib/destination-utils';
+import { useTravelersInfoStore } from '@/store/travelers-info-store';
 
 export default function SearchDestinationPage() {
+    const router = useRouter();
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedTitle, setSelectedTitle] = useState<string>('');
     const searchInputRef = useRef<HTMLInputElement>(null);
+    const setSelectedDestination = useTravelersInfoStore((state) => state.setSelectedDestination);
 
     // Auto-focus search input on mount
     useEffect(() => {
@@ -74,10 +78,16 @@ export default function SearchDestinationPage() {
                     {filteredDestinations.map((dest) => {
                         const isSelected = selectedTitle === dest.title;
 
+                        const handleDestinationClick = () => {
+                            setSelectedTitle(dest.title);
+                            setSelectedDestination(dest.title);
+                            router.push('/travelers-info');
+                        };
+
                         return (
                             <motion.div
                                 key={dest.title}
-                                onClick={() => setSelectedTitle(dest.title)}
+                                onClick={handleDestinationClick}
                                 className={`
                                     relative flex justify-between items-center px-6 py-4 cursor-pointer transition-all duration-200
                                     ${isSelected

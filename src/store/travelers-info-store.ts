@@ -44,6 +44,9 @@ interface TravelersInfoStore {
   // Current step
   currentStep: number;
 
+  // Selected destination
+  selectedDestination: string;
+
   // Step 1: Travelers Info Form data
   departureCity: string;
   travelStyle: TravelStyle;
@@ -70,6 +73,9 @@ interface TravelersInfoStore {
   setCurrentStep: (step: number) => void;
   nextStep: () => void;
   previousStep: () => void;
+
+  // Destination actions
+  setSelectedDestination: (destination: string) => void;
 
   // Step 1 Actions
   setDepartureCity: (city: string) => void;
@@ -113,6 +119,7 @@ export const useTravelersInfoStore = create<TravelersInfoStore>()(
       (set, get) => ({
         // Initial state
         currentStep: 1,
+        selectedDestination: '',
         departureCity: '',
         travelStyle: 'Couple',
         startDate: null,
@@ -137,6 +144,9 @@ export const useTravelersInfoStore = create<TravelersInfoStore>()(
         setCurrentStep: (step) => set({ currentStep: step }),
         nextStep: () => set((state) => ({ currentStep: Math.min(state.currentStep + 1, 4) })),
         previousStep: () => set((state) => ({ currentStep: Math.max(state.currentStep - 1, 1) })),
+
+        // Destination actions
+        setSelectedDestination: (destination) => set({ selectedDestination: destination }),
 
         // Step 1 Actions
         setDepartureCity: (city) => set({ departureCity: city }),
@@ -208,6 +218,7 @@ export const useTravelersInfoStore = create<TravelersInfoStore>()(
         resetForm: () =>
           set({
             currentStep: 1,
+            selectedDestination: '',
             departureCity: '',
             travelStyle: 'Couple',
             startDate: null,
@@ -234,6 +245,7 @@ export const useTravelersInfoStore = create<TravelersInfoStore>()(
         // Custom serialization for Date objects
         partialize: (state) => ({
           currentStep: state.currentStep,
+          selectedDestination: state.selectedDestination,
           departureCity: state.departureCity,
           travelStyle: state.travelStyle,
           startDate: state.startDate?.toISOString() || null,

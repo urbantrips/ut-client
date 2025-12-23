@@ -1,11 +1,13 @@
 'use client';
 
-import { forwardRef, useImperativeHandle, useState } from 'react';
+import { forwardRef, useImperativeHandle, useState, useMemo, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { DatePicker } from '@/components/ui/date-picker';
 import { useTravelersInfoStore, type TravelStyle, type TravelersInfoFormData } from '@/store/travelers-info-store';
 import { travelersInfoSchema } from '@/schemas/travelers-info-schema';
 import { ZodError } from 'zod';
+import { getAllDestinationsIncludingCombos, getDestinationTag } from '@/data/all-destinations';
+import { filterDestinations } from '@/lib/destination-utils';
 
 export type { TravelersInfoFormData };
 
@@ -48,8 +50,50 @@ export const TravelersInfoForm = forwardRef<TravelersInfoFormRef, TravelersInfoF
     } = useTravelersInfoStore();
 
     const [errors, setErrors] = useState<ValidationErrors>({});
+    const [citySearchQuery, setCitySearchQuery] = useState('');
+    const [selectedCity, setSelectedCity] = useState<string>('');
+    const cityInputRef = useRef<HTMLInputElement>(null);
 
     const travelStyles: TravelStyle[] = ['Couple', 'Friends', 'Family', 'Solo'];
+
+    // Get all destinations (same as search page) - convert to DestinationWithTag format
+    const allDestinations = useMemo(() => {
+        const destinationStrings = getAllDestinationsIncludingCombos();
+        return destinationStrings.map(title => ({ 
+            title,
+            tag: getDestinationTag(title)
+        }));
+    }, []);
+
+    // Filter cities based on search query (using same filterDestinations as search page)
+    const filteredCities = useMemo(() => {
+        if (!citySearchQuery.trim()) {
+            return [];
+        }
+        const filtered = filterDestinations(citySearchQuery, allDestinations);
+        return filtered.map(dest => dest.title);
+    }, [citySearchQuery, allDestinations]);
+
+    // Update city search query when departureCity changes externally
+    useEffect(() => {
+        if (departureCity && !citySearchQuery) {
+            setCitySearchQuery(departureCity);
+            setSelectedCity(departureCity);
+        }
+    }, [departureCity]);
+
+    const handleCitySelect = (city: string) => {
+        setDepartureCity(city);
+        setCitySearchQuery(city);
+        setSelectedCity(city);
+        handleFieldChange('departureCity');
+    };
+
+    const handleCityInputChange = (value: string) => {
+        setCitySearchQuery(value);
+        setDepartureCity(value);
+        handleFieldChange('departureCity');
+    };
 
     // Helper function to convert dates
     const convertDate = (date: Date | string | null): Date | null => {
@@ -167,21 +211,63 @@ export const TravelersInfoForm = forwardRef<TravelersInfoFormRef, TravelersInfoF
                     <label className="block text-sm font-bold text-black mb-2" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
                         Departure city
                     </label>
-                    <input
-                        type="text"
-                        placeholder="Search your departure city"
-                        value={departureCity}
-                        onChange={(e) => {
-                            setDepartureCity(e.target.value);
-                            handleFieldChange('departureCity');
-                        }}
-                        className={`w-full px-6 py-2 rounded-3xl border outline-none focus:ring-1 transition-all text-sm italic placeholder:text-gray-400 bg-white text-black ${
-                            errors.departureCity
-                                ? 'border-red-400 focus:border-red-400 focus:ring-red-400'
-                                : 'border-gray-300 focus:border-yellow-400 focus:ring-yellow-400'
-                        }`}
-                        style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
-                    />
+                    <div className="mb-4">
+                        <input
+                            ref={cityInputRef}
+                            type="text"
+                            placeholder="Search your departure city"
+                            value={citySearchQuery}
+                            onChange={(e) => handleCityInputChange(e.target.value)}
+                            className={`w-full px-6 py-2 rounded-3xl border outline-none focus:ring-1 transition-all text-sm italic placeholder:text-gray-400 bg-white text-black ${
+                                errors.departureCity
+                                    ? 'border-red-400 focus:border-red-400 focus:ring-red-400'
+                                    : 'border-gray-300 focus:border-yellow-400 focus:ring-yellow-400'
+                            }`}
+                            style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
+                        />
+                    </div>
+                    
+                    {/* Cities List - Same style as search destination */}
+                    {citySearchQuery.trim() && (
+                        <div className="w-full space-y-4 max-h-60 overflow-y-auto">
+                            {filteredCities.length > 0 ? (
+                                filteredCities.map((city) => {
+                                    const isSelected = selectedCity === city;
+                                    return (
+                                        <motion.div
+                                            key={city}
+                                            onClick={() => handleCitySelect(city)}
+                                            className={`
+                                                relative flex justify-between items-center px-6 py-4 cursor-pointer transition-all duration-200
+                                                ${isSelected
+                                                    ? 'bg-primary-50 border border-primary-500 rounded-[25px]'
+                                                    : 'bg-transparent border border-gray-200 hover:border-primary-300 rounded-[20px]'
+                                                }
+                                            `}
+                                            initial={false}
+                                            whileHover={{ scale: 1.02 }}
+                                            whileTap={{ scale: 0.98 }}
+                                        >
+                                            <span className={`text-sm md:text-base font-bold ${isSelected ? 'text-black' : 'text-gray-900'}`}>
+                                                {city}
+                                            </span>
+                                            {isSelected && (
+                                                <motion.div
+                                                    initial={{ scale: 0 }}
+                                                    animate={{ scale: 1 }}
+                                                    className="w-2 h-2 rounded-full bg-primary-500"
+                                                />
+                                            )}
+                                        </motion.div>
+                                    );
+                                })
+                            ) : (
+                                <div className="text-center text-gray-500 py-4 font-medium">
+                                    No cities found matching &quot;{citySearchQuery}&quot;
+                                </div>
+                            )}
+                        </div>
+                    )}
                     {errors.departureCity && (
                         <p className="mt-1 text-xs text-red-500" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
                             {errors.departureCity}
