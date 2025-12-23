@@ -7,7 +7,7 @@ import { TravelersInfoForm, type TravelersInfoFormRef } from '@/components/featu
 import { HotelTravelModeForm, type HotelTravelModeFormRef } from '@/components/features/travelers-info/hotel-travel-mode-form';
 import { TravelStyleActivitiesForm, type TravelStyleActivitiesFormRef } from '@/components/features/travelers-info/travel-style-activities-form';
 import { OtpVerificationForm, type OtpVerificationFormRef } from '@/components/features/travelers-info/otp-verification-form';
-import { BackButton } from '@/components/features/back-button';
+import { BackButton } from '@/components/features/common/back-button';
 import { useTravelersInfoStore } from '@/store/travelers-info-store';
 import { ArrowRightIcon, ArrowLeftIcon } from 'lucide-react';
 

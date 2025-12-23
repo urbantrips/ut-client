@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Menu } from 'lucide-react';
-import { BookingCard } from '@/components/features/booking-card';
-import { TripsTabs, type TabType } from '@/components/features/trips-tabs';
+import { BookingCard } from '@/components/features/trips/booking-card';
+import { TripsTabs, type TabType } from '@/components/features/trips/trips-tabs';
 
 export default function TripsPage() {
   const router = useRouter();

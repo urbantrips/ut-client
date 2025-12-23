@@ -1,9 +1,9 @@
-import { Header } from '@/components/features/header';
-import { TravelStyleHeroSection } from '@/components/features/travel-style-hero-section';
-import { ForCouplesSection } from '@/components/features/for-couples-section';
-import { TravelStyleDestinationsSection } from '@/components/features/travel-style-destinations-section';
-import { DestinationPosterSection } from '@/components/features/destination-poster-section';
-import { Footer } from '@/components/features/footer';
+import { Header } from '@/components/features/layout/header';
+import { TravelStyleHeroSection } from '@/components/features/travel-style/travel-style-hero-section';
+import { ForCouplesSection } from '@/components/features/homepage/for-couples-section';
+import { TravelStyleDestinationsSection } from '@/components/features/travel-style/travel-style-destinations-section';
+import { DestinationPosterSection } from '@/components/features/homepage/destination-poster-section';
+import { Footer } from '@/components/features/layout/footer';
 import {
   travelStyleDestinations,
   styleMap,
