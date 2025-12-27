@@ -2,12 +2,12 @@ import { getDestinationImage } from '@/data/travel-style-destinations';
 
 /**
  * Fetches an image URL for a destination using multiple sources with fallbacks
- * Priority: 1. Pexels API, 2. Unsplash API, 3. Local images, 4. Placeholder
+ * Priority: 1. Google Places API Photos (always tried first), 2. Unsplash API, 3. Local images, 4. Placeholder
  * 
  * Production apps typically use:
  * - CDN + Image Storage (AWS S3 + CloudFront, Cloudinary, Imgix)
  * - Cached image databases
- * - Licensed image APIs (Pexels, Unsplash, Getty)
+ * - Google Places API for place photos (primary source)
  * - Aggressive caching strategies
  */
 export async function fetchDestinationImage(
@@ -18,34 +18,108 @@ export async function fetchDestinationImage(
   const keywordsArray = searchQuery.split(',').map(k => k.trim()).filter(k => k.length > 0);
   const primaryKeyword = keywordsArray[0] || 'travel';
 
-  // Try Pexels API first (free, reliable, good quality, production-ready)
-  const pexelsApiKey = process.env.PEXELS_API_KEY || "TqAFWMr8CsKXDHhQCJXvEdNXQx85Bvr5NgUgLUXSVz2gq1qEVQrKtyr5"
-  if (pexelsApiKey) {
-    try {
-      const pexelsUrl = `https://api.pexels.com/v1/search?query=${encodeURIComponent(primaryKeyword)}&per_page=1&orientation=landscape`;
-      const response = await fetch(pexelsUrl, {
-        headers: {
-          Authorization: pexelsApiKey,
-        },
-        // Add timeout to prevent hanging (production apps use timeouts)
-        signal: AbortSignal.timeout(3000),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.photos && data.photos.length > 0) {
-          // Return large-sized image (good balance of quality and size)
-          const imageUrl = data.photos[0].src.large || data.photos[0].src.medium;
-          console.log(`  ✓ Pexels image found for: ${primaryKeyword}`);
-          return imageUrl;
-        }
+  // Always try Google Places API first (gets actual place photos)
+  const googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY;
+  if (!googleMapsApiKey) {
+    console.log(`  ✗ Google Maps API key not configured`);
+  } else {
+    // Filter out invalid location names
+    const invalidLocations = ['not specified', 'undefined', 'null', 'none', 'travel', 'destination', 'trip', 'tour'];
+    const isInvalidLocation = (loc: string | undefined): boolean => {
+      if (!loc) return true;
+      const normalized = loc.toLowerCase().trim();
+      return invalidLocations.includes(normalized) || normalized.length < 2;
+    };
+    
+    // Build list of potential locations to try
+    const locationsToTry: string[] = [];
+    
+    // 1. Try destination name first
+    if (destinationName && !isInvalidLocation(destinationName)) {
+      const cleaned = destinationName
+        .replace(/\b(travel|destination|trip|tour|visit|explore|departure|arrival)\b/gi, '')
+        .trim();
+      if (cleaned && !isInvalidLocation(cleaned)) {
+        locationsToTry.push(cleaned);
       }
-    } catch (error) {
-      console.log(`  ✗ Pexels API failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
+    
+    // 2. Try keywords (prioritize capitalized words, then all keywords)
+    const validKeywords = keywordsArray.filter(k => 
+      k.length > 2 && !isInvalidLocation(k) && !invalidLocations.includes(k.toLowerCase())
+    );
+    locationsToTry.push(...validKeywords);
+    
+    // 3. Try primary keyword if it's valid
+    if (primaryKeyword && !isInvalidLocation(primaryKeyword) && !locationsToTry.includes(primaryKeyword)) {
+      locationsToTry.push(primaryKeyword);
+    }
+    
+    // Try each location until we find a photo
+    for (const location of locationsToTry) {
+      if (!location || isInvalidLocation(location)) continue;
+      
+      try {
+        // Step 1: Search for the place using Places API Text Search
+        const textSearchUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(location)}&key=${googleMapsApiKey}`;
+        
+        const searchResponse = await fetch(textSearchUrl, {
+          signal: AbortSignal.timeout(5000),
+        });
+
+        if (searchResponse.ok) {
+          const searchData = await searchResponse.json();
+          
+          if (searchData.results && searchData.results.length > 0) {
+            const place = searchData.results[0];
+            
+            // Check if photos are already in the text search response (optimization)
+            if (place.photos && place.photos.length > 0) {
+              const photoReference = place.photos[0].photo_reference;
+              // Use proxy endpoint to avoid CORS and keep API key server-side
+              const photoUrl = `/api/places/image?photo_reference=${encodeURIComponent(photoReference)}&maxwidth=800`;
+              
+              console.log(`  ✓ Google Places photo found for: ${location}`);
+              console.log(`  📷 Photo URL: ${photoUrl}`);
+              return photoUrl;
+            }
+            
+            // If no photos in text search, get place details with photos
+            const placeId = place.place_id;
+            const placeDetailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=photos&key=${googleMapsApiKey}`;
+            
+            const detailsResponse = await fetch(placeDetailsUrl, {
+              signal: AbortSignal.timeout(5000),
+            });
+
+            if (detailsResponse.ok) {
+              const detailsData = await detailsResponse.json();
+              
+              if (detailsData.result && detailsData.result.photos && detailsData.result.photos.length > 0) {
+                // Get the photo URL using Place Photos API via proxy
+                const photoReference = detailsData.result.photos[0].photo_reference;
+                // Use proxy endpoint to avoid CORS and keep API key server-side
+                const photoUrl = `/api/places/image?photo_reference=${encodeURIComponent(photoReference)}&maxwidth=800`;
+                
+                console.log(`  ✓ Google Places photo found for: ${location}`);
+                console.log(`  📷 Photo URL: ${photoUrl}`);
+                return photoUrl;
+              }
+            }
+          }
+        }
+      } catch (error) {
+        // Continue to next location if this one fails
+        console.log(`  ✗ Google Places API failed for "${location}": ${error instanceof Error ? error.message : 'Unknown error'}`);
+        continue;
+      }
+    }
+    
+    console.log(`  ✗ Google Places API: No photos found for any location`);
   }
 
-  // Try Unsplash API (requires API key, production-grade)
+
+  // Try Unsplash API (fallback if Google Places doesn't work)
   const unsplashApiKey = process.env.UNSPLASH_ACCESS_KEY;
   if (unsplashApiKey) {
     try {
