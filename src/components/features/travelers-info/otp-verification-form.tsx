@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { ArrowRightIcon } from 'lucide-react';
 import { CountryPicker } from '@/components/ui/country-picker';
 import { useTravelersInfoStore } from '@/store/travelers-info-store';
+import { useUserStore } from '@/store/user-store';
 import { getCountryByCode } from '@/lib/countries';
 
 export interface OtpVerificationFormRef {
@@ -26,14 +27,16 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
             setVerificationPhone,
             setVerificationCountryCode,
         } = useTravelersInfoStore();
+        
+        const setUser = useUserStore((state) => state.setUser);
 
-        const [otp, setOtp] = useState<string[]>(['', '', '', '', '', '']);
+        const [otp, setOtp] = useState<string[]>(['', '', '', '']);
         const [isOtpSent, setIsOtpSent] = useState(false);
         const [isResending, setIsResending] = useState(false);
         const [isSending, setIsSending] = useState(false);
         const [isVerifying, setIsVerifying] = useState(false);
         const [error, setError] = useState<string | null>(null);
-        const otpInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+        const otpInputRefs = useRef<(HTMLInputElement | null)[]>(new Array(4).fill(null));
 
         const selectedCountry = useMemo(() => {
             const countryCode = verificationCountryCode || 'IN';
@@ -80,7 +83,7 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
         const handleResendOtp = async () => {
             setIsResending(true);
             setError(null);
-            setOtp(['', '', '', '', '', '']);
+            setOtp(['', '', '', '']);
             
             try {
                 const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
@@ -110,17 +113,17 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
         const handleOtpChange = (index: number, value: string) => {
             if (value.length > 1) {
                 // Handle paste
-                const pastedOtp = value.slice(0, 6).split('');
+                const pastedOtp = value.slice(0, 4).split('');
                 const newOtp = [...otp];
                 pastedOtp.forEach((digit, i) => {
-                    if (index + i < 6) {
+                    if (index + i < 4) {
                         newOtp[index + i] = digit;
                     }
                 });
                 setOtp(newOtp);
                 
                 // Focus on the next empty input or the last one
-                const nextIndex = Math.min(index + pastedOtp.length, 5);
+                const nextIndex = Math.min(index + pastedOtp.length, 3);
                 otpInputRefs.current[nextIndex]?.focus();
                 return;
             }
@@ -134,7 +137,7 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
             setOtp(newOtp);
 
             // Auto-focus next input
-            if (value && index < 5) {
+            if (value && index < 3) {
                 otpInputRefs.current[index + 1]?.focus();
             }
         };
@@ -152,7 +155,7 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
             }
 
             const otpString = otp.join('');
-            if (otpString.length !== 6) {
+            if (otpString.length !== 4) {
                 return;
             }
 
@@ -170,6 +173,7 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
                         phoneNumber: verificationPhone,
                         countryCode: dialCode,
                         otp: otpString,
+                        name: verificationName,
                     }),
                 });
 
@@ -180,6 +184,15 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
 
                 const authData = await response.json();
                 console.log('OTP Verification successful:', authData);
+
+                // Store user data in user store
+                if (authData.user) {
+                    setUser({
+                        id: authData.user._id,
+                        name: authData.user.name || verificationName,
+                        email: authData.user.email || '',
+                    });
+                }
 
                 const formData = {
                     name: verificationName,
@@ -307,7 +320,7 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
                                 Enter OTP*
                             </label>
                             <div className="flex gap-2 justify-center">
-                                {otp.map((digit, index) => (
+                                {Array.from({ length: 4 }, (_, index) => (
                                     <input
                                         key={index}
                                         ref={(el) => {
@@ -316,7 +329,7 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
                                         type="text"
                                         inputMode="numeric"
                                         maxLength={1}
-                                        value={digit}
+                                        value={otp[index] || ''}
                                         onChange={(e) => handleOtpChange(index, e.target.value)}
                                         onKeyDown={(e) => handleOtpKeyDown(index, e)}
                                         className="w-12 h-12 text-center rounded-lg border border-gray-300 outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400 transition-all text-lg font-semibold"
@@ -341,7 +354,7 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
                     {isOtpSent && (
                         <motion.button
                             onClick={handleContinue}
-                            disabled={otp.join('').length !== 6 || isVerifying}
+                            disabled={otp.join('').length !== 4 || isVerifying}
                             whileHover={{ scale: 1.01 }}
                             whileTap={{ scale: 0.99 }}
                             className="w-full bg-yellow-400 text-black font-bold py-3 rounded-3xl shadow-none hover:bg-yellow-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
