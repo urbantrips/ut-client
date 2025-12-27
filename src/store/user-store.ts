@@ -9,7 +9,10 @@ interface User {
 
 interface UserStore {
   user: User | null;
-  setUser: (user: User) => void;
+  accessToken: string | null;
+  refreshToken: string | null;
+  setUser: (user: User, tokens?: { accessToken: string; refreshToken: string }) => void;
+  setTokens: (tokens: { accessToken: string; refreshToken: string }) => void;
   clearUser: () => void;
 }
 
@@ -18,8 +21,18 @@ export const useUserStore = create<UserStore>()(
     persist(
       (set) => ({
         user: null,
-        setUser: (user) => set({ user }),
-        clearUser: () => set({ user: null }),
+        accessToken: null,
+        refreshToken: null,
+        setUser: (user, tokens) => set({ 
+          user, 
+          accessToken: tokens?.accessToken || null,
+          refreshToken: tokens?.refreshToken || null,
+        }),
+        setTokens: (tokens) => set({ 
+          accessToken: tokens.accessToken,
+          refreshToken: tokens.refreshToken,
+        }),
+        clearUser: () => set({ user: null, accessToken: null, refreshToken: null }),
       }),
       { name: 'user-storage' }
     )

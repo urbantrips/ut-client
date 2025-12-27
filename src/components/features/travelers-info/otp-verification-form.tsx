@@ -185,13 +185,21 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
                 const authData = await response.json();
                 console.log('OTP Verification successful:', authData);
 
-                // Store user data in user store
+                // Store user data and tokens in user store
                 if (authData.user) {
-                    setUser({
-                        id: authData.user._id,
-                        name: authData.user.name || verificationName,
-                        email: authData.user.email || '',
-                    });
+                    setUser(
+                        {
+                            id: authData.user._id,
+                            name: authData.user.name || verificationName,
+                            email: authData.user.email || '',
+                        },
+                        authData.accessToken && authData.refreshToken
+                            ? {
+                                  accessToken: authData.accessToken,
+                                  refreshToken: authData.refreshToken,
+                              }
+                            : undefined
+                    );
                 }
 
                 const formData = {

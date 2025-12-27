@@ -9,6 +9,7 @@ export interface DayItinerary {
   title: string;
   activities: string[];
   imageUrl?: string;
+  imageKeywords?: string;
 }
 
 interface DayCardProps {

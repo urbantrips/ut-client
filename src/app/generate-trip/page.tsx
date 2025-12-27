@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTravelersInfoStore } from '@/store/travelers-info-store';
+import { useUserStore } from '@/store/user-store';
 import { GenerateTripHeader } from '@/components/features/generate-trip/generate-trip-header';
 import { GenerateTripTabs } from '@/components/features/generate-trip/generate-trip-tabs';
 import { ItineraryView } from '@/components/features/generate-trip/itinerary-view';
@@ -30,6 +31,11 @@ export default function GenerateTripPage() {
   // Confirmation state
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const [isSavingTrip, setIsSavingTrip] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  // Get user store for access token
+  const accessToken = useUserStore((state) => state.accessToken);
 
   // Get data from store
   const getFormData = useTravelersInfoStore((state) => state.getFormData);
@@ -122,9 +128,87 @@ export default function GenerateTripPage() {
     setShowConfirmationModal(true);
   };
 
-  const handleFinalConfirm = () => {
+  const handleFinalConfirm = async () => {
+    if (!accessToken) {
+      setSaveError('You must be logged in to confirm a trip. Please log in and try again.');
+      setShowConfirmationModal(false);
+      return;
+    }
+
+    setIsSavingTrip(true);
+    setSaveError(null);
     setShowConfirmationModal(false);
-    setIsConfirmed(true);
+
+    try {
+      const formData = getFormData();
+      const hotelData = getHotelTravelModeData();
+      const activitiesData = getTravelStyleActivitiesData();
+
+      // Prepare trip data
+      const tripData = {
+        destination: selectedDestination || 'Not specified',
+        departureCity: formData.departureCity || undefined,
+        travelStyle: formData.travelStyle || undefined,
+        startDate: formData.startDate?.toISOString() || undefined,
+        endDate: formData.endDate?.toISOString() || undefined,
+        travelerCounts: formData.travelerCounts || { adults: 2, children: 0, infants: 0 },
+        hotelCategory: hotelData.hotelCategory || undefined,
+        roomType: hotelData.roomType || undefined,
+        preferredTravelMode: hotelData.preferredTravelMode || undefined,
+        needReturnTicket: hotelData.needReturnTicket ?? false,
+        selectedActivities: activitiesData.selectedActivities || [],
+        travelStylePreferences: activitiesData.travelStylePreferences || {
+          relaxation: 0,
+          nightlife: 0,
+          heritage: 0,
+          adventure: 0,
+        },
+        itinerary: itinerary.map((day) => ({
+          day: day.day,
+          title: day.title,
+          activities: day.activities,
+          imageUrl: day.imageUrl,
+          imageKeywords: day.imageKeywords,
+        })),
+        chatHistory: chatMessages.map((msg) => {
+          const chatMsg: any = {
+            id: msg.id,
+            role: msg.role,
+            content: msg.content,
+            timestamp: msg.timestamp.toISOString(),
+          };
+          // Only include itineraryUpdate if it exists, is not null/undefined, and is an object
+          if (msg.itineraryUpdate && typeof msg.itineraryUpdate === 'object' && !Array.isArray(msg.itineraryUpdate)) {
+            chatMsg.itineraryUpdate = msg.itineraryUpdate;
+          }
+          return chatMsg;
+        }),
+      };
+
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const response = await fetch(`${apiUrl}/trips`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(tripData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to save trip');
+      }
+
+      // Trip saved successfully
+      setIsConfirmed(true);
+    } catch (err) {
+      console.error('Error saving trip:', err);
+      setSaveError(err instanceof Error ? err.message : 'Failed to save trip. Please try again.');
+      // Don't set isConfirmed to true on error - let user retry
+    } finally {
+      setIsSavingTrip(false);
+    }
   };
 
   if (isConfirmed) {
@@ -281,9 +365,37 @@ export default function GenerateTripPage() {
 
       <ConfirmationModal
         isOpen={showConfirmationModal}
-        onClose={() => setShowConfirmationModal(false)}
+        onClose={() => {
+          setShowConfirmationModal(false);
+          setSaveError(null);
+        }}
         onConfirm={handleFinalConfirm}
+        isLoading={isSavingTrip}
       />
+
+      {/* Error Display */}
+      {saveError && (
+        <div className="fixed bottom-20 left-4 right-4 z-50 bg-red-50 border border-red-200 rounded-xl p-4 shadow-lg">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0">
+              <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-red-800">{saveError}</p>
+            </div>
+            <button
+              onClick={() => setSaveError(null)}
+              className="flex-shrink-0 text-red-600 hover:text-red-800"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
