@@ -33,7 +33,7 @@ export function ConfirmationSuccess({ formData, destination, durationDays, itine
         resetForm();
     };
 
-    const handleDownloadItinerary = () => {
+    const generatePDF = () => {
         const doc = new jsPDF();
         let yPos = 20;
 
@@ -107,8 +107,38 @@ export function ConfirmationSuccess({ formData, destination, durationDays, itine
             doc.text(`Page ${i} of ${pageCount}`, 170, 285);
         }
 
-        // Save
+        return doc;
+    };
+
+    const handleDownloadItinerary = () => {
+        const doc = generatePDF();
         doc.save(`itinerary-${destination.replace(/\s+/g, '-').toLowerCase()}.pdf`);
+    };
+
+    const handleShareItinerary = async () => {
+        try {
+            const doc = generatePDF();
+            const blob = doc.output('blob');
+            const file = new File([blob], `itinerary-${destination.replace(/\s+/g, '-').toLowerCase()}.pdf`, { type: 'application/pdf' });
+
+            const shareData = {
+                title: `Trip Itinerary: ${destination}`,
+                text: `Check out my travel plan for ${destination}!`,
+                files: [file]
+            };
+
+            if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+                await navigator.share(shareData);
+            } else {
+                // Fallback for browsers that don't support sharing files
+                handleDownloadItinerary();
+            }
+        } catch (error) {
+            // Ignore AbortError (user cancelled)
+            if (error instanceof Error && error.name !== 'AbortError') {
+                console.error('Error sharing itinerary:', error);
+            }
+        }
     };
 
     return (
@@ -118,10 +148,10 @@ export function ConfirmationSuccess({ formData, destination, durationDays, itine
                 animate={{ opacity: 1, y: 0 }}
                 className="text-center w-full max-w-md"
             >
-                <h1 className="text-3xl font-bold text-black mb-1" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
+                <h1 className="text-3xl font-bold text-black mb-1" style={{ fontFamily: 'var(--font-poppins), sans-serif' }}>
                     You&apos;re All Set!
                 </h1>
-                <h2 className="text-xl font-bold text-yellow-500 mb-6" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
+                <h2 className="text-xl font-bold text-yellow-500 mb-6" style={{ fontFamily: 'var(--font-poppins), sans-serif' }}>
                     Your Plan is Confirmed!
                 </h2>
 
@@ -131,7 +161,7 @@ export function ConfirmationSuccess({ formData, destination, durationDays, itine
 
                 {/* Details Card */}
                 <div className="bg-gray-50 rounded-3xl p-6 mb-8 mx-2 border border-gray-100">
-                    <h3 className="text-sm font-bold text-black mb-6 text-center" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
+                    <h3 className="text-sm font-bold text-black mb-6 text-center" style={{ fontFamily: 'var(--font-poppins), sans-serif' }}>
                         Confirmation Details
                     </h3>
 
@@ -169,7 +199,7 @@ export function ConfirmationSuccess({ formData, destination, durationDays, itine
                     </button>
 
                     <div className="flex gap-3">
-                        <Link href="/" className="flex-1" onClick={handleNewTrip}>
+                        <Link href="/search" className="flex-1" onClick={handleNewTrip}>
                             <button className="w-full bg-yellow-400 text-black rounded-xl py-3.5 flex items-center justify-center gap-2 font-bold hover:bg-yellow-500 transition-colors shadow-lg shadow-yellow-400/20">
                                 <Plus size={18} />
                                 New Trip
@@ -185,7 +215,10 @@ export function ConfirmationSuccess({ formData, destination, durationDays, itine
                     </div>
                 </div>
 
-                <button className="text-black font-bold text-sm hover:underline">
+                <button
+                    onClick={handleShareItinerary}
+                    className="text-black font-bold text-sm hover:underline"
+                >
                     Share Itinerary
                 </button>
             </motion.div>
