@@ -133,6 +133,7 @@ export default function GenerateTripPage() {
         formData={getFormData()}
         destination={selectedDestination}
         durationDays={itinerary.length}
+        itinerary={itinerary}
       />
     );
   }
