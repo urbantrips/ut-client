@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchDestinationImage, extractDestinationFromItinerary } from '@/lib/image-fetcher';
+import { fetchDestinationImage } from '@/lib/image-fetcher';
 
 interface DayItinerary {
   day: number;
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     const { currentItinerary, userMessage, travelContext } = body;
 
     // Get API key from environment variable
-    const apiKey = process.env.GEMINI_API_KEY || "AIzaSyAHsRns7gdFHZBbN698-pAyjUrixc2vvpA";
+    const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
         { error: 'Gemini API key not configured' },

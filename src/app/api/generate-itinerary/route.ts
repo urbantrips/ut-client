@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     const body: GenerateItineraryRequest = await request.json();
 
     // Get API key from environment variable
-    const apiKey = process.env.GEMINI_API_KEY || "AIzaSyAHsRns7gdFHZBbN698-pAyjUrixc2vvpA";
+    const apiKey = process.env.GEMINI_API_KEY
     if (!apiKey) {
       return NextResponse.json(
         { error: 'Gemini API key not configured' },
@@ -110,7 +110,6 @@ Return ONLY valid JSON, no markdown formatting, no code blocks, just the JSON ar
 
     if (!response.ok) {
       const errorData = await response.text();
-      console.error('Gemini API error:', errorData);
       return NextResponse.json(
         { error: 'Failed to generate itinerary', details: errorData },
         { status: response.status }
@@ -119,21 +118,10 @@ Return ONLY valid JSON, no markdown formatting, no code blocks, just the JSON ar
 
     const data = await response.json();
 
-    // Log the full Gemini API response for debugging
-    console.log('=== Gemini API Response ===');
-    console.log('Full response:', JSON.stringify(data, null, 2));
-    console.log('==========================');
-
     // Extract text from Gemini response
     const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
-    // Log the extracted text
-    console.log('=== Extracted Text from Gemini ===');
-    console.log(generatedText);
-    console.log('==================================');
-
     if (!generatedText) {
-      console.error('No text content found in Gemini response');
       return NextResponse.json(
         { error: 'No content generated from Gemini' },
         { status: 500 }
@@ -148,24 +136,13 @@ Return ONLY valid JSON, no markdown formatting, no code blocks, just the JSON ar
       const jsonMatch = generatedText.match(/```(?:json)?\s*([\s\S]*?)\s*```/) || 
                        generatedText.match(/\[[\s\S]*\]/);
       
-      console.log('=== JSON Parsing Attempt ===');
-      console.log('JSON Match found:', !!jsonMatch);
-      if (jsonMatch) {
-        console.log('Extracted JSON string:', jsonMatch[1] || jsonMatch[0]);
-      }
-      
       if (jsonMatch) {
         itinerary = JSON.parse(jsonMatch[1] || jsonMatch[0]);
       } else {
         itinerary = JSON.parse(generatedText);
       }
-      
-      console.log('Parsed itinerary:', JSON.stringify(itinerary, null, 2));
-      console.log('============================');
     } catch (parseError) {
       // If parsing fails, try to construct a basic itinerary from the text
-      console.error('Failed to parse JSON, attempting to parse text:', parseError);
-      
       // Fallback: create a simple structure from the text
       const lines = generatedText.split('\n').filter((line: string) => line.trim());
       itinerary = [];
@@ -217,7 +194,6 @@ Return ONLY valid JSON, no markdown formatting, no code blocks, just the JSON ar
     // Fetch images for each day using production-grade approach
     // Production apps typically: 1) Use CDN + curated images, 2) Cache aggressively, 
     // 3) Use licensed APIs (Pexels/Unsplash), 4) Fallback to local assets
-    console.log('=== Generating Image URLs ===');
     const itineraryWithImages = await Promise.all(
       itinerary.map(async (day) => {
         // Extract destination name for local image lookup
@@ -230,17 +206,10 @@ Return ONLY valid JSON, no markdown formatting, no code blocks, just the JSON ar
         // Use Gemini-provided imageKeywords if available, otherwise extract from title/activities
         let searchQuery = '';
         
-        console.log(`\nDay ${day.day}:`);
-        console.log('  Title:', day.title);
-        console.log('  ImageKeywords from Gemini:', day.imageKeywords);
-        console.log('  Extracted destination:', destinationName);
-        
         if (day.imageKeywords && day.imageKeywords.trim()) {
           searchQuery = day.imageKeywords.trim();
-          console.log('  Using Gemini keywords:', searchQuery);
         } else {
           // Fallback: Extract keywords from day title and activities
-          console.log('  No Gemini keywords, extracting from title/activities...');
           const extractKeywords = (text: string): string[] => {
             const commonWords = ['day', 'arrival', 'exploration', 'visit', 'tour', 'the', 'and', 'or', 'at', 'to', 'a', 'an'];
             return text
@@ -264,7 +233,6 @@ Return ONLY valid JSON, no markdown formatting, no code blocks, just the JSON ar
           } else {
             searchQuery = 'travel,destination';
           }
-          console.log('  Extracted keywords:', searchQuery);
         }
         
         // Use production-grade image fetcher with multiple fallbacks
@@ -275,21 +243,12 @@ Return ONLY valid JSON, no markdown formatting, no code blocks, just the JSON ar
           imageUrl,
         };
         
-        console.log('  Final day object:', JSON.stringify(result, null, 2));
-        
         return result;
       })
     );
-    console.log('============================\n');
-
-    // Log the final itinerary with images
-    console.log('=== Final Itinerary with Images ===');
-    console.log(JSON.stringify(itineraryWithImages, null, 2));
-    console.log('===================================');
 
     return NextResponse.json({ itinerary: itineraryWithImages });
   } catch (error) {
-    console.error('Error generating itinerary:', error);
     return NextResponse.json(
       { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
