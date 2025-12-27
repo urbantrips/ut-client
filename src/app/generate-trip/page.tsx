@@ -9,6 +9,8 @@ import { ChatView, ChatMessage } from '@/components/features/generate-trip/chat-
 import { ChatInput } from '@/components/features/generate-trip/chat-input';
 import { ConfirmPlanButton } from '@/components/features/generate-trip/confirm-plan-button';
 import { DayItinerary } from '@/components/features/generate-trip/day-card';
+import { ConfirmationModal } from '@/components/features/generate-trip/confirmation/confirmation-modal';
+import { ConfirmationSuccess } from '@/components/features/generate-trip/confirmation/confirmation-success';
 
 export default function GenerateTripPage() {
   const [selectedTab, setSelectedTab] = useState<'chat' | 'itinerary'>('itinerary');
@@ -18,17 +20,22 @@ export default function GenerateTripPage() {
   const [error, setError] = useState<string | null>(null);
   const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
   const [imageLoaded, setImageLoaded] = useState<Record<number, boolean>>({});
-  
+
   // Chat state
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isSendingMessage, setIsSendingMessage] = useState(false);
   const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set());
 
+  // Confirmation state
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [isConfirmed, setIsConfirmed] = useState(false);
+
   // Get data from store
   const getFormData = useTravelersInfoStore((state) => state.getFormData);
   const getHotelTravelModeData = useTravelersInfoStore((state) => state.getHotelTravelModeData);
   const getTravelStyleActivitiesData = useTravelersInfoStore((state) => state.getTravelStyleActivitiesData);
+  const selectedDestination = useTravelersInfoStore((state) => state.selectedDestination);
 
   useEffect(() => {
     const generateItinerary = async () => {
@@ -73,7 +80,7 @@ export default function GenerateTripPage() {
         }
 
         const data = await response.json();
-        
+
         if (data.itinerary && Array.isArray(data.itinerary)) {
           setItinerary(data.itinerary);
           if (data.itinerary.length > 0) {
@@ -112,9 +119,23 @@ export default function GenerateTripPage() {
   }, [getFormData, getHotelTravelModeData, getTravelStyleActivitiesData]);
 
   const handleConfirmPlan = () => {
-    // Handle plan confirmation
-    console.log('Plan confirmed', itinerary);
+    setShowConfirmationModal(true);
   };
+
+  const handleFinalConfirm = () => {
+    setShowConfirmationModal(false);
+    setIsConfirmed(true);
+  };
+
+  if (isConfirmed) {
+    return (
+      <ConfirmationSuccess
+        formData={getFormData()}
+        destination={selectedDestination}
+        durationDays={itinerary.length}
+      />
+    );
+  }
 
   const toggleDayExpansion = (day: number) => {
     setExpandedDays((prev) => {
@@ -256,6 +277,12 @@ export default function GenerateTripPage() {
       {selectedTab === 'itinerary' && !isLoading && itinerary.length > 0 && (
         <ConfirmPlanButton onConfirm={handleConfirmPlan} />
       )}
+
+      <ConfirmationModal
+        isOpen={showConfirmationModal}
+        onClose={() => setShowConfirmationModal(false)}
+        onConfirm={handleFinalConfirm}
+      />
     </div>
   );
 }
