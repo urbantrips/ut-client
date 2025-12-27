@@ -2,7 +2,6 @@
 
 import { forwardRef, useImperativeHandle, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
 import { DatePicker } from '@/components/ui/date-picker';
 import { useTravelersInfoStore, type TravelStyle, type TravelersInfoFormData } from '@/store/travelers-info-store';
 import { travelersInfoSchema } from '@/schemas/travelers-info-schema';
@@ -34,153 +33,148 @@ interface ValidationErrors {
 
 export const TravelersInfoForm = forwardRef<TravelersInfoFormRef, TravelersInfoFormProps>(
     ({ onContinue }, ref) => {
-    const router = useRouter();
-    const {
-        departureCity,
-        travelStyle,
-        startDate,
-        endDate,
-        travelerCounts,
-        selectedDestination,
-        setDepartureCity,
-        setTravelStyle,
-        setStartDate,
-        setEndDate,
-        updateTravelerCount,
-        getFormData,
-        setSelectedDestination,
-    } = useTravelersInfoStore();
+        const {
+            departureCity,
+            travelStyle,
+            startDate,
+            endDate,
+            travelerCounts,
+            selectedDestination,
+            setDepartureCity,
+            setTravelStyle,
+            setStartDate,
+            setEndDate,
+            updateTravelerCount,
+            getFormData,
+            setSelectedDestination,
+        } = useTravelersInfoStore();
 
-    const [errors, setErrors] = useState<ValidationErrors>({});
+        const [errors, setErrors] = useState<ValidationErrors>({});
 
-    const travelStyles: TravelStyle[] = ['Couple', 'Friends', 'Family', 'Solo'];
+        const travelStyles: TravelStyle[] = ['Couple', 'Friends', 'Family', 'Solo'];
 
-    // Pre-fill departure city with selected destination from search page, then clear it
-    useEffect(() => {
-        if (selectedDestination && !departureCity) {
-            setDepartureCity(selectedDestination);
-            // Clear the selected destination after using it
-            setSelectedDestination('');
-        }
-    }, [selectedDestination, departureCity, setDepartureCity, setSelectedDestination]);
-
-    const handleDepartureCityClick = () => {
-        // Redirect to search destination page
-        router.push('/search');
-    };
-
-    // Helper function to convert dates
-    const convertDate = (date: Date | string | null): Date | null => {
-        if (!date) return null;
-        if (date instanceof Date) {
-            // Check if it's a valid date
-            return isNaN(date.getTime()) ? null : date;
-        }
-        // If it's a string, try to convert it
-        const converted = new Date(date);
-        return isNaN(converted.getTime()) ? null : converted;
-    };
-
-    // Check if form is valid without setting errors (for button state)
-    const checkFormValidity = (): boolean => {
-        try {
-            const formData = getFormData();
-            const dataToValidate = {
-                ...formData,
-                startDate: convertDate(formData.startDate),
-                endDate: convertDate(formData.endDate),
-            };
-            travelersInfoSchema.parse(dataToValidate);
-            return true;
-        } catch {
-            return false;
-        }
-    };
-
-    const validateForm = (): boolean => {
-        try {
-            const formData = getFormData();
-            const dataToValidate = {
-                ...formData,
-                startDate: convertDate(formData.startDate),
-                endDate: convertDate(formData.endDate),
-            };
-
-            travelersInfoSchema.parse(dataToValidate);
-            setErrors({});
-            return true;
-        } catch (error) {
-            if (error instanceof ZodError) {
-                const newErrors: ValidationErrors = {};
-                
-                error.errors.forEach((err) => {
-                    const path = err.path;
-                    if (path.length === 1) {
-                        const field = path[0] as keyof ValidationErrors;
-                        if (field === 'travelerCounts') {
-                            newErrors.travelerCounts = {};
-                        } else {
-                            (newErrors[field] as string) = err.message;
-                        }
-                    } else if (path.length === 2 && path[0] === 'travelerCounts') {
-                        if (!newErrors.travelerCounts) {
-                            newErrors.travelerCounts = {};
-                        }
-                        const travelerType = path[1] as keyof typeof newErrors.travelerCounts;
-                        newErrors.travelerCounts[travelerType] = err.message;
-                    }
-                });
-                
-                setErrors(newErrors);
+        // Pre-fill departure city with selected destination from search page, then clear it
+        useEffect(() => {
+            if (selectedDestination && !departureCity) {
+                setDepartureCity(selectedDestination);
+                // Clear the selected destination after using it
+                setSelectedDestination('');
             }
-            return false;
-        }
-    };
+        }, [selectedDestination, departureCity, setDepartureCity, setSelectedDestination]);
 
-    const handleContinue = () => {
-        if (validateForm()) {
-            const formData = getFormData();
-            console.log(formData);
-            onContinue?.(formData);
-        }
-    };
 
-    const handleFieldChange = (field: keyof ValidationErrors) => {
-        // Clear error when user starts typing/selecting
-        if (errors[field]) {
-            setErrors((prev) => {
-                const newErrors = { ...prev };
-                delete newErrors[field];
-                return newErrors;
-            });
-        }
-    };
+        // Helper function to convert dates
+        const convertDate = (date: Date | string | null): Date | null => {
+            if (!date) return null;
+            if (date instanceof Date) {
+                // Check if it's a valid date
+                return isNaN(date.getTime()) ? null : date;
+            }
+            // If it's a string, try to convert it
+            const converted = new Date(date);
+            return isNaN(converted.getTime()) ? null : converted;
+        };
 
-    const handleTravelerCountChange = (type: keyof typeof travelerCounts, increment: boolean) => {
-        updateTravelerCount(type, increment);
-        // Clear error for this traveler type
-        if (errors.travelerCounts?.[type]) {
-            setErrors((prev) => {
-                const newErrors = { ...prev };
-                if (newErrors.travelerCounts) {
-                    const newTravelerCounts = { ...newErrors.travelerCounts };
-                    delete newTravelerCounts[type];
-                    newErrors.travelerCounts = Object.keys(newTravelerCounts).length > 0 ? newTravelerCounts : undefined;
+        // Check if form is valid without setting errors (for button state)
+        const checkFormValidity = (): boolean => {
+            try {
+                const formData = getFormData();
+                const dataToValidate = {
+                    ...formData,
+                    startDate: convertDate(formData.startDate),
+                    endDate: convertDate(formData.endDate),
+                };
+                travelersInfoSchema.parse(dataToValidate);
+                return true;
+            } catch {
+                return false;
+            }
+        };
+
+        const validateForm = (): boolean => {
+            try {
+                const formData = getFormData();
+                const dataToValidate = {
+                    ...formData,
+                    startDate: convertDate(formData.startDate),
+                    endDate: convertDate(formData.endDate),
+                };
+
+                travelersInfoSchema.parse(dataToValidate);
+                setErrors({});
+                return true;
+            } catch (error) {
+                if (error instanceof ZodError) {
+                    const newErrors: ValidationErrors = {};
+
+                    error.errors.forEach((err) => {
+                        const path = err.path;
+                        if (path.length === 1) {
+                            const field = path[0] as keyof ValidationErrors;
+                            if (field === 'travelerCounts') {
+                                newErrors.travelerCounts = {};
+                            } else {
+                                (newErrors[field] as string) = err.message;
+                            }
+                        } else if (path.length === 2 && path[0] === 'travelerCounts') {
+                            if (!newErrors.travelerCounts) {
+                                newErrors.travelerCounts = {};
+                            }
+                            const travelerType = path[1] as keyof typeof newErrors.travelerCounts;
+                            newErrors.travelerCounts[travelerType] = err.message;
+                        }
+                    });
+
+                    setErrors(newErrors);
                 }
-                return newErrors;
-            });
-        }
-    };
+                return false;
+            }
+        };
 
-    useImperativeHandle(ref, () => ({
-        handleContinue,
-        getFormData,
-        isValid: checkFormValidity,
-    }));
+        const handleContinue = () => {
+            if (validateForm()) {
+                const formData = getFormData();
+                console.log(formData);
+                onContinue?.(formData);
+            }
+        };
 
-    return (
-        <>
-            {/* Departure City */}
+        const handleFieldChange = (field: keyof ValidationErrors) => {
+            // Clear error when user starts typing/selecting
+            if (errors[field]) {
+                setErrors((prev) => {
+                    const newErrors = { ...prev };
+                    delete newErrors[field];
+                    return newErrors;
+                });
+            }
+        };
+
+        const handleTravelerCountChange = (type: keyof typeof travelerCounts, increment: boolean) => {
+            updateTravelerCount(type, increment);
+            // Clear error for this traveler type
+            if (errors.travelerCounts?.[type]) {
+                setErrors((prev) => {
+                    const newErrors = { ...prev };
+                    if (newErrors.travelerCounts) {
+                        const newTravelerCounts = { ...newErrors.travelerCounts };
+                        delete newTravelerCounts[type];
+                        newErrors.travelerCounts = Object.keys(newTravelerCounts).length > 0 ? newTravelerCounts : undefined;
+                    }
+                    return newErrors;
+                });
+            }
+        };
+
+        useImperativeHandle(ref, () => ({
+            handleContinue,
+            getFormData,
+            isValid: checkFormValidity,
+        }));
+
+        return (
+            <>
+                {/* Departure City */}
                 <div className="mb-6">
                     <label className="block text-sm font-bold text-black mb-2" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
                         Departure city
@@ -189,13 +183,14 @@ export const TravelersInfoForm = forwardRef<TravelersInfoFormRef, TravelersInfoF
                         type="text"
                         placeholder="Search your departure city"
                         value={departureCity}
-                        onClick={handleDepartureCityClick}
-                        readOnly
-                        className={`w-full px-6 py-2 rounded-3xl border outline-none focus:ring-1 transition-all text-sm italic placeholder:text-gray-400 bg-white text-black cursor-pointer ${
-                            errors.departureCity
-                                ? 'border-red-400 focus:border-red-400 focus:ring-red-400'
-                                : 'border-gray-300 focus:border-yellow-400 focus:ring-yellow-400'
-                        }`}
+                        onChange={(e) => {
+                            setDepartureCity(e.target.value);
+                            handleFieldChange('departureCity');
+                        }}
+                        className={`w-full px-6 py-2 rounded-3xl border outline-none focus:ring-1 transition-all text-sm italic placeholder:text-gray-400 bg-white text-black ${errors.departureCity
+                            ? 'border-red-400 focus:border-red-400 focus:ring-red-400'
+                            : 'border-gray-300 focus:border-yellow-400 focus:ring-yellow-400'
+                            }`}
                         style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
                     />
                     {errors.departureCity && (
@@ -289,9 +284,8 @@ export const TravelersInfoForm = forwardRef<TravelersInfoFormRef, TravelersInfoF
                     <label className="block text-sm font-bold text-black mb-3" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
                         Number of Travelers
                     </label>
-                    <div className={`border rounded-[20px] p-5 space-y-6 ${
-                        errors.travelerCounts ? 'border-red-400' : 'border-gray-300'
-                    }`}>
+                    <div className={`border rounded-[20px] p-5 space-y-6 ${errors.travelerCounts ? 'border-red-400' : 'border-gray-300'
+                        }`}>
                         {/* Adults */}
                         <div className="flex items-center justify-between">
                             <span className="text-sm font-bold text-black" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
@@ -386,8 +380,8 @@ export const TravelersInfoForm = forwardRef<TravelersInfoFormRef, TravelersInfoF
                         )}
                     </div>
                 </div>
-        </>
-    );
+            </>
+        );
     }
 );
 
