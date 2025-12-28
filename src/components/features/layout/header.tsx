@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { MapPin, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
@@ -33,20 +33,19 @@ export function Header() {
       transition={{ duration: 0.5 }}
     >
       {/* Top border */}
-      <motion.div 
+      <motion.div
         className="h-px bg-gradient-to-r from-transparent via-primary to-transparent"
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
         transition={{ duration: 0.8, delay: 0.2 }}
       />
-      
+
       {/* Main header content */}
       <motion.div
-        className={`px-3 sm:px-4 py-3 sm:py-4 transition-all duration-300 ${
-          isScrolled
-            ? 'bg-white/95 backdrop-blur-md shadow-lg'
-            : 'bg-white'
-        }`}
+        className={`px-3 sm:px-4 py-3 sm:py-4 transition-all duration-300 ${isScrolled
+          ? 'bg-white/95 backdrop-blur-md shadow-lg'
+          : 'bg-white'
+          }`}
         animate={{
           boxShadow: isScrolled ? '0 4px 20px rgba(0,0,0,0.1)' : '0 0 0 rgba(0,0,0,0)',
         }}
@@ -65,10 +64,10 @@ export function Header() {
               />
             </Link>
           </motion.div>
-          
+
           {/* Desktop Navigation links */}
           <nav className="hidden md:flex items-center gap-6">
-            <motion.div whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
+            {/* <motion.div whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
               <Link 
                 href="/trips" 
                 className="flex items-center gap-2 text-black hover:text-primary transition-colors relative group"
@@ -85,6 +84,16 @@ export function Header() {
                     className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"
                   />
                 </span>
+              </Link>
+            </motion.div> */}
+
+            <motion.div whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
+              <Link
+                href="/signin"
+                className="text-sm font-bold text-black border-b-2 border-transparent hover:border-black transition-all whitespace-nowrap"
+                style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
+              >
+                Sign In
               </Link>
             </motion.div>
           </nav>
@@ -115,13 +124,21 @@ export function Header() {
               animate={{ x: isMobileMenuOpen ? 0 : -20, opacity: isMobileMenuOpen ? 1 : 0 }}
               transition={{ delay: 0.1 }}
             >
-              <Link 
-                href="/trips" 
+              {/* <Link
+                href="/trips"
                 className="flex items-center gap-2 text-black hover:text-primary transition-colors py-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <MapPin className="w-4 h-4 text-gray-400" />
                 <span>My Trips</span>
+              </Link> */}
+              <Link
+                href="/signin"
+                className="block text-sm font-bold text-black py-2"
+                style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Sign In
               </Link>
             </motion.div>
           </div>
