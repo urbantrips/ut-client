@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchDestinationImage } from '@/lib/image-fetcher';
+import { fetchDestinationImage, extractDestinationFromItinerary } from '@/lib/image-fetcher';
 
 interface DayItinerary {
   day: number;
@@ -212,7 +212,7 @@ Example response format:
 
     // Update image URLs for modified days
     const itineraryWithImages = await Promise.all(
-      result.itinerary.map(async (day) => {
+      result.itinerary.map(async (day, index) => {
         // Only fetch new image if imageKeywords changed or imageUrl is missing
         const existingDay = currentItinerary.find(d => d.day === day.day);
         if (existingDay?.imageUrl && existingDay?.imageKeywords === day.imageKeywords) {
@@ -223,13 +223,20 @@ Example response format:
         }
 
         // Fetch new image
-        const destinationName = travelContext?.destination || travelContext?.departureCity || '';
+        // Extract destination name from itinerary for better image matching
+        const destinationName = extractDestinationFromItinerary(
+          day.title,
+          day.activities,
+          travelContext?.departureCity
+        ) || travelContext?.destination || travelContext?.departureCity || '';
+        
         let searchQuery = day.imageKeywords || '';
         
         if (!searchQuery) {
           // Extract keywords from title and activities
+          // Try to extract specific attractions from activities for more unique searches
           const extractKeywords = (text: string): string[] => {
-            const commonWords = ['day', 'arrival', 'exploration', 'visit', 'tour', 'the', 'and', 'or', 'at', 'to', 'a', 'an'];
+            const commonWords = ['day', 'arrival', 'exploration', 'visit', 'tour', 'the', 'and', 'or', 'at', 'to', 'a', 'an', 'return', 'overnight', 'optional', 'activities', 'extra', 'cost'];
             return text
               .toLowerCase()
               .replace(/[^a-z0-9\s]/g, ' ')
@@ -238,18 +245,24 @@ Example response format:
               .slice(0, 3);
           };
           
+          // Extract from multiple activities to get more specific keywords
+          const activityTexts = day.activities.slice(0, 3).join(' '); // Use first 3 activities
           const titleKeywords = extractKeywords(day.title);
-          const activityKeywords = day.activities.length > 0 
-            ? extractKeywords(day.activities[0]) 
-            : [];
+          const activityKeywords = extractKeywords(activityTexts);
           const allKeywords = [...titleKeywords, ...activityKeywords].slice(0, 3);
           
-          searchQuery = allKeywords.length > 0 
-            ? allKeywords.join(',')
-            : 'travel,destination';
+          if (allKeywords.length > 0) {
+            searchQuery = allKeywords.join(',');
+          } else if (travelContext?.destination) {
+            // Use destination with day-specific variation
+            searchQuery = `${travelContext.destination.toLowerCase()},day ${day.day}`;
+          } else {
+            searchQuery = 'travel,destination';
+          }
         }
 
-        const imageUrl = await fetchDestinationImage(searchQuery, destinationName);
+        // Pass day index (0-based) as photoIndex to get different photos for same location
+        const imageUrl = await fetchDestinationImage(searchQuery, destinationName, index);
         
         return {
           ...day,

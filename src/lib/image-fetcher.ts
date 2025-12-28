@@ -12,7 +12,8 @@ import { getDestinationImage } from '@/data/travel-style-destinations';
  */
 export async function fetchDestinationImage(
   keywords: string,
-  destinationName?: string
+  destinationName?: string,
+  photoIndex: number = 0
 ): Promise<string> {
   const searchQuery = keywords.trim() || destinationName || 'travel destination';
   const keywordsArray = searchQuery.split(',').map(k => k.trim()).filter(k => k.length > 0);
@@ -75,11 +76,13 @@ export async function fetchDestinationImage(
             
             // Check if photos are already in the text search response (optimization)
             if (place.photos && place.photos.length > 0) {
-              const photoReference = place.photos[0].photo_reference;
+              // Use different photo index to get variety when same place is found multiple times
+              const photoIdx = Math.min(photoIndex, place.photos.length - 1);
+              const photoReference = place.photos[photoIdx].photo_reference;
               // Use proxy endpoint to avoid CORS and keep API key server-side
               const photoUrl = `/api/places/image?photo_reference=${encodeURIComponent(photoReference)}&maxwidth=800`;
               
-              console.log(`  ✓ Google Places photo found for: ${location}`);
+              console.log(`  ✓ Google Places photo found for: ${location} (photo ${photoIdx + 1}/${place.photos.length})`);
               console.log(`  📷 Photo URL: ${photoUrl}`);
               return photoUrl;
             }
@@ -97,11 +100,13 @@ export async function fetchDestinationImage(
               
               if (detailsData.result && detailsData.result.photos && detailsData.result.photos.length > 0) {
                 // Get the photo URL using Place Photos API via proxy
-                const photoReference = detailsData.result.photos[0].photo_reference;
+                // Use different photo index to get variety when same place is found multiple times
+                const photoIdx = Math.min(photoIndex, detailsData.result.photos.length - 1);
+                const photoReference = detailsData.result.photos[photoIdx].photo_reference;
                 // Use proxy endpoint to avoid CORS and keep API key server-side
                 const photoUrl = `/api/places/image?photo_reference=${encodeURIComponent(photoReference)}&maxwidth=800`;
                 
-                console.log(`  ✓ Google Places photo found for: ${location}`);
+                console.log(`  ✓ Google Places photo found for: ${location} (photo ${photoIdx + 1}/${detailsData.result.photos.length})`);
                 console.log(`  📷 Photo URL: ${photoUrl}`);
                 return photoUrl;
               }
@@ -196,8 +201,29 @@ export function extractDestinationFromItinerary(
     }
   }
 
-  // Try first activity
+  // Try to extract specific attractions from activities (more specific than just first activity)
   if (activities.length > 0) {
+    // Look for specific attraction names (capitalized words, often after "Visit to" or similar)
+    const attractionPatterns = [
+      /(?:visit|explore|see|tour)\s+(?:to\s+)?([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/gi,
+      /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+(?:palace|temple|fort|lake|beach|mountain|valley|museum|park|garden|market)/gi,
+      /^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)$/g, // Standalone capitalized names
+    ];
+
+    for (const activity of activities) {
+      for (const pattern of attractionPatterns) {
+        const match = activity.match(pattern);
+        if (match && match[0]) {
+          const location = match[0].replace(/(?:visit|explore|see|tour)\s+(?:to\s+)?/gi, '').trim();
+          // Filter out common words
+          if (location && !['Location', 'Visit', 'Return', 'Overnight', 'Optional'].includes(location)) {
+            return location;
+          }
+        }
+      }
+    }
+
+    // Fallback: Try first activity for any capitalized words
     const activityMatch = activities[0].match(/([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/);
     if (activityMatch) {
       return activityMatch[0];

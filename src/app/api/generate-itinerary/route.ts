@@ -239,7 +239,7 @@ Return ONLY valid JSON array, no markdown, no code blocks, just the JSON array.`
     // Production apps typically: 1) Use CDN + curated images, 2) Cache aggressively, 
     // 3) Use licensed APIs (Pexels/Unsplash), 4) Fallback to local assets
     const itineraryWithImages = await Promise.all(
-      itinerary.map(async (day) => {
+      itinerary.map(async (day, index) => {
         // Extract destination name for local image lookup
         const destinationName = extractDestinationFromItinerary(
           day.title,
@@ -254,8 +254,9 @@ Return ONLY valid JSON array, no markdown, no code blocks, just the JSON array.`
           searchQuery = day.imageKeywords.trim();
         } else {
           // Fallback: Extract keywords from day title and activities
+          // Try to extract specific attractions from activities for more unique searches
           const extractKeywords = (text: string): string[] => {
-            const commonWords = ['day', 'arrival', 'exploration', 'visit', 'tour', 'the', 'and', 'or', 'at', 'to', 'a', 'an'];
+            const commonWords = ['day', 'arrival', 'exploration', 'visit', 'tour', 'the', 'and', 'or', 'at', 'to', 'a', 'an', 'return', 'overnight', 'optional', 'activities', 'extra', 'cost'];
             return text
               .toLowerCase()
               .replace(/[^a-z0-9\s]/g, ' ')
@@ -264,14 +265,17 @@ Return ONLY valid JSON array, no markdown, no code blocks, just the JSON array.`
               .slice(0, 3);
           };
           
+          // Extract from multiple activities to get more specific keywords
+          const activityTexts = day.activities.slice(0, 3).join(' '); // Use first 3 activities
           const titleKeywords = extractKeywords(day.title);
-          const activityKeywords = day.activities.length > 0 
-            ? extractKeywords(day.activities[0]) 
-            : [];
+          const activityKeywords = extractKeywords(activityTexts);
           const allKeywords = [...titleKeywords, ...activityKeywords].slice(0, 3);
           
           if (allKeywords.length > 0) {
             searchQuery = allKeywords.join(',');
+          } else if (body.destination) {
+            // Use destination with day-specific variation
+            searchQuery = `${body.destination.toLowerCase()},day ${day.day}`;
           } else if (body.departureCity) {
             searchQuery = `travel,${body.departureCity.toLowerCase()}`;
           } else {
@@ -280,7 +284,8 @@ Return ONLY valid JSON array, no markdown, no code blocks, just the JSON array.`
         }
         
         // Use production-grade image fetcher with multiple fallbacks
-        const imageUrl = await fetchDestinationImage(searchQuery, destinationName);
+        // Pass day index (0-based) as photoIndex to get different photos for same location
+        const imageUrl = await fetchDestinationImage(searchQuery, destinationName, index);
         
         const result = {
           ...day,
