@@ -30,13 +30,13 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
         
         const setUser = useUserStore((state) => state.setUser);
 
-        const [otp, setOtp] = useState<string[]>(['', '', '', '']);
+        const [otp, setOtp] = useState<string[]>(['', '', '', '', '', '']);
         const [isOtpSent, setIsOtpSent] = useState(false);
         const [isResending, setIsResending] = useState(false);
         const [isSending, setIsSending] = useState(false);
         const [isVerifying, setIsVerifying] = useState(false);
         const [error, setError] = useState<string | null>(null);
-        const otpInputRefs = useRef<(HTMLInputElement | null)[]>(new Array(4).fill(null));
+        const otpInputRefs = useRef<(HTMLInputElement | null)[]>(new Array(6).fill(null));
 
         const selectedCountry = useMemo(() => {
             const countryCode = verificationCountryCode || 'IN';
@@ -83,7 +83,7 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
         const handleResendOtp = async () => {
             setIsResending(true);
             setError(null);
-            setOtp(['', '', '', '']);
+            setOtp(['', '', '', '', '', '']);
             
             try {
                 const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
@@ -113,17 +113,17 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
         const handleOtpChange = (index: number, value: string) => {
             if (value.length > 1) {
                 // Handle paste
-                const pastedOtp = value.slice(0, 4).split('');
+                const pastedOtp = value.slice(0, 6).split('').filter(d => /^\d$/.test(d));
                 const newOtp = [...otp];
                 pastedOtp.forEach((digit, i) => {
-                    if (index + i < 4) {
+                    if (index + i < 6) {
                         newOtp[index + i] = digit;
                     }
                 });
                 setOtp(newOtp);
                 
                 // Focus on the next empty input or the last one
-                const nextIndex = Math.min(index + pastedOtp.length, 3);
+                const nextIndex = Math.min(index + pastedOtp.length, 5);
                 otpInputRefs.current[nextIndex]?.focus();
                 return;
             }
@@ -137,7 +137,7 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
             setOtp(newOtp);
 
             // Auto-focus next input
-            if (value && index < 3) {
+            if (value && index < 5) {
                 otpInputRefs.current[index + 1]?.focus();
             }
         };
@@ -155,7 +155,7 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
             }
 
             const otpString = otp.join('');
-            if (otpString.length !== 4) {
+            if (otpString.length !== 6) {
                 return;
             }
 
@@ -328,7 +328,7 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
                                 Enter OTP*
                             </label>
                             <div className="flex gap-2 justify-center">
-                                {Array.from({ length: 4 }, (_, index) => (
+                                {Array.from({ length: 6 }, (_, index) => (
                                     <input
                                         key={index}
                                         ref={(el) => {
@@ -362,7 +362,7 @@ export const OtpVerificationForm = forwardRef<OtpVerificationFormRef, OtpVerific
                     {isOtpSent && (
                         <motion.button
                             onClick={handleContinue}
-                            disabled={otp.join('').length !== 4 || isVerifying}
+                            disabled={otp.join('').length !== 6 || isVerifying}
                             whileHover={{ scale: 1.01 }}
                             whileTap={{ scale: 0.99 }}
                             className="w-full bg-yellow-400 text-black font-bold py-3 rounded-3xl shadow-none hover:bg-yellow-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
