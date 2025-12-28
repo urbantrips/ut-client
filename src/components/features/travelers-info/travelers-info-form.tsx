@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef, useImperativeHandle, useState, useEffect } from 'react';
+import { forwardRef, useImperativeHandle, useState } from 'react';
 import { motion } from 'framer-motion';
 import { DatePicker } from '@/components/ui/date-picker';
 import { useTravelersInfoStore, type TravelStyle, type TravelersInfoFormData } from '@/store/travelers-info-store';
@@ -39,29 +39,17 @@ export const TravelersInfoForm = forwardRef<TravelersInfoFormRef, TravelersInfoF
             startDate,
             endDate,
             travelerCounts,
-            selectedDestination,
             setDepartureCity,
             setTravelStyle,
             setStartDate,
             setEndDate,
             updateTravelerCount,
             getFormData,
-            setSelectedDestination,
         } = useTravelersInfoStore();
 
         const [errors, setErrors] = useState<ValidationErrors>({});
 
         const travelStyles: TravelStyle[] = ['Couple', 'Friends', 'Family', 'Solo'];
-
-        // Pre-fill departure city with selected destination from search page, then clear it
-        useEffect(() => {
-            if (selectedDestination && !departureCity) {
-                setDepartureCity(selectedDestination);
-                // Clear the selected destination after using it
-                setSelectedDestination('');
-            }
-        }, [selectedDestination, departureCity, setDepartureCity, setSelectedDestination]);
-
 
         // Helper function to convert dates
         const convertDate = (date: Date | string | null): Date | null => {

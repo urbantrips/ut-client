@@ -14,7 +14,6 @@ export default function SearchDestinationPage() {
     const [selectedTitle, setSelectedTitle] = useState<string>('');
     const searchInputRef = useRef<HTMLInputElement>(null);
     const setSelectedDestination = useTravelersInfoStore((state) => state.setSelectedDestination);
-    const setDepartureCity = useTravelersInfoStore((state) => state.setDepartureCity);
 
     // Auto-focus search input on mount
     useEffect(() => {
@@ -82,8 +81,6 @@ export default function SearchDestinationPage() {
                         const handleDestinationClick = () => {
                             setSelectedTitle(dest.title);
                             setSelectedDestination(dest.title);
-                            // Set as departure city and navigate back
-                            setDepartureCity(dest.title);
                             router.push('/travelers-info');
                         };
 
