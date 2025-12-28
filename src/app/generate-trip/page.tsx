@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTravelersInfoStore } from '@/store/travelers-info-store';
 import { useUserStore } from '@/store/user-store';
 import { GenerateTripHeader } from '@/components/features/generate-trip/generate-trip-header';
@@ -14,6 +15,7 @@ import { ConfirmationModal } from '@/components/features/generate-trip/confirmat
 import { ConfirmationSuccess } from '@/components/features/generate-trip/confirmation/confirmation-success';
 
 export default function GenerateTripPage() {
+  const router = useRouter();
   const [selectedTab, setSelectedTab] = useState<'chat' | 'itinerary'>('itinerary');
   const [selectedDay, setSelectedDay] = useState<number>(1);
   const [itinerary, setItinerary] = useState<DayItinerary[]>([]);
@@ -21,6 +23,7 @@ export default function GenerateTripPage() {
   const [error, setError] = useState<string | null>(null);
   const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
   const [imageLoaded, setImageLoaded] = useState<Record<number, boolean>>({});
+  const [isHydrated, setIsHydrated] = useState(false);
 
   // Chat state
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -57,7 +60,47 @@ export default function GenerateTripPage() {
   }));
   const selectedDestination = useTravelersInfoStore((state) => state.selectedDestination);
 
+  // Wait for hydration from localStorage
   useEffect(() => {
+    // Check if we're on the client side
+    if (typeof window !== 'undefined') {
+      // Check if localStorage has data
+      const stored = localStorage.getItem('travelers-info-storage');
+      if (stored) {
+        try {
+          // Verify it's valid JSON
+          JSON.parse(stored);
+          // If we have stored data, wait a bit for Zustand to hydrate
+          const timer = setTimeout(() => {
+            setIsHydrated(true);
+          }, 100);
+          return () => clearTimeout(timer);
+        } catch {
+          setIsHydrated(true);
+        }
+      } else {
+        // No stored data, proceed immediately
+        setIsHydrated(true);
+      }
+    } else {
+      setIsHydrated(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Don't generate until store is hydrated
+    if (!isHydrated) {
+      return;
+    }
+
+    // Redirect to search page if we don't have destination or departure city
+    // This prevents generating random destinations on refresh
+    if (!selectedDestination && (!formData.departureCity || formData.departureCity === 'Not specified')) {
+      // Redirect to search page
+      router.push('/search');
+      return;
+    }
+
     const generateItinerary = async () => {
       try {
         setIsLoading(true);
@@ -134,6 +177,7 @@ export default function GenerateTripPage() {
 
     generateItinerary();
   }, [
+    isHydrated,
     formData.departureCity,
     formData.travelStyle,
     formData.startDate,
@@ -144,6 +188,7 @@ export default function GenerateTripPage() {
     activitiesData.selectedActivities,
     activitiesData.travelStylePreferences,
     selectedDestination,
+    router,
   ]);
 
   const handleConfirmPlan = () => {
