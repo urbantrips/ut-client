@@ -41,8 +41,28 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_PORT || 22 }}
           script: |
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" || true
+            [ -s "$HOME/.bashrc" ] && \. "$HOME/.bashrc" || true
+            [ -s "$HOME/.bash_profile" ] && \. "$HOME/.bash_profile" || true
+            export PATH="$PATH:/usr/local/bin:$HOME/.local/bin"
+            
             cd /home/${{ secrets.EC2_USERNAME }}/urban-trips/ut-client
-            npm ci --production
-            pm2 restart urban-trips-client || pm2 start npm --name urban-trips-client -- start
-            pm2 save
+            
+            # Use full path or which to find npm
+            NPM_CMD=$(which npm || echo "/usr/bin/npm" || echo "/usr/local/bin/npm")
+            PM2_CMD=$(which pm2 || echo "/usr/local/bin/pm2" || echo "$HOME/.npm-global/bin/pm2")
+            
+            # Install dependencies
+            $NPM_CMD ci --production || $NPM_CMD install --production
+            
+            # Restart with PM2
+            if command -v pm2 &> /dev/null || [ -f "$PM2_CMD" ]; then
+              $PM2_CMD restart urban-trips-client || $PM2_CMD start npm --name urban-trips-client -- start
+              $PM2_CMD save
+            else
+              echo "PM2 not found, trying to start with npm..."
+              pkill -f "next start" 2>/dev/null || true
+              nohup $NPM_CMD start > client.log 2>&1 &
+            fi
 
