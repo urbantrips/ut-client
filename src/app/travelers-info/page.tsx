@@ -9,6 +9,7 @@ import { TravelStyleActivitiesForm, type TravelStyleActivitiesFormRef } from '@/
 import { OtpVerificationForm, type OtpVerificationFormRef } from '@/components/features/travelers-info/otp-verification-form';
 import { BackButton } from '@/components/features/common/back-button';
 import { useTravelersInfoStore } from '@/store/travelers-info-store';
+import { useUserStore } from '@/store/user-store';
 import { ArrowRightIcon, ArrowLeftIcon } from 'lucide-react';
 
 export default function TravelersInfoPage() {
@@ -24,6 +25,10 @@ export default function TravelersInfoPage() {
     const getFormData = useTravelersInfoStore((state) => state.getFormData);
     const getHotelTravelModeData = useTravelersInfoStore((state) => state.getHotelTravelModeData);
     const getTravelStyleActivitiesData = useTravelersInfoStore((state) => state.getTravelStyleActivitiesData);
+    
+    // Get session state to check if user is already logged in
+    const user = useUserStore((state) => state.user);
+    const accessToken = useUserStore((state) => state.accessToken);
     
     // Track form validity for step 1
     const [isFormValid, setIsFormValid] = useState(false);
@@ -68,8 +73,15 @@ export default function TravelersInfoPage() {
                 step3: getTravelStyleActivitiesData(),
             });
             step3FormRef.current?.handleContinue();
-            // Navigate to step 4 (OTP form)
-            nextStep();
+            
+            // Check if user already has a session
+            if (accessToken && user) {
+                // User is logged in, skip OTP and go directly to generate-trip
+                router.push('/generate-trip');
+            } else {
+                // User needs to verify, go to step 4
+                nextStep();
+            }
         } else if (currentStep === 4) {
             // Step 4 - OTP Verification (handled by form component)
             step4FormRef.current?.handleContinue();
