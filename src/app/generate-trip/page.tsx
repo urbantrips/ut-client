@@ -37,10 +37,24 @@ export default function GenerateTripPage() {
   // Get user store for access token
   const accessToken = useUserStore((state) => state.accessToken);
 
-  // Get data from store
-  const getFormData = useTravelersInfoStore((state) => state.getFormData);
-  const getHotelTravelModeData = useTravelersInfoStore((state) => state.getHotelTravelModeData);
-  const getTravelStyleActivitiesData = useTravelersInfoStore((state) => state.getTravelStyleActivitiesData);
+  // Get data from store - using direct state access to ensure reactivity
+  const formData = useTravelersInfoStore((state) => ({
+    departureCity: state.departureCity,
+    travelStyle: state.travelStyle,
+    startDate: state.startDate,
+    endDate: state.endDate,
+    travelerCounts: state.travelerCounts,
+  }));
+  const hotelData = useTravelersInfoStore((state) => ({
+    hotelCategory: state.hotelCategory,
+    roomType: state.roomType,
+    preferredTravelMode: state.preferredTravelMode,
+    needReturnTicket: state.needReturnTicket,
+  }));
+  const activitiesData = useTravelersInfoStore((state) => ({
+    travelStylePreferences: state.travelStylePreferences,
+    selectedActivities: state.selectedActivities,
+  }));
   const selectedDestination = useTravelersInfoStore((state) => state.selectedDestination);
 
   useEffect(() => {
@@ -49,13 +63,10 @@ export default function GenerateTripPage() {
         setIsLoading(true);
         setError(null);
 
-        const formData = getFormData();
-        const hotelData = getHotelTravelModeData();
-        const activitiesData = getTravelStyleActivitiesData();
-
-        // Prepare request payload
+        // Prepare request payload with all data including destination
         const payload = {
           departureCity: formData.departureCity || 'Not specified',
+          destination: selectedDestination || undefined,
           travelStyle: formData.travelStyle || 'Couple',
           startDate: formData.startDate?.toISOString() || null,
           endDate: formData.endDate?.toISOString() || null,
@@ -122,7 +133,18 @@ export default function GenerateTripPage() {
     };
 
     generateItinerary();
-  }, [getFormData, getHotelTravelModeData, getTravelStyleActivitiesData]);
+  }, [
+    formData.departureCity,
+    formData.travelStyle,
+    formData.startDate,
+    formData.endDate,
+    formData.travelerCounts,
+    hotelData.hotelCategory,
+    hotelData.preferredTravelMode,
+    activitiesData.selectedActivities,
+    activitiesData.travelStylePreferences,
+    selectedDestination,
+  ]);
 
   const handleConfirmPlan = () => {
     setShowConfirmationModal(true);
@@ -140,10 +162,6 @@ export default function GenerateTripPage() {
     setShowConfirmationModal(false);
 
     try {
-      const formData = getFormData();
-      const hotelData = getHotelTravelModeData();
-      const activitiesData = getTravelStyleActivitiesData();
-
       // Prepare trip data
       const tripData = {
         destination: selectedDestination || 'Not specified',
@@ -214,7 +232,7 @@ export default function GenerateTripPage() {
   if (isConfirmed) {
     return (
       <ConfirmationSuccess
-        formData={getFormData()}
+        formData={formData}
         destination={selectedDestination}
         durationDays={itinerary.length}
         itinerary={itinerary}
@@ -249,8 +267,6 @@ export default function GenerateTripPage() {
     setIsSendingMessage(true);
 
     try {
-      const formData = getFormData();
-
       const response = await fetch('/api/modify-itinerary', {
         method: 'POST',
         headers: {
@@ -261,10 +277,20 @@ export default function GenerateTripPage() {
           userMessage: userMessage.content,
           travelContext: {
             departureCity: formData.departureCity || 'Not specified',
+            destination: selectedDestination || undefined,
             travelStyle: formData.travelStyle || 'Couple',
             startDate: formData.startDate?.toISOString() || null,
             endDate: formData.endDate?.toISOString() || null,
             travelerCounts: formData.travelerCounts || { adults: 2, children: 0, infants: 0 },
+            hotelCategory: hotelData.hotelCategory || 'Mid',
+            preferredTravelMode: hotelData.preferredTravelMode || 'Flight',
+            selectedActivities: activitiesData.selectedActivities || [],
+            travelStylePreferences: activitiesData.travelStylePreferences || {
+              relaxation: 0,
+              nightlife: 0,
+              heritage: 0,
+              adventure: 0,
+            },
           },
         }),
       });

@@ -45,40 +45,84 @@ export async function POST(request: NextRequest) {
       numberOfDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
     }
 
-    // Build the prompt for Gemini
-    const prompt = `Create a detailed ${numberOfDays}-day travel itinerary for ${body.travelerCounts.adults} adult(s)${body.travelerCounts.children > 0 ? `, ${body.travelerCounts.children} child(ren)` : ''}${body.travelerCounts.infants > 0 ? `, ${body.travelerCounts.infants} infant(s)` : ''}.
+    // Build a comprehensive prompt for Gemini that emphasizes all user preferences
+    const destinationText = body.destination 
+      ? `The destination is ${body.destination}. The traveler is departing from ${body.departureCity}.`
+      : `The traveler is departing from ${body.departureCity}. Please suggest an appropriate destination based on their preferences and travel style.`;
 
-Travel Details:
-- Departure City: ${body.departureCity}
-${body.destination ? `- Destination: ${body.destination}` : ''}
+    // Calculate preference emphasis
+    const preferences = body.travelStylePreferences;
+    const maxPreference = Math.max(preferences.relaxation, preferences.nightlife, preferences.heritage, preferences.adventure);
+    const preferenceEmphasis = maxPreference > 0 
+      ? Object.entries(preferences)
+          .filter(([_, value]) => value === maxPreference)
+          .map(([key, _]) => key)
+          .join(' and ')
+      : 'balanced';
+
+    const prompt = `You are an expert travel planner. Create a detailed, personalized ${numberOfDays}-day travel itinerary.
+
+CRITICAL REQUIREMENTS - These must be strictly followed:
+${destinationText}
+
+Traveler Profile:
+- Number of travelers: ${body.travelerCounts.adults} adult(s)${body.travelerCounts.children > 0 ? `, ${body.travelerCounts.children} child(ren)` : ''}${body.travelerCounts.infants > 0 ? `, ${body.travelerCounts.infants} infant(s)` : ''}
 - Travel Style: ${body.travelStyle}
+- Departure City: ${body.departureCity}
+${body.destination ? `- Destination: ${body.destination} (THIS IS THE PRIMARY DESTINATION - all activities must be in or near this location)` : ''}
+- Travel Dates: ${body.startDate ? new Date(body.startDate).toLocaleDateString() : 'Not specified'} to ${body.endDate ? new Date(body.endDate).toLocaleDateString() : 'Not specified'}
 - Hotel Category: ${body.hotelCategory}
 - Preferred Travel Mode: ${body.preferredTravelMode}
-- Start Date: ${body.startDate ? new Date(body.startDate).toLocaleDateString() : 'Not specified'}
-- End Date: ${body.endDate ? new Date(body.endDate).toLocaleDateString() : 'Not specified'}
 
-Preferences:
-- Relaxation: ${body.travelStylePreferences.relaxation}%
-- Nightlife: ${body.travelStylePreferences.nightlife}%
-- Heritage: ${body.travelStylePreferences.heritage}%
-- Adventure: ${body.travelStylePreferences.adventure}%
+PREFERENCE SCORES (Higher scores = more emphasis required):
+- Relaxation: ${preferences.relaxation}% ${preferences.relaxation >= 50 ? '(HIGH PRIORITY - Include spa, beach, peaceful activities, quiet places)' : ''}
+- Nightlife: ${preferences.nightlife}% ${preferences.nightlife >= 50 ? '(HIGH PRIORITY - Include bars, clubs, evening entertainment, night markets)' : ''}
+- Heritage: ${preferences.heritage}% ${preferences.heritage >= 50 ? '(HIGH PRIORITY - Include historical sites, museums, cultural experiences, temples, monuments)' : ''}
+- Adventure: ${preferences.adventure}% ${preferences.adventure >= 50 ? '(HIGH PRIORITY - Include outdoor activities, trekking, water sports, adventure sports)' : ''}
 
-Selected Activities: ${body.selectedActivities.length > 0 ? body.selectedActivities.join(', ') : 'None specified'}
+Primary Focus: ${preferenceEmphasis} (emphasize this throughout the itinerary)
 
-Please generate a detailed day-by-day itinerary. For each day, provide:
-1. A descriptive title for the day
-2. A list of specific activities, attractions, and experiences
-3. Include meal suggestions, transportation details, and timing recommendations where relevant
+Selected Activities (MUST be included): ${body.selectedActivities.length > 0 ? body.selectedActivities.join(', ') : 'None specified - use preferences to suggest activities'}
 
-Format the response as a JSON array where each object has:
+INSTRUCTIONS:
+1. The itinerary MUST be tailored to the destination "${body.destination || 'based on preferences'}" and departure from "${body.departureCity}"
+2. Activities MUST reflect the preference scores - higher scores mean more activities of that type
+3. Include specific, real attractions and places in the destination
+4. Consider the travel style (${body.travelStyle}) - activities should match this style
+5. Include meal suggestions appropriate for the hotel category (${body.hotelCategory})
+6. Provide transportation details considering the preferred travel mode (${body.preferredTravelMode})
+7. Include timing recommendations for each activity
+8. Make activities age-appropriate for the traveler composition
+
+CRITICAL FORMAT REQUIREMENT - Each day's activities array MUST follow this exact structure:
+The activities array should contain strings in this specific format:
+- "Location: [City/Area name]"
+- "Visit to major attractions:"
+- "[Specific Attraction 1 name]"
+- "[Specific Attraction 2 name]"
+- "[Additional attractions as needed]"
+- "Optional activities (extra cost): [activity name]"
+- "Return to hotel"
+- "Overnight Stay: [Hotel name or category] / [City name]"
+
+Example format for activities array:
+[
+  "Location: [City/Area]",
+  "Visit to major attractions:",
+  "[Attraction 1 - specific name]",
+  "[Attraction 2 - specific name]",
+  "Optional activities (extra cost): [activity name]",
+  "Return to hotel",
+  "Overnight Stay: [Hotel] / [City]"
+]
+
+For each day, provide:
 - day: number (1, 2, 3, etc.)
-- title: string (e.g., "Arrival & Exploration", "Cultural Immersion")
-- activities: string[] (array of activity descriptions)
-- imageKeywords: string (comma-separated keywords for finding relevant images, e.g., "srinagar, dal lake, houseboat, kashmir")
+- title: string (descriptive title like "Sightseeing & Experiences", "Cultural Immersion", etc.)
+- activities: string[] (MUST follow the format above with Location, Visit to major attractions, specific attractions, optional activities, Return to hotel, and Overnight Stay)
+- imageKeywords: string (comma-separated keywords specific to the destination and activities, e.g., "${body.destination ? body.destination.toLowerCase() : 'destination'}, [specific attraction], [activity type]")
 
-The imageKeywords should be specific and relevant to the day's activities and location. Use 3-5 keywords that would help find appropriate travel/destination images.
-
-Return ONLY valid JSON, no markdown formatting, no code blocks, just the JSON array.`;
+Return ONLY valid JSON array, no markdown, no code blocks, just the JSON array.`;
 
     // Call Gemini API
     const response = await fetch(

@@ -23,6 +23,15 @@ interface ModifyItineraryRequest {
       children: number;
       infants: number;
     };
+    hotelCategory?: string;
+    preferredTravelMode?: string;
+    selectedActivities?: string[];
+    travelStylePreferences?: {
+      relaxation: number;
+      nightlife: number;
+      heritage: number;
+      adventure: number;
+    };
   };
 }
 
@@ -42,13 +51,28 @@ export async function POST(request: NextRequest) {
 
     // Build the prompt for Gemini
     const itineraryContext = JSON.stringify(currentItinerary, null, 2);
+    const preferences = travelContext?.travelStylePreferences;
+    const preferenceText = preferences 
+      ? `
+PREFERENCE SCORES (must be considered when making changes):
+- Relaxation: ${preferences.relaxation}% ${preferences.relaxation >= 50 ? '(HIGH PRIORITY)' : ''}
+- Nightlife: ${preferences.nightlife}% ${preferences.nightlife >= 50 ? '(HIGH PRIORITY)' : ''}
+- Heritage: ${preferences.heritage}% ${preferences.heritage >= 50 ? '(HIGH PRIORITY)' : ''}
+- Adventure: ${preferences.adventure}% ${preferences.adventure >= 50 ? '(HIGH PRIORITY)' : ''}
+`
+      : '';
+
     const contextInfo = travelContext ? `
 Travel Context:
 - Departure City: ${travelContext.departureCity || 'Not specified'}
-${travelContext.destination ? `- Destination: ${travelContext.destination}` : ''}
+${travelContext.destination ? `- Destination: ${travelContext.destination} (ALL activities must be in or near this location)` : ''}
 - Travel Style: ${travelContext.travelStyle || 'Not specified'}
-- Travelers: ${travelContext.travelerCounts?.adults || 0} adult(s)${travelContext.travelerCounts?.children ? `, ${travelContext.travelerCounts.children} child(ren)` : ''}
+- Travelers: ${travelContext.travelerCounts?.adults || 0} adult(s)${travelContext.travelerCounts?.children ? `, ${travelContext.travelerCounts.children} child(ren)` : ''}${travelContext.travelerCounts?.infants ? `, ${travelContext.travelerCounts.infants} infant(s)` : ''}
 - Dates: ${travelContext.startDate ? new Date(travelContext.startDate).toLocaleDateString() : 'Not specified'} to ${travelContext.endDate ? new Date(travelContext.endDate).toLocaleDateString() : 'Not specified'}
+- Hotel Category: ${travelContext.hotelCategory || 'Not specified'}
+- Preferred Travel Mode: ${travelContext.preferredTravelMode || 'Not specified'}
+${travelContext.selectedActivities && travelContext.selectedActivities.length > 0 ? `- Selected Activities: ${travelContext.selectedActivities.join(', ')}` : ''}
+${preferenceText}
 ` : '';
 
     const prompt = `You are a helpful travel planning AI assistant. The user wants to modify their existing travel itinerary.
@@ -59,13 +83,30 @@ ${itineraryContext}
 
 User's Request: "${userMessage}"
 
+CRITICAL REQUIREMENTS:
+1. ALL activities must be in or near the destination: "${travelContext?.destination || 'based on current itinerary'}"
+2. When adding/modifying activities, they MUST align with the user's preference scores (higher scores = more emphasis)
+3. Consider the travel style (${travelContext?.travelStyle || 'Not specified'}) and hotel category (${travelContext?.hotelCategory || 'Not specified'})
+4. Activities should be age-appropriate for ${travelContext?.travelerCounts?.adults || 0} adult(s)${travelContext?.travelerCounts?.children ? `, ${travelContext.travelerCounts.children} child(ren)` : ''}${travelContext?.travelerCounts?.infants ? `, ${travelContext.travelerCounts.infants} infant(s)` : ''}
+
+CRITICAL FORMAT REQUIREMENT - Each day's activities array MUST follow this exact structure:
+The activities array should contain strings in this specific format:
+- "Location: [City/Area name]"
+- "Visit to major attractions:"
+- "[Specific Attraction 1 name]"
+- "[Specific Attraction 2 name]"
+- "[Additional attractions as needed]"
+- "Optional activities (extra cost): [activity name]"
+- "Return to hotel"
+- "Overnight Stay: [Hotel name or category] / [City name]"
+
 Your task:
 1. Understand what the user wants to change or add to the itinerary
-2. Modify the itinerary accordingly while maintaining the overall structure
-3. If adding activities, integrate them naturally into the appropriate day(s)
-4. If removing activities, remove them cleanly
-5. If modifying activities, update them appropriately
-6. Maintain the same JSON structure with day, title, activities, and imageKeywords fields
+2. Modify the itinerary accordingly while maintaining the overall structure AND the format above
+3. If adding activities, integrate them naturally into the appropriate day(s) and ensure they match preferences
+4. If removing activities, remove them cleanly while maintaining the format structure
+5. If modifying activities, update them appropriately while respecting preferences and maintaining the format
+6. Maintain the same JSON structure with day, title, activities (in the format above), and imageKeywords fields
 7. Keep the same number of days unless the user explicitly asks to add/remove days
 8. Provide a friendly, conversational response message explaining what you changed
 
@@ -182,7 +223,7 @@ Example response format:
         }
 
         // Fetch new image
-        const destinationName = travelContext?.departureCity || '';
+        const destinationName = travelContext?.destination || travelContext?.departureCity || '';
         let searchQuery = day.imageKeywords || '';
         
         if (!searchQuery) {
