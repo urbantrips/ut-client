@@ -3,6 +3,10 @@
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { CountryPicker } from '@/components/ui/country-picker';
+import { apiPost } from '@/lib/api-client';
+import { useUserStore } from '@/store/user-store';
+import { getCountryByCode } from '@/lib/countries';
+import { env } from '@/lib/env';
 
 interface MobileLoginFormProps {
     onLoginSuccess?: () => void;
@@ -13,34 +17,60 @@ export const MobileLoginForm = ({ onLoginSuccess }: MobileLoginFormProps) => {
     const [countryCode, setCountryCode] = useState('IN');
     const [mobileNumber, setMobileNumber] = useState('');
     const [showOtp, setShowOtp] = useState(false);
-    const [otp, setOtp] = useState<string[]>(['', '', '', '']);
-    const otpInputRefs = useRef<(HTMLInputElement | null)[]>(new Array(4).fill(null));
+    const [otp, setOtp] = useState<string[]>(['', '', '', '', '', '']);
+    const [isSendingOtp, setIsSendingOtp] = useState(false);
+    const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const otpInputRefs = useRef<(HTMLInputElement | null)[]>(new Array(6).fill(null));
+    const { setUser } = useUserStore();
 
-    const handleSendOtp = () => {
-        // TODO: Implement actual OTP sending logic
-        if (mobileNumber.length >= 10) {
+    const handleSendOtp = async () => {
+        if (mobileNumber.length < 10) {
+            return;
+        }
+
+        setIsSendingOtp(true);
+        setError(null);
+
+        try {
+            const country = getCountryByCode(countryCode);
+            if (!country) {
+                throw new Error('Invalid country code');
+            }
+
+            const apiUrl = env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+            await apiPost(`${apiUrl}/auth/phone/send-otp`, {
+                phoneNumber: mobileNumber,
+                countryCode: country.dialCode,
+            });
+
             setShowOtp(true);
             // Focus first OTP input
             setTimeout(() => {
                 otpInputRefs.current[0]?.focus();
             }, 100);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to send OTP. Please try again.');
+            console.error('Error sending OTP:', err);
+        } finally {
+            setIsSendingOtp(false);
         }
     };
 
     const handleOtpChange = (index: number, value: string) => {
         if (value.length > 1) {
             // Handle paste
-            const pastedOtp = value.slice(0, 4).split('');
+            const pastedOtp = value.slice(0, 6).split('').filter(d => /^\d$/.test(d));
             const newOtp = [...otp];
             pastedOtp.forEach((digit, i) => {
-                if (index + i < 4) {
+                if (index + i < 6) {
                     newOtp[index + i] = digit;
                 }
             });
             setOtp(newOtp);
 
             // Focus on the next empty input or the last one
-            const nextIndex = Math.min(index + pastedOtp.length, 3);
+            const nextIndex = Math.min(index + pastedOtp.length, 5);
             otpInputRefs.current[nextIndex]?.focus();
             return;
         }
@@ -54,7 +84,7 @@ export const MobileLoginForm = ({ onLoginSuccess }: MobileLoginFormProps) => {
         setOtp(newOtp);
 
         // Auto-focus next input
-        if (value && index < 3) {
+        if (value && index < 5) {
             otpInputRefs.current[index + 1]?.focus();
         }
     };
@@ -65,10 +95,57 @@ export const MobileLoginForm = ({ onLoginSuccess }: MobileLoginFormProps) => {
         }
     };
 
-    const handleVerifyOtp = () => {
-        // TODO: Implement actual OTP verification logic
-        if (otp.join('').length === 4) {
+    const handleVerifyOtp = async () => {
+        const otpString = otp.join('');
+        if (otpString.length !== 6) {
+            return;
+        }
+
+        setIsVerifyingOtp(true);
+        setError(null);
+
+        try {
+            const country = getCountryByCode(countryCode);
+            if (!country) {
+                throw new Error('Invalid country code');
+            }
+
+            const apiUrl = env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+            const authData = await apiPost<{
+                accessToken: string;
+                refreshToken: string;
+                user: {
+                    _id: string;
+                    name?: string;
+                    email?: string;
+                };
+            }>(`${apiUrl}/auth/phone/verify-otp`, {
+                phoneNumber: mobileNumber,
+                countryCode: country.dialCode,
+                otp: otpString,
+            });
+
+            // Store user data and tokens in user store
+            if (authData.user) {
+                setUser(
+                    {
+                        id: authData.user._id,
+                        name: authData.user.name || '',
+                        email: authData.user.email || '',
+                    },
+                    {
+                        accessToken: authData.accessToken,
+                        refreshToken: authData.refreshToken,
+                    }
+                );
+            }
+
             onLoginSuccess?.();
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to verify OTP. Please try again.');
+            console.error('Error verifying OTP:', err);
+        } finally {
+            setIsVerifyingOtp(false);
         }
     };
 
@@ -115,26 +192,30 @@ export const MobileLoginForm = ({ onLoginSuccess }: MobileLoginFormProps) => {
                         </div>
                     </div>
 
+                    {error && !showOtp && (
+                        <div className="text-red-500 text-sm text-center mt-2" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
+                            {error}
+                        </div>
+                    )}
                     <motion.button
                         whileHover={{ scale: 1.01 }}
                         whileTap={{ scale: 0.99 }}
                         onClick={handleSendOtp}
-                        disabled={mobileNumber.length < 10}
-                        className={`w-full font-bold py-3 rounded-3xl text-black transition-colors flex items-center justify-center gap-2 mt-4 ${mobileNumber.length >= 10
+                        disabled={mobileNumber.length < 10 || isSendingOtp}
+                        className={`w-full font-bold py-3 rounded-3xl text-black transition-colors flex items-center justify-center gap-2 mt-4 ${mobileNumber.length >= 10 && !isSendingOtp
                             ? 'bg-yellow-400 hover:bg-yellow-500 cursor-pointer'
                             : 'bg-gray-200 text-gray-500 cursor-not-allowed'
                             }`}
                         style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
                     >
-                        Continue
+                        {isSendingOtp ? 'Sending...' : 'Continue'}
                     </motion.button>
                 </div>
             ) : (
                 <div className="space-y-6">
                     <div className="mb-6">
-
                         <div className="flex gap-2 justify-center">
-                            {Array.from({ length: 4 }, (_, index) => (
+                            {Array.from({ length: 6 }, (_, index) => (
                                 <input
                                     key={index}
                                     ref={(el) => {
@@ -153,20 +234,30 @@ export const MobileLoginForm = ({ onLoginSuccess }: MobileLoginFormProps) => {
                         </div>
                     </div>
 
+                    {error && showOtp && (
+                        <div className="text-red-500 text-sm text-center" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
+                            {error}
+                        </div>
+                    )}
+
                     <motion.button
                         whileHover={{ scale: 1.01 }}
                         whileTap={{ scale: 0.99 }}
                         onClick={handleVerifyOtp}
-                        disabled={otp.join('').length < 4}
-                        className={`w-full font-bold py-3 rounded-3xl text-black transition-colors flex items-center justify-center gap-2 mt-4 ${otp.join('').length >= 4
+                        disabled={otp.join('').length < 6 || isVerifyingOtp}
+                        className={`w-full font-bold py-3 rounded-3xl text-black transition-colors flex items-center justify-center gap-2 mt-4 ${otp.join('').length >= 6 && !isVerifyingOtp
                             ? 'bg-yellow-400 hover:bg-yellow-500 cursor-pointer'
                             : 'bg-gray-200 text-gray-500 cursor-not-allowed'
                             }`}
                         style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
                     >
-                        Verify & Continue
+                        {isVerifyingOtp ? 'Verifying...' : 'Verify & Continue'}
                     </motion.button>
-                    <p className="text-center text-xs mt-4 cursor-pointer text-gray-500 hover:text-black" onClick={() => setShowOtp(false)} style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
+                    <p className="text-center text-xs mt-4 cursor-pointer text-gray-500 hover:text-black" onClick={() => {
+                        setShowOtp(false);
+                        setOtp(['', '', '', '', '', '']);
+                        setError(null);
+                    }} style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
                         Change Mobile Number
                     </p>
                 </div>
