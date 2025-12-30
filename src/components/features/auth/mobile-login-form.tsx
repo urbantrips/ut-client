@@ -37,7 +37,6 @@ export const MobileLoginForm = ({ onLoginSuccess }: MobileLoginFormProps) => {
             if (!country) {
                 throw new Error('Invalid country code');
             }
-
             const apiUrl = env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
             await apiPost(`${apiUrl}/auth/phone/send-otp`, {
                 phoneNumber: mobileNumber,
