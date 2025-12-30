@@ -3,34 +3,24 @@ const INVALID_LOCATIONS = ['not specified', 'undefined', 'null', 'none', 'travel
 const COMMON_WORDS_TO_REMOVE = /\b(travel|destination|trip|tour|visit|explore|departure|arrival)\b/gi;
 const FETCH_TIMEOUT = 5000;
 const IMAGE_MAX_WIDTH = 800;
+const IMAGE_HEIGHT = 600;
 
-// Types for New Places API
-interface PlacePhoto {
-  name: string;
-  widthPx?: number;
-  heightPx?: number;
-  authorAttributions?: Array<{
-    displayName?: string;
-    uri?: string;
-    photoUri?: string;
-  }>;
-}
-
-interface Place {
+// Types for Unsplash API
+interface UnsplashPhoto {
   id: string;
-  displayName?: {
-    text?: string;
-    languageCode?: string;
+  urls: {
+    regular: string;
+    small: string;
+    thumb: string;
   };
-  photos?: PlacePhoto[];
+  width: number;
+  height: number;
 }
 
-interface PlacesSearchResponse {
-  places?: Place[];
-}
-
-interface PlaceDetailsResponse {
-  photos?: PlacePhoto[];
+interface UnsplashSearchResponse {
+  results: UnsplashPhoto[];
+  total: number;
+  total_pages: number;
 }
 
 /**
@@ -82,99 +72,60 @@ function buildLocationSearchList(
 }
 
 /**
- * Searches for a place using Google Places API (New) - searchText endpoint
+ * Searches for photos using Unsplash API
  */
-async function searchPlace(
-  location: string,
-  apiKey: string
-): Promise<Place | null> {
+async function searchUnsplashPhotos(
+  query: string,
+  accessKey: string,
+  page: number = 1,
+  perPage: number = 10
+): Promise<UnsplashPhoto[] | null> {
   try {
-    const url = 'https://places.googleapis.com/v1/places:searchText';
-    
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Goog-Api-Key': apiKey,
-        'X-Goog-FieldMask': 'places.id,places.displayName,places.photos',
-      },
-      body: JSON.stringify({
-        textQuery: location,
-        maxResultCount: 1,
-      }),
-      signal: AbortSignal.timeout(FETCH_TIMEOUT),
-    });
-
-    if (!response.ok) {
-      console.error(`[Image Fetcher] API error for location "${location}": ${response.status} ${response.statusText}`);
-      return null;
-    }
-
-    const data: PlacesSearchResponse = await response.json();
-    return data.places?.[0] || null;
-  } catch (error) {
-    console.error(`[Image Fetcher] Error searching for place "${location}":`, error instanceof Error ? error.message : error);
-    return null;
-  }
-}
-
-/**
- * Gets place details with photos from Google Places API (New)
- */
-async function getPlaceDetails(
-  placeId: string,
-  apiKey: string
-): Promise<PlacePhoto[] | null> {
-  try {
-    const url = `https://places.googleapis.com/v1/places/${placeId}`;
+    const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&page=${page}&per_page=${perPage}&orientation=landscape`;
     
     const response = await fetch(url, {
       headers: {
-        'Content-Type': 'application/json',
-        'X-Goog-Api-Key': apiKey,
-        'X-Goog-FieldMask': 'photos',
+        'Authorization': `Client-ID ${accessKey}`,
       },
       signal: AbortSignal.timeout(FETCH_TIMEOUT),
     });
 
     if (!response.ok) {
-      console.error(`[Image Fetcher] API error for place ${placeId}: ${response.status} ${response.statusText}`);
+      console.error(`[Image Fetcher] Unsplash API error for query "${query}": ${response.status} ${response.statusText}`);
       return null;
     }
 
-    const data: PlaceDetailsResponse = await response.json();
-    return data.photos || null;
+    const data: UnsplashSearchResponse = await response.json();
+    return data.results || [];
   } catch (error) {
-    console.error(`[Image Fetcher] Error fetching place details for ${placeId}:`, error instanceof Error ? error.message : error);
+    console.error(`[Image Fetcher] Error searching Unsplash for "${query}":`, error instanceof Error ? error.message : error);
     return null;
   }
 }
 
 /**
- * Gets a photo URL from Google Places API (New)
- * The new API uses photo name (format: places/{PLACE_ID}/photos/{PHOTO_ID})
+ * Gets an Unsplash photo URL with proper sizing
  */
-function getGooglePlacesPhotoUrl(photoName: string): string {
-  // Photo name format from API is "places/{PLACE_ID}/photos/{PHOTO_ID}"
-  // Pass the full photo name to the proxy as-is (it's already in the correct format)
-  // URL encode it to handle special characters in the photo ID
-  return `/api/places/image?photo_reference=${encodeURIComponent(photoName)}&maxwidth=${IMAGE_MAX_WIDTH}`;
+function getUnsplashPhotoUrl(photo: UnsplashPhoto): string {
+  // Use regular size which is typically 1080px wide, good quality
+  // Unsplash provides different sizes: raw, full, regular, small, thumb
+  return photo.urls.regular;
 }
 
 /**
- * Fetches an image URL from Google Places API (New) only
+ * Fetches an image URL from Unsplash API
  */
 export async function fetchDestinationImage(
   keywords: string,
   destinationName?: string,
   photoIndex: number = 0
 ): Promise<string> {
-  const googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY;
+  const unsplashAccessKey = process.env.UNSPLASH_ACCESS_KEY;
   
-  if (!googleMapsApiKey) {
+  if (!unsplashAccessKey) {
     // Return placeholder if API key is not configured
-    const placeholderUrl = `https://picsum.photos/${IMAGE_MAX_WIDTH}/600`;
-    console.error(`[Image Fetcher] ❌ Google Maps API key not configured! Check your .env file for GOOGLE_MAPS_API_KEY`);
+    const placeholderUrl = `https://picsum.photos/${IMAGE_MAX_WIDTH}/${IMAGE_HEIGHT}`;
+    console.error(`[Image Fetcher] ❌ Unsplash API key not configured! Check your .env file for UNSPLASH_ACCESS_KEY`);
     return placeholderUrl;
   }
 
@@ -187,40 +138,38 @@ export async function fetchDestinationImage(
 
   if (locationsToTry.length === 0) {
     // Return placeholder if no valid locations to search
-    return `https://picsum.photos/${IMAGE_MAX_WIDTH}/600`;
+    return `https://picsum.photos/${IMAGE_MAX_WIDTH}/${IMAGE_HEIGHT}`;
   }
 
   // Try each location until we find a photo
   for (const location of locationsToTry) {
     if (!isValidLocation(location)) continue;
 
-    const place = await searchPlace(location, googleMapsApiKey);
-    if (!place) continue;
-
-    // Try photos from search response first
-    if (place.photos && place.photos.length > 0) {
-      const photoIdx = Math.min(photoIndex, place.photos.length - 1);
-      const photo = place.photos[photoIdx];
-      if (photo.name) {
-        return getGooglePlacesPhotoUrl(photo.name);
-      }
-    }
-
-    // If no photos in search response, get place details
-    if (place.id) {
-      const photos = await getPlaceDetails(place.id, googleMapsApiKey);
+    // Build search query - add "travel" or "destination" for better results
+    const searchTerms = [`${location} travel`, `${location} destination`, location];
+    
+    for (const searchTerm of searchTerms) {
+      const photos = await searchUnsplashPhotos(searchTerm, unsplashAccessKey, 1, 20);
+      
       if (photos && photos.length > 0) {
-        const photoIdx = Math.min(photoIndex, photos.length - 1);
-        const photo = photos[photoIdx];
-        if (photo.name) {
-          return getGooglePlacesPhotoUrl(photo.name);
+        // Try to get a good photo index, skip first few if needed
+        const indexToUse = Math.min(photoIndex + 2, photos.length - 1);
+        const photo = photos[indexToUse];
+        
+        if (photo) {
+          return getUnsplashPhotoUrl(photo);
+        }
+        
+        // Fallback to first photo if index is out of range
+        if (photos[0]) {
+          return getUnsplashPhotoUrl(photos[0]);
         }
       }
     }
   }
 
-  // Return placeholder if Google Maps search fails
-  return `https://picsum.photos/${IMAGE_MAX_WIDTH}/600`;
+  // Return placeholder if Unsplash search fails
+  return `https://picsum.photos/${IMAGE_MAX_WIDTH}/${IMAGE_HEIGHT}`;
 }
 
 /**

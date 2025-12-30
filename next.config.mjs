@@ -28,11 +28,6 @@ const nextConfig = {
         hostname: 'api.pexels.com',
         pathname: '/**',
       },
-      {
-        protocol: 'https',
-        hostname: 'maps.googleapis.com',
-        pathname: '/maps/api/place/photo',
-      },
     ],
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
