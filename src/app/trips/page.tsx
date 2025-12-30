@@ -1,84 +1,110 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Menu } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { BookingCard } from '@/components/features/trips/booking-card';
-import { TripsTabs, type TabType } from '@/components/features/trips/trips-tabs';
+import { apiGet } from '@/lib/api-client';
+import { queryKeys } from '@/lib/query-keys';
+import { getDestinationImage } from '@/lib/destination-utils';
+import { env } from '@/lib/env';
+import { LoadingState } from '@/components/features/generate-trip/loading-state';
+
+interface TripResponse {
+  id: string;
+  bookingId: string;
+  destination: string;
+  departureCity?: string;
+  startDate?: string;
+  endDate?: string;
+  travelerCounts: {
+    adults: number;
+    children: number;
+    infants: number;
+  };
+  itinerary: Array<{
+    day: number;
+    title: string;
+    activities: string[];
+    imageUrl?: string;
+  }>;
+  status: string;
+}
+
+interface BookingCardData {
+  id: string;
+  title: string;
+  dates: string;
+  travelers: number;
+  image?: string;
+  status: 'Payment Pending' | 'Confirmed' | 'Upcoming' | 'Cancelled' | string;
+}
+
+function formatDateRange(startDate?: string, endDate?: string): string {
+  if (!startDate || !endDate) {
+    return 'Dates TBD';
+  }
+
+  try {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    
+    const startMonth = start.toLocaleDateString('en-US', { month: 'short' });
+    const startDay = start.getDate();
+    const endMonth = end.toLocaleDateString('en-US', { month: 'short' });
+    const endDay = end.getDate();
+    
+    if (startMonth === endMonth) {
+      return `${startMonth} ${startDay} - ${endDay}`;
+    }
+    return `${startMonth} ${startDay} - ${endMonth} ${endDay}`;
+  } catch {
+    return 'Dates TBD';
+  }
+}
+
+function transformTripToBooking(trip: TripResponse): BookingCardData {
+  const totalTravelers = 
+    (trip.travelerCounts?.adults || 0) + 
+    (trip.travelerCounts?.children || 0) + 
+    (trip.travelerCounts?.infants || 0);
+
+  // Get image from itinerary first day, or destination image, or undefined
+  const imageUrl = 
+    trip.itinerary?.[0]?.imageUrl || 
+    getDestinationImage(trip.destination) ||
+    undefined;
+
+  // Create title from destination and departure city
+  const title = trip.departureCity 
+    ? `${trip.departureCity} to ${trip.destination}`
+    : trip.destination;
+
+  return {
+    id: trip.bookingId,
+    title,
+    dates: formatDateRange(trip.startDate, trip.endDate),
+    travelers: totalTravelers,
+    image: imageUrl,
+    status: trip.status || 'Confirmed',
+  };
+}
 
 export default function TripsPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<TabType>('Pending');
-  const tabs: TabType[] = ['Pending', 'Upcoming', 'Live', 'Completed'];
+  
+  const apiUrl = env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  
+  const { data: trips, isLoading, error } = useQuery<TripResponse[]>({
+    queryKey: queryKeys.trips.all,
+    queryFn: async () => {
+      return apiGet<TripResponse[]>(`${apiUrl}/trips`);
+    },
+    retry: 1,
+  });
 
-  // Mock booking cards data - in real app, this would come from API/store
-  const allBookings = [
-    {
-      id: 'UT2024002',
-      title: 'Delhi to Manali Getaway',
-      dates: 'June 22 - June 27',
-      travelers: 4,
-      image: '/assets/destinations/must-visit/manali.png',
-      status: 'Payment Pending' as const,
-      tab: 'Pending' as TabType
-    },
-    {
-      id: 'UT2024003',
-      title: 'Delhi to Manali Getaway',
-      dates: 'June 22 - June 27',
-      travelers: 4,
-      image: '/assets/destinations/must-visit/manali.png',
-      status: 'Payment Pending' as const,
-      tab: 'Pending' as TabType
-    },
-    {
-      id: 'UT2024004',
-      title: 'Delhi to Manali Getaway',
-      dates: 'June 22 - June 27',
-      travelers: 4,
-      image: '/assets/destinations/must-visit/manali.png',
-      status: 'Payment Pending' as const,
-      tab: 'Pending' as TabType
-    },
-    {
-      id: 'UT2024005',
-      title: 'Goa Beach Escape',
-      dates: 'July 15 - July 20',
-      travelers: 2,
-      image: '/assets/destinations/must-visit/goa.png',
-      status: 'Confirmed' as const,
-      tab: 'Upcoming' as TabType
-    },
-    {
-      id: 'UT2024006',
-      title: 'Kerala Backwaters',
-      dates: 'August 10 - August 15',
-      travelers: 3,
-      image: '/assets/destinations/must-visit/kerala.png',
-      status: 'Upcoming' as const,
-      tab: 'Upcoming' as TabType
-    },
-    {
-      id: 'UT2024007',
-      title: 'Rajasthan Heritage Tour',
-      dates: 'September 5 - September 10',
-      travelers: 2,
-      image: '/assets/destinations/must-visit/rajasthan.png',
-      status: 'Confirmed' as const,
-      tab: 'Live' as TabType
-    },
-    {
-      id: 'UT2024008',
-      title: 'Himachal Adventure',
-      dates: 'May 10 - May 15',
-      travelers: 4,
-      image: '/assets/destinations/must-visit/himachal.png',
-      status: 'Confirmed' as const,
-      tab: 'Completed' as TabType
-    }
-  ];
-
-  const filteredBookings = allBookings.filter(booking => booking.tab === activeTab);
+  // Transform trips to booking card format
+  const filteredBookings = trips?.map(transformTripToBooking) || [];
 
   const handleBack = () => {
     router.back();
@@ -89,7 +115,7 @@ export default function TripsPage() {
       {/* Header */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-40">
         <div className="px-4 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center">
             <button
               onClick={handleBack}
               className="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -99,22 +125,25 @@ export default function TripsPage() {
             </button>
             <h1 className="text-xl font-bold text-black flex-1 text-center" >
               My Trips</h1>
-            <button
-              className="p-2 -mr-2 hover:bg-gray-100 rounded-lg transition-colors"
-              aria-label="Menu"
-            >
-              <Menu className="w-6 h-6 text-black" />
-            </button>
+            <div className="w-10" /> {/* Spacer to balance the back button */}
           </div>
         </div>
 
         {/* Tabs */}
-        <TripsTabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+        {/* <TripsTabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} /> */}
       </div>
 
       {/* Content */}
       <div className="px-4 py-4 pb-20 ">
-        {filteredBookings.length > 0 ? (
+        {isLoading ? (
+          <LoadingState message="Loading your trips..." />
+        ) : error ? (
+          <div className="flex items-center justify-center h-64">
+            <p className="text-sm text-red-600 text-center" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
+              {error instanceof Error ? error.message : 'Failed to load trips. Please try again later.'}
+            </p>
+          </div>
+        ) : filteredBookings.length > 0 ? (
           <div className="space-y-4">
             {filteredBookings.map((booking, index) => (
               <BookingCard
@@ -143,7 +172,9 @@ export default function TripsPage() {
           </div>
         ) : (
           <div className="flex items-center justify-center h-64">
-            <p className="text-sm text-gray-600 text-center" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>No trips found in this category</p>
+            <p className="text-sm text-gray-600 text-center" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
+              No trips found in this category
+            </p>
           </div>
         )}
       </div>

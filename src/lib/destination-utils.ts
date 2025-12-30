@@ -1,8 +1,32 @@
 import { findAllMatchingCategories, getDestinationsByCategory, getDestinationTag, trendingDestinations, popularComboDestinations, allDestinationsByRegion } from '@/data/all-destinations';
+import { destinationsByCategory } from '@/data/destinations';
 
 export interface DestinationWithTag {
   title: string;
   tag: string | null;
+}
+
+/**
+ * Gets the image path for a destination by searching through all categories
+ */
+export function getDestinationImage(destinationName: string): string | undefined {
+  if (!destinationName) return undefined;
+
+  const normalizedName = destinationName.trim();
+  
+  // Search through all categories
+  for (const category of Object.values(destinationsByCategory)) {
+    const dest = category.find(d => 
+      d.title.toLowerCase() === normalizedName.toLowerCase() ||
+      d.title.toLowerCase().includes(normalizedName.toLowerCase()) ||
+      normalizedName.toLowerCase().includes(d.title.toLowerCase())
+    );
+    if (dest) {
+      return dest.image;
+    }
+  }
+  
+  return undefined;
 }
 
 export function getTagStyle(tag: string | null): string {
