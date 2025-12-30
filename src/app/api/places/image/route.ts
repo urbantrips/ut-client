@@ -26,25 +26,12 @@ export async function GET(request: NextRequest) {
         { status: 500 }
       );
     }
-    
-    console.log(`[Places Image API] Request received - photo_reference: ${photoReference}, maxWidth: ${maxWidth}`);
 
     // Fetch the image from Google Places API (New) Media endpoint
-    // Photo reference should be in format: places/PHOTO_ID
-    // Decode the photo reference in case it was URL encoded
+    // Photo reference format: "places/{PLACE_ID}/photos/{PHOTO_ID}" (already URL encoded)
     const decodedPhotoRef = decodeURIComponent(photoReference);
-    const photoName = decodedPhotoRef.startsWith('places/') 
-      ? decodedPhotoRef 
-      : `places/${decodedPhotoRef}`;
-    
+    const photoName = decodedPhotoRef;
     const photoUrl = `https://places.googleapis.com/v1/${photoName}/media?maxWidthPx=${maxWidth}`;
-    
-    // Log the actual Google Places API URL (for debugging)
-    console.log(`[Places Image API] Fetching image from Google Places API:`);
-    console.log(`[Places Image API] Decoded photo reference: ${decodedPhotoRef}`);
-    console.log(`[Places Image API] Photo Name: ${photoName}`);
-    console.log(`[Places Image API] URL: ${photoUrl}`);
-    console.log(`[Places Image API] Note: This URL requires 'X-Goog-Api-Key' header to access`);
     
     const response = await fetch(photoUrl, {
       headers: {
@@ -56,8 +43,6 @@ export async function GET(request: NextRequest) {
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`[Places Image API] ❌ Failed to fetch image: ${response.status} ${response.statusText}`);
-      console.error(`[Places Image API] Error response:`, errorText);
-      console.error(`[Places Image API] Request URL: ${photoUrl}`);
       return NextResponse.json(
         { 
           error: 'Failed to fetch image from Google Places API',
@@ -71,8 +56,6 @@ export async function GET(request: NextRequest) {
     // Get the image data
     const imageBuffer = await response.arrayBuffer();
     const contentType = response.headers.get('content-type') || 'image/jpeg';
-    
-    console.log(`[Places Image API] ✅ Successfully fetched image: ${imageBuffer.byteLength} bytes, Content-Type: ${contentType}`);
 
     // Return the image with proper headers
     return new NextResponse(imageBuffer, {
@@ -85,8 +68,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('[Places Image API] ❌ Error proxying Google Places image:', error);
-    console.error('[Places Image API] Error details:', error instanceof Error ? error.message : String(error));
+    console.error('[Places Image API] ❌ Error proxying Google Places image:', error instanceof Error ? error.message : error);
     return NextResponse.json(
       { 
         error: 'Internal server error',

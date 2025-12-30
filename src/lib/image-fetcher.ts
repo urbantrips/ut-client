@@ -90,7 +90,6 @@ async function searchPlace(
 ): Promise<Place | null> {
   try {
     const url = 'https://places.googleapis.com/v1/places:searchText';
-    console.log(`[Image Fetcher] Searching for place: "${location}"`);
     
     const response = await fetch(url, {
       method: 'POST',
@@ -107,21 +106,12 @@ async function searchPlace(
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`[Image Fetcher] API error for location "${location}": ${response.status} ${response.statusText}`, errorText);
+      console.error(`[Image Fetcher] API error for location "${location}": ${response.status} ${response.statusText}`);
       return null;
     }
 
     const data: PlacesSearchResponse = await response.json();
-    const place = data.places?.[0] || null;
-    
-    if (place) {
-      console.log(`[Image Fetcher] Found place: ${place.displayName?.text || place.id}, Photos: ${place.photos?.length || 0}`);
-    } else {
-      console.log(`[Image Fetcher] No places found for location "${location}"`);
-    }
-    
-    return place;
+    return data.places?.[0] || null;
   } catch (error) {
     console.error(`[Image Fetcher] Error searching for place "${location}":`, error instanceof Error ? error.message : error);
     return null;
@@ -137,7 +127,6 @@ async function getPlaceDetails(
 ): Promise<PlacePhoto[] | null> {
   try {
     const url = `https://places.googleapis.com/v1/places/${placeId}`;
-    console.log(`[Image Fetcher] Fetching place details for: ${placeId}`);
     
     const response = await fetch(url, {
       headers: {
@@ -149,21 +138,12 @@ async function getPlaceDetails(
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`[Image Fetcher] API error for place ${placeId}: ${response.status} ${response.statusText}`, errorText);
+      console.error(`[Image Fetcher] API error for place ${placeId}: ${response.status} ${response.statusText}`);
       return null;
     }
 
     const data: PlaceDetailsResponse = await response.json();
-    const photos = data.photos || null;
-    
-    if (photos) {
-      console.log(`[Image Fetcher] Found ${photos.length} photos for place ${placeId}`);
-    } else {
-      console.log(`[Image Fetcher] No photos found for place ${placeId}`);
-    }
-    
-    return photos;
+    return data.photos || null;
   } catch (error) {
     console.error(`[Image Fetcher] Error fetching place details for ${placeId}:`, error instanceof Error ? error.message : error);
     return null;
@@ -171,25 +151,14 @@ async function getPlaceDetails(
 }
 
 /**
- * Gets the actual Google Places API photo URL (for logging/debugging)
- * Note: This URL requires 'X-Goog-Api-Key' header to access
- */
-function getActualGooglePlacesPhotoUrl(photoName: string): string {
-  // Photo name format is already "places/PHOTO_ID"
-  const photoNameFormatted = photoName.startsWith('places/') ? photoName : `places/${photoName}`;
-  return `https://places.googleapis.com/v1/${photoNameFormatted}/media?maxWidthPx=${IMAGE_MAX_WIDTH}`;
-}
-
-/**
  * Gets a photo URL from Google Places API (New)
- * The new API uses photo name (format: places/PHOTO_ID) instead of photo_reference
+ * The new API uses photo name (format: places/{PLACE_ID}/photos/{PHOTO_ID})
  */
 function getGooglePlacesPhotoUrl(photoName: string): string {
-  // Photo name format from API is "places/PHOTO_ID"
-  // Pass the full photo name to the proxy, not just the ID
-  // The proxy will handle the format correctly
-  const fullPhotoName = photoName.startsWith('places/') ? photoName : `places/${photoName}`;
-  return `/api/places/image?photo_reference=${encodeURIComponent(fullPhotoName)}&maxwidth=${IMAGE_MAX_WIDTH}`;
+  // Photo name format from API is "places/{PLACE_ID}/photos/{PHOTO_ID}"
+  // Pass the full photo name to the proxy as-is (it's already in the correct format)
+  // URL encode it to handle special characters in the photo ID
+  return `/api/places/image?photo_reference=${encodeURIComponent(photoName)}&maxwidth=${IMAGE_MAX_WIDTH}`;
 }
 
 /**
@@ -206,99 +175,52 @@ export async function fetchDestinationImage(
     // Return placeholder if API key is not configured
     const placeholderUrl = `https://picsum.photos/${IMAGE_MAX_WIDTH}/600`;
     console.error(`[Image Fetcher] ❌ Google Maps API key not configured! Check your .env file for GOOGLE_MAPS_API_KEY`);
-    console.log(`[Image Fetcher] Using placeholder: ${placeholderUrl}`);
     return placeholderUrl;
   }
-  
-  console.log(`[Image Fetcher] Google Maps API key is configured (length: ${googleMapsApiKey.length})`);
 
   // Parse and prepare search terms
   const searchQuery = keywords.trim() || destinationName || 'travel destination';
   const keywordsArray = searchQuery.split(',').map((k) => k.trim()).filter((k) => k.length > 0);
 
-  console.log(`[Image Fetcher] Starting image fetch - Keywords: "${keywords}", Destination: "${destinationName || 'N/A'}", Search Query: "${searchQuery}"`);
-
   // Build location search list
   const locationsToTry = buildLocationSearchList(destinationName, keywordsArray);
-  console.log(`[Image Fetcher] Locations to try:`, locationsToTry);
 
   if (locationsToTry.length === 0) {
     // Return placeholder if no valid locations to search
-    const placeholderUrl = `https://picsum.photos/${IMAGE_MAX_WIDTH}/600`;
-    console.log(`[Image Fetcher] No valid locations to search for keywords "${keywords}", using placeholder: ${placeholderUrl}`);
-    return placeholderUrl;
+    return `https://picsum.photos/${IMAGE_MAX_WIDTH}/600`;
   }
 
   // Try each location until we find a photo
   for (const location of locationsToTry) {
-    if (!isValidLocation(location)) {
-      console.log(`[Image Fetcher] Skipping invalid location: "${location}"`);
-      continue;
-    }
+    if (!isValidLocation(location)) continue;
 
-    console.log(`[Image Fetcher] Trying location: "${location}"`);
     const place = await searchPlace(location, googleMapsApiKey);
-    
-    if (!place) {
-      console.log(`[Image Fetcher] No place found for location: "${location}"`);
-      continue;
-    }
+    if (!place) continue;
 
     // Try photos from search response first
     if (place.photos && place.photos.length > 0) {
       const photoIdx = Math.min(photoIndex, place.photos.length - 1);
       const photo = place.photos[photoIdx];
-      console.log(`[Image Fetcher] Photo object:`, JSON.stringify(photo, null, 2));
       if (photo.name) {
-        console.log(`[Image Fetcher] Photo name from API: "${photo.name}"`);
-        const imageUrl = getGooglePlacesPhotoUrl(photo.name);
-        const actualApiUrl = getActualGooglePlacesPhotoUrl(photo.name);
-        console.log(`[Image Fetcher] ✅ Successfully found image for location "${location}"`);
-        console.log(`[Image Fetcher] Proxy URL: ${imageUrl}`);
-        console.log(`[Image Fetcher] Actual Google Places API URL: ${actualApiUrl}`);
-        console.log(`[Image Fetcher] Note: The API URL requires 'X-Goog-Api-Key' header with your API key to access`);
-        return imageUrl;
-      } else {
-        console.log(`[Image Fetcher] Photo found but missing name property for location "${location}"`);
-        console.log(`[Image Fetcher] Photo object keys:`, Object.keys(photo));
+        return getGooglePlacesPhotoUrl(photo.name);
       }
-    } else {
-      console.log(`[Image Fetcher] Place found but no photos in search response for location "${location}"`);
     }
 
     // If no photos in search response, get place details
     if (place.id) {
-      console.log(`[Image Fetcher] Fetching place details for place ID: ${place.id}`);
       const photos = await getPlaceDetails(place.id, googleMapsApiKey);
       if (photos && photos.length > 0) {
         const photoIdx = Math.min(photoIndex, photos.length - 1);
         const photo = photos[photoIdx];
-        console.log(`[Image Fetcher] Photo from place details:`, JSON.stringify(photo, null, 2));
         if (photo.name) {
-          console.log(`[Image Fetcher] Photo name from API: "${photo.name}"`);
-          const imageUrl = getGooglePlacesPhotoUrl(photo.name);
-          const actualApiUrl = getActualGooglePlacesPhotoUrl(photo.name);
-          console.log(`[Image Fetcher] ✅ Successfully found image from place details for location "${location}"`);
-          console.log(`[Image Fetcher] Proxy URL: ${imageUrl}`);
-          console.log(`[Image Fetcher] Actual Google Places API URL: ${actualApiUrl}`);
-          console.log(`[Image Fetcher] Note: The API URL requires 'X-Goog-Api-Key' header with your API key to access`);
-          return imageUrl;
-        } else {
-          console.log(`[Image Fetcher] Photo found in place details but missing name property for location "${location}"`);
-          console.log(`[Image Fetcher] Photo object keys:`, Object.keys(photo));
+          return getGooglePlacesPhotoUrl(photo.name);
         }
-      } else {
-        console.log(`[Image Fetcher] No photos found in place details for location "${location}"`);
       }
-    } else {
-      console.log(`[Image Fetcher] Place found but missing ID for location "${location}"`);
     }
   }
 
   // Return placeholder if Google Maps search fails
-  const placeholderUrl = `https://picsum.photos/${IMAGE_MAX_WIDTH}/600`;
-  console.log(`[Image Fetcher] No image found for keywords "${keywords}", using placeholder: ${placeholderUrl}`);
-  return placeholderUrl;
+  return `https://picsum.photos/${IMAGE_MAX_WIDTH}/600`;
 }
 
 /**

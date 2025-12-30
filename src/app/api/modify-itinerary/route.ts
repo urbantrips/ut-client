@@ -216,7 +216,6 @@ Example response format:
         // Only fetch new image if imageKeywords changed or imageUrl is missing
         const existingDay = currentItinerary.find(d => d.day === day.day);
         if (existingDay?.imageUrl && existingDay?.imageKeywords === day.imageKeywords) {
-          console.log(`[Modify Itinerary] Day ${day.day} - Reusing existing image URL: ${existingDay.imageUrl}`);
           return {
             ...day,
             imageUrl: existingDay.imageUrl,
@@ -264,9 +263,6 @@ Example response format:
 
         // Pass day index (0-based) as photoIndex to get different photos for same location
         const imageUrl = await fetchDestinationImage(searchQuery, destinationName, index);
-        
-        console.log(`[Modify Itinerary] Day ${day.day} - Image URL: ${imageUrl}`);
-        console.log(`[Modify Itinerary] Day ${day.day} - Search Query: "${searchQuery}", Destination: "${destinationName || 'N/A'}"`);
         
         return {
           ...day,
