@@ -4,11 +4,15 @@ import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import { useUserStore } from '@/store/user-store';
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { scrollY } = useScroll();
+  const user = useUserStore((state) => state.user);
+  const accessToken = useUserStore((state) => state.accessToken);
+  const isLoggedIn = !!(user || accessToken);
 
   useMotionValueEvent(scrollY, 'change', (latest) => {
     setIsScrolled(latest > 50);
@@ -67,35 +71,27 @@ export function Header() {
 
           {/* Desktop Navigation links */}
           <nav className="hidden md:flex items-center gap-6">
-            {/* <motion.div whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
-              <Link 
-                href="/trips" 
-                className="flex items-center gap-2 text-black hover:text-primary transition-colors relative group"
-              >
-                <motion.div
-                  whileHover={{ rotate: 360 }}
-                  transition={{ duration: 0.5 }}
+            {isLoggedIn ? (
+              <motion.div whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
+                <Link
+                  href="/trips"
+                  className="text-sm font-bold text-black border-b-2 border-transparent hover:border-black transition-all whitespace-nowrap"
+                  style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
                 >
-                  <MapPin className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors" />
-                </motion.div>
-                <span className="relative">
                   My Trips
-                  <motion.span
-                    className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"
-                  />
-                </span>
-              </Link>
-            </motion.div> */}
-
-            <motion.div whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
-              <Link
-                href="/signin"
-                className="text-sm font-bold text-black border-b-2 border-transparent hover:border-black transition-all whitespace-nowrap"
-                style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
-              >
-                Sign In
-              </Link>
-            </motion.div>
+                </Link>
+              </motion.div>
+            ) : (
+              <motion.div whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
+                <Link
+                  href="/signin"
+                  className="text-sm font-bold text-black border-b-2 border-transparent hover:border-black transition-all whitespace-nowrap"
+                  style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
+                >
+                  Sign In
+                </Link>
+              </motion.div>
+            )}
           </nav>
 
           {/* Mobile menu button */}
@@ -124,22 +120,25 @@ export function Header() {
               animate={{ x: isMobileMenuOpen ? 0 : -20, opacity: isMobileMenuOpen ? 1 : 0 }}
               transition={{ delay: 0.1 }}
             >
-              {/* <Link
-                href="/trips"
-                className="flex items-center gap-2 text-black hover:text-primary transition-colors py-2"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <MapPin className="w-4 h-4 text-gray-400" />
-                <span>My Trips</span>
-              </Link> */}
-              <Link
-                href="/signin"
-                className="block text-sm font-bold text-black py-2"
-                style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Sign In
-              </Link>
+              {isLoggedIn ? (
+                <Link
+                  href="/trips"
+                  className="block text-sm font-bold text-black py-2"
+                  style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  My Trips
+                </Link>
+              ) : (
+                <Link
+                  href="/signin"
+                  className="block text-sm font-bold text-black py-2"
+                  style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Sign In
+                </Link>
+              )}
             </motion.div>
           </div>
         </motion.nav>
