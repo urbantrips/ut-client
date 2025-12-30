@@ -287,6 +287,9 @@ Return ONLY valid JSON array, no markdown, no code blocks, just the JSON array.`
         // Pass day index (0-based) as photoIndex to get different photos for same location
         const imageUrl = await fetchDestinationImage(searchQuery, destinationName, index);
         
+        console.log(`[Generate Itinerary] Day ${day.day} - Image URL: ${imageUrl}`);
+        console.log(`[Generate Itinerary] Day ${day.day} - Search Query: "${searchQuery}", Destination: "${destinationName || 'N/A'}"`);
+        
         const result = {
           ...day,
           imageUrl,
