@@ -13,6 +13,7 @@ import { ConfirmPlanButton } from '@/components/features/generate-trip/confirm-p
 import { DayItinerary } from '@/components/features/generate-trip/day-card';
 import { ConfirmationModal } from '@/components/features/generate-trip/confirmation/confirmation-modal';
 import { ConfirmationSuccess } from '@/components/features/generate-trip/confirmation/confirmation-success';
+import { apiPost } from '@/lib/api-client';
 
 export default function GenerateTripPage() {
   const router = useRouter();
@@ -248,20 +249,10 @@ export default function GenerateTripPage() {
         }),
       };
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-      const response = await fetch(`${apiUrl}/trips`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(tripData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to save trip');
-      }
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      
+      // Use API client which handles token refresh automatically
+      await apiPost(`${apiUrl}/trips`, tripData);
 
       // Trip saved successfully
       setIsConfirmed(true);
