@@ -1,14 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { BookingCard } from '@/components/features/trips/booking-card';
-import { apiGet } from '@/lib/api-client';
+import { apiGet, apiPatch } from '@/lib/api-client';
 import { queryKeys } from '@/lib/query-keys';
 import { getDestinationImage } from '@/lib/destination-utils';
 import { env } from '@/lib/env';
 import { LoadingState } from '@/components/features/generate-trip/loading-state';
+import { CancelConfirmationModal } from '@/components/features/trips/cancel-confirmation-modal';
 
 interface TripResponse {
   id: string;
@@ -33,6 +35,7 @@ interface TripResponse {
 
 interface BookingCardData {
   id: string;
+  tripId: string; // MongoDB ID for navigation
   title: string;
   dates: string;
   travelers: number;
@@ -82,6 +85,7 @@ function transformTripToBooking(trip: TripResponse): BookingCardData {
 
   return {
     id: trip.bookingId,
+    tripId: trip.id, // MongoDB ID for API calls and navigation
     title,
     dates: formatDateRange(trip.startDate, trip.endDate),
     travelers: totalTravelers,
@@ -92,6 +96,9 @@ function transformTripToBooking(trip: TripResponse): BookingCardData {
 
 export default function TripsPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const [tripToCancel, setTripToCancel] = useState<BookingCardData | null>(null);
   
   const apiUrl = env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
   
@@ -103,11 +110,43 @@ export default function TripsPage() {
     retry: 1,
   });
 
+  // Cancel trip mutation
+  const cancelTripMutation = useMutation({
+    mutationFn: async (tripId: string) => {
+      return apiPatch(`${apiUrl}/trips/${tripId}`, { status: 'Cancelled' });
+    },
+    onSuccess: () => {
+      // Invalidate and refetch trips list
+      queryClient.invalidateQueries({ queryKey: queryKeys.trips.all });
+      setCancelModalOpen(false);
+      setTripToCancel(null);
+    },
+    onError: (error: Error) => {
+      console.error('Failed to cancel trip:', error);
+      alert(`Failed to cancel trip: ${error.message}`);
+    },
+  });
+
   // Transform trips to booking card format
   const filteredBookings = trips?.map(transformTripToBooking) || [];
 
   const handleBack = () => {
     router.back();
+  };
+
+  const handleViewDetails = (booking: BookingCardData) => {
+    router.push(`/trips/${booking.tripId}`);
+  };
+
+  const handleCancel = (booking: BookingCardData) => {
+    setTripToCancel(booking);
+    setCancelModalOpen(true);
+  };
+
+  const handleConfirmCancel = () => {
+    if (tripToCancel) {
+      cancelTripMutation.mutate(tripToCancel.tripId);
+    }
   };
 
   return (
@@ -159,14 +198,8 @@ export default function TripsPage() {
                   // Handle complete booking action
                   console.log('Complete booking for:', booking.id);
                 }}
-                onCancel={() => {
-                  // Handle cancel action
-                  console.log('Cancel booking for:', booking.id);
-                }}
-                onViewDetails={() => {
-                  // Handle view details action
-                  console.log('View details for:', booking.id);
-                }}
+                onCancel={() => handleCancel(booking)}
+                onViewDetails={() => handleViewDetails(booking)}
               />
             ))}
           </div>
@@ -178,6 +211,18 @@ export default function TripsPage() {
           </div>
         )}
       </div>
+
+      {/* Cancel Confirmation Modal */}
+      <CancelConfirmationModal
+        isOpen={cancelModalOpen}
+        onClose={() => {
+          setCancelModalOpen(false);
+          setTripToCancel(null);
+        }}
+        onConfirm={handleConfirmCancel}
+        isLoading={cancelTripMutation.isPending}
+        tripTitle={tripToCancel?.title}
+      />
     </div>
   );
 }
