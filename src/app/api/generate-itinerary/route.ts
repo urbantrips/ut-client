@@ -117,12 +117,38 @@ Example format for activities array:
 ]
 
 For each day, provide:
-- day: number (1, 2, 3, etc.)
+- day: number (1, 2, 3, etc.) - MUST be sequential starting from 1
 - title: string (descriptive title like "Sightseeing & Experiences", "Cultural Immersion", etc.)
 - activities: string[] (MUST follow the format above with Location, Visit to major attractions, specific attractions, optional activities, Return to hotel, and Overnight Stay)
 - imageKeywords: string (comma-separated keywords specific to the destination and activities, e.g., "${body.destination ? body.destination.toLowerCase() : 'destination'}, [specific attraction], [activity type]")
 
-Return ONLY valid JSON array, no markdown, no code blocks, just the JSON array.`;
+CRITICAL: You MUST return ALL ${numberOfDays} days in your response. Do not skip any days. Day 1, Day 2, Day 3, etc. must all be included.
+
+IMPORTANT: Ensure your response is complete. If you cannot fit all days, prioritize completing at least the first ${Math.min(numberOfDays, 3)} days fully rather than providing incomplete days. Each day object must be complete with all required fields (day, title, activities, imageKeywords).
+
+OUTPUT FORMAT:
+Return your response as a valid JSON array starting with [ and ending with ]. 
+DO NOT wrap it in markdown code blocks (no \`\`\`json).
+DO NOT add any explanatory text before or after the JSON.
+DO NOT use code blocks.
+Start your response directly with [ and end with ].
+The response should be parseable JSON that can be directly used with JSON.parse().
+
+Example of correct output format:
+[
+  {
+    "day": 1,
+    "title": "Arrival & Exploration",
+    "activities": ["Location: Bangkok", "Visit to major attractions:", "Grand Palace", "Wat Pho", "Return to hotel", "Overnight Stay: Budget Hotel / Bangkok"],
+    "imageKeywords": "bangkok, grand palace, temples"
+  },
+  {
+    "day": 2,
+    "title": "Cultural Immersion",
+    "activities": ["Location: Bangkok", "Visit to major attractions:", "Wat Arun", "Chinatown", "Return to hotel", "Overnight Stay: Budget Hotel / Bangkok"],
+    "imageKeywords": "bangkok, wat arun, chinatown"
+  }
+]`;
 
     // Call Gemini API
     const response = await fetch(
@@ -146,7 +172,7 @@ Return ONLY valid JSON array, no markdown, no code blocks, just the JSON array.`
             temperature: 0.7,
             topK: 40,
             topP: 0.95,
-            maxOutputTokens: 2048,
+            maxOutputTokens: 4096, // Increased for longer itineraries
           },
         }),
       }
@@ -164,28 +190,279 @@ Return ONLY valid JSON array, no markdown, no code blocks, just the JSON array.`
 
     // Extract text from Gemini response
     const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    
+    // Check if response was truncated
+    const finishReason = data.candidates?.[0]?.finishReason;
+    if (finishReason === 'MAX_TOKENS') {
+      console.warn('Response was truncated due to token limit');
+    }
 
     if (!generatedText) {
+      console.error('No text content in Gemini response:', JSON.stringify(data, null, 2));
       return NextResponse.json(
         { error: 'No content generated from Gemini' },
         { status: 500 }
       );
     }
+    
+    // Log first part of response for debugging
+    console.log('Generated text length:', generatedText.length);
+    console.log('First 200 chars:', generatedText.substring(0, 200));
 
     // Try to parse JSON from the response
     // Gemini might return JSON wrapped in markdown code blocks or with extra text
     let itinerary: Array<{ day: number; title: string; activities: string[]; imageKeywords?: string }>;
     try {
-      // Try to extract JSON from markdown code blocks if present
-      const jsonMatch = generatedText.match(/```(?:json)?\s*([\s\S]*?)\s*```/) || 
-                       generatedText.match(/\[[\s\S]*\]/);
+      let parsed: any = null;
       
-      if (jsonMatch) {
-        itinerary = JSON.parse(jsonMatch[1] || jsonMatch[0]);
+      // Strategy 1: Try to extract JSON from markdown code blocks
+      const codeBlockMatch = generatedText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+      if (codeBlockMatch) {
+        try {
+          parsed = JSON.parse(codeBlockMatch[1]);
+        } catch (e) {
+          // If parsing fails, try to extract complete day objects from the code block
+          const codeBlockContent = codeBlockMatch[1];
+          const extractedDays: any[] = [];
+          let braceCount = 0;
+          let startIndex = -1;
+          let inString = false;
+          let escapeNext = false;
+          
+          const arrayStart = codeBlockContent.indexOf('[');
+          if (arrayStart !== -1) {
+            for (let i = arrayStart + 1; i < codeBlockContent.length; i++) {
+              const char = codeBlockContent[i];
+              
+              if (escapeNext) {
+                escapeNext = false;
+                continue;
+              }
+              
+              if (char === '\\') {
+                escapeNext = true;
+                continue;
+              }
+              
+              if (char === '"' && !escapeNext) {
+                inString = !inString;
+                continue;
+              }
+              
+              if (inString) continue;
+              
+              if (char === '{') {
+                if (startIndex === -1) startIndex = i;
+                braceCount++;
+              } else if (char === '}') {
+                braceCount--;
+                if (braceCount === 0 && startIndex !== -1) {
+                  try {
+                    const jsonStr = codeBlockContent.substring(startIndex, i + 1);
+                    const dayObj = JSON.parse(jsonStr);
+                    if (dayObj && typeof dayObj === 'object' && 
+                        (dayObj.day !== undefined || dayObj.title !== undefined)) {
+                      extractedDays.push(dayObj);
+                    }
+                  } catch (parseErr) {
+                    // Invalid JSON for this object, continue
+                  }
+                  startIndex = -1;
+                }
+              }
+            }
+            
+            if (extractedDays.length > 0) {
+              console.log(`Extracted ${extractedDays.length} complete days from code block`);
+              parsed = extractedDays;
+            }
+          }
+          
+          // If still no parsed data, continue to next strategy
+          if (!parsed) {
+            // Continue to next strategy
+          }
+        }
+      }
+      
+      // Strategy 2: Try to find JSON array in the text (balanced brackets)
+      // This finds the largest valid JSON array
+      if (!parsed) {
+        const candidates: { json: any; length: number }[] = [];
+        let bracketCount = 0;
+        let startIndex = -1;
+        
+        for (let i = 0; i < generatedText.length; i++) {
+          if (generatedText[i] === '[') {
+            if (startIndex === -1) startIndex = i;
+            bracketCount++;
+          } else if (generatedText[i] === ']') {
+            bracketCount--;
+            if (bracketCount === 0 && startIndex !== -1) {
+              try {
+                const jsonStr = generatedText.substring(startIndex, i + 1);
+                const candidate = JSON.parse(jsonStr);
+                if (Array.isArray(candidate) && candidate.length > 0) {
+                  candidates.push({ json: candidate, length: candidate.length });
+                }
+              } catch (e) {
+                // Invalid JSON, continue
+              }
+              startIndex = -1;
+              bracketCount = 0;
+            }
+          }
+        }
+        
+        // Use the largest valid array found
+        if (candidates.length > 0) {
+          candidates.sort((a, b) => b.length - a.length);
+          parsed = candidates[0].json;
+        }
+      }
+      
+      // Strategy 2.5: If parsing failed, try to extract complete day objects from incomplete JSON
+      if (!parsed || (Array.isArray(parsed) && parsed.length === 0)) {
+        const extractedDays: any[] = [];
+        let braceCount = 0;
+        let startIndex = -1;
+        let inString = false;
+        let escapeNext = false;
+        
+        // Find the start of the array
+        const arrayStart = generatedText.indexOf('[');
+        if (arrayStart !== -1) {
+          // Look for complete day objects within the array
+          for (let i = arrayStart + 1; i < generatedText.length; i++) {
+            const char = generatedText[i];
+            
+            if (escapeNext) {
+              escapeNext = false;
+              continue;
+            }
+            
+            if (char === '\\') {
+              escapeNext = true;
+              continue;
+            }
+            
+            if (char === '"' && !escapeNext) {
+              inString = !inString;
+              continue;
+            }
+            
+            if (inString) continue;
+            
+            if (char === '{') {
+              if (startIndex === -1) {
+                startIndex = i;
+              }
+              braceCount++;
+            } else if (char === '}') {
+              braceCount--;
+              if (braceCount === 0 && startIndex !== -1) {
+                try {
+                  const jsonStr = generatedText.substring(startIndex, i + 1);
+                  const dayObj = JSON.parse(jsonStr);
+                  // Validate it looks like a day object
+                  if (dayObj && typeof dayObj === 'object' && 
+                      (dayObj.day !== undefined || dayObj.title !== undefined)) {
+                    extractedDays.push(dayObj);
+                  }
+                } catch (e) {
+                  // Invalid JSON for this object, continue
+                }
+                startIndex = -1;
+              }
+            }
+          }
+          
+          if (extractedDays.length > 0) {
+            console.log(`Extracted ${extractedDays.length} complete days from incomplete JSON`);
+            parsed = extractedDays;
+          }
+        }
+      }
+      
+      // Strategy 3: Try to find JSON object with itinerary property
+      if (!parsed) {
+        let braceCount = 0;
+        let startIndex = -1;
+        for (let i = 0; i < generatedText.length; i++) {
+          if (generatedText[i] === '{') {
+            if (startIndex === -1) startIndex = i;
+            braceCount++;
+          } else if (generatedText[i] === '}') {
+            braceCount--;
+            if (braceCount === 0 && startIndex !== -1) {
+              try {
+                const jsonStr = generatedText.substring(startIndex, i + 1);
+                const candidate = JSON.parse(jsonStr);
+                if (candidate && typeof candidate === 'object' && Array.isArray(candidate.itinerary)) {
+                  parsed = candidate.itinerary;
+                  break;
+                }
+              } catch (e) {
+                // Invalid JSON, continue
+              }
+              startIndex = -1;
+              braceCount = 0;
+            }
+          }
+        }
+      }
+      
+      // Strategy 4: Try parsing the entire text
+      if (!parsed) {
+        try {
+          parsed = JSON.parse(generatedText);
+        } catch (e) {
+          // Will fall through to fallback parsing
+        }
+      }
+      
+      // If parsed is an object with itinerary property, extract it
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed) && parsed.itinerary) {
+        parsed = parsed.itinerary;
+      }
+      
+      itinerary = Array.isArray(parsed) ? parsed : [];
+      
+      // Log for debugging
+      if (itinerary.length === 0) {
+        console.warn('No itinerary parsed from response. Generated text length:', generatedText.length);
+        console.warn('First 500 chars of response:', generatedText.substring(0, 500));
+        // Try one more time with a more lenient approach
+        // Look for any array-like structure
+        const arrayLikeMatch = generatedText.match(/\[[\s\S]{100,}?\]/);
+        if (arrayLikeMatch) {
+          try {
+            const lenientParsed = JSON.parse(arrayLikeMatch[0]);
+            if (Array.isArray(lenientParsed) && lenientParsed.length > 0) {
+              console.log('Found itinerary using lenient parsing');
+              itinerary = lenientParsed;
+            }
+          } catch (e) {
+            console.warn('Lenient parsing also failed');
+          }
+        }
       } else {
-        itinerary = JSON.parse(generatedText);
+        console.log(`Successfully parsed ${itinerary.length} days from itinerary`);
+        
+        // Check if we got fewer days than expected - might be truncated
+        if (itinerary.length < numberOfDays) {
+          console.warn(`Warning: Only got ${itinerary.length} days but expected ${numberOfDays}. Response may be truncated.`);
+          // Check if the last day is complete by looking at the response
+          const lastDay = itinerary[itinerary.length - 1];
+          if (lastDay && (!lastDay.activities || lastDay.activities.length === 0)) {
+            console.warn('Last day appears incomplete, removing it');
+            itinerary = itinerary.slice(0, -1);
+          }
+        }
       }
     } catch (parseError) {
+      console.error('Parse error:', parseError);
+      console.error('Generated text (first 1000 chars):', generatedText.substring(0, 1000));
       // If parsing fails, try to construct a basic itinerary from the text
       // Fallback: create a simple structure from the text
       const lines = generatedText.split('\n').filter((line: string) => line.trim());
@@ -212,8 +489,41 @@ Return ONLY valid JSON array, no markdown, no code blocks, just the JSON array.`
         itinerary.push(currentDay);
       }
       
+      // If still no itinerary, try one more aggressive parsing attempt
+      if (itinerary.length === 0) {
+        // Try to find any JSON structure that might contain itinerary data
+        const jsonPatterns = [
+          /\[[\s\S]*?\]/g,  // Any array
+          /\{[\s\S]*?"itinerary"[\s\S]*?\}/g,  // Object with itinerary property
+        ];
+        
+        for (const pattern of jsonPatterns) {
+          const matches = generatedText.match(pattern);
+          if (matches) {
+            for (const match of matches) {
+              try {
+                const candidate = JSON.parse(match);
+                if (Array.isArray(candidate) && candidate.length > 0) {
+                  itinerary = candidate;
+                  console.log('Found itinerary using aggressive parsing');
+                  break;
+                } else if (candidate && candidate.itinerary && Array.isArray(candidate.itinerary)) {
+                  itinerary = candidate.itinerary;
+                  console.log('Found itinerary in object using aggressive parsing');
+                  break;
+                }
+              } catch (e) {
+                // Continue to next match
+              }
+            }
+            if (itinerary.length > 0) break;
+          }
+        }
+      }
+      
       // If still no itinerary, create a default one
       if (itinerary.length === 0) {
+        console.error('Failed to parse itinerary. Creating default placeholder.');
         itinerary = Array.from({ length: numberOfDays }, (_, i) => ({
           day: i + 1,
           title: `Day ${i + 1} Itinerary`,
@@ -222,6 +532,46 @@ Return ONLY valid JSON array, no markdown, no code blocks, just the JSON array.`
         }));
       }
     }
+
+    // Ensure all activities are strings (not objects) and validate day structure
+    itinerary = itinerary
+      .filter((day) => day && typeof day === 'object') // Remove invalid entries
+      .map((day, index) => {
+        // Ensure day number is set correctly
+        if (!day.day || typeof day.day !== 'number') {
+          day.day = index + 1;
+        }
+        
+        // Ensure title exists
+        if (!day.title || typeof day.title !== 'string') {
+          day.title = `Day ${day.day} Itinerary`;
+        }
+        
+        // Ensure activities is an array of strings
+        if (Array.isArray(day.activities)) {
+          day.activities = day.activities
+            .filter((activity) => activity !== null && activity !== undefined)
+            .map((activity: any) => {
+              // If activity is an object, convert it to string
+              if (typeof activity === 'object' && activity !== null) {
+                return JSON.stringify(activity);
+              }
+              // Ensure it's a string
+              return String(activity);
+            });
+        } else {
+          // If activities is not an array, make it an empty array
+          day.activities = [];
+        }
+        
+        // Ensure imageKeywords is a string if provided
+        if (day.imageKeywords && typeof day.imageKeywords !== 'string') {
+          day.imageKeywords = String(day.imageKeywords);
+        }
+        
+        return day;
+      })
+      .sort((a, b) => a.day - b.day); // Sort by day number
 
     // Ensure we have the correct number of days
     if (itinerary.length < numberOfDays) {

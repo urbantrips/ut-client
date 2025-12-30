@@ -108,7 +108,8 @@ Your task:
 5. If modifying activities, update them appropriately while respecting preferences and maintaining the format
 6. Maintain the same JSON structure with day, title, activities (in the format above), and imageKeywords fields
 7. Keep the same number of days unless the user explicitly asks to add/remove days
-8. Provide a friendly, conversational response message explaining what you changed
+8. CRITICAL: You MUST return ALL days in the itinerary, not just the modified ones. Include every day from Day 1 to the last day.
+9. Provide a friendly, conversational response message explaining what you changed
 
 IMPORTANT: 
 - Return your response as a JSON object with two fields:
@@ -183,17 +184,52 @@ Example response format:
     // Parse the response
     let result: { message: string; itinerary: DayItinerary[] };
     try {
-      // Try to extract JSON from markdown code blocks if present
-      const jsonMatch = generatedText.match(/```(?:json)?\s*([\s\S]*?)\s*```/) || 
-                       generatedText.match(/\{[\s\S]*\}/);
+      // Try multiple parsing strategies
+      let parsed: any = null;
       
-      if (jsonMatch) {
-        result = JSON.parse(jsonMatch[1] || jsonMatch[0]);
-      } else {
-        result = JSON.parse(generatedText);
+      // Strategy 1: Try to extract JSON from markdown code blocks
+      const codeBlockMatch = generatedText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+      if (codeBlockMatch) {
+        try {
+          parsed = JSON.parse(codeBlockMatch[1]);
+        } catch (e) {
+          // Continue to next strategy
+        }
       }
+      
+      // Strategy 2: Try to find JSON object in the text (non-greedy, balanced braces)
+      if (!parsed) {
+        let braceCount = 0;
+        let startIndex = -1;
+        for (let i = 0; i < generatedText.length; i++) {
+          if (generatedText[i] === '{') {
+            if (startIndex === -1) startIndex = i;
+            braceCount++;
+          } else if (generatedText[i] === '}') {
+            braceCount--;
+            if (braceCount === 0 && startIndex !== -1) {
+              try {
+                const jsonStr = generatedText.substring(startIndex, i + 1);
+                parsed = JSON.parse(jsonStr);
+                break;
+              } catch (e) {
+                startIndex = -1;
+                braceCount = 0;
+              }
+            }
+          }
+        }
+      }
+      
+      // Strategy 3: Try parsing the entire text
+      if (!parsed) {
+        parsed = JSON.parse(generatedText);
+      }
+      
+      result = parsed;
     } catch (parseError) {
       console.error('Failed to parse JSON:', parseError);
+      console.error('Generated text:', generatedText);
       // Fallback: return the original itinerary with a generic message
       return NextResponse.json({
         message: "I understand your request, but I'm having trouble processing it. Could you please rephrase?",
@@ -202,12 +238,89 @@ Example response format:
     }
 
     // Validate the response structure
+    if (!result || typeof result !== 'object') {
+      console.error('Invalid response: not an object');
+      return NextResponse.json({
+        message: "I've processed your request, but there was an issue updating the itinerary.",
+        itinerary: currentItinerary,
+      });
+    }
+
+    // Check if result is directly an array (itinerary only)
+    if (Array.isArray(result)) {
+      result = { message: "I've updated your itinerary!", itinerary: result };
+    }
+
+    // Validate the itinerary array
     if (!result.itinerary || !Array.isArray(result.itinerary)) {
-      console.error('Invalid itinerary structure in response');
+      console.error('Invalid itinerary structure in response:', result);
       return NextResponse.json({
         message: result.message || "I've processed your request, but there was an issue updating the itinerary.",
         itinerary: currentItinerary,
       });
+    }
+
+    // Ensure all activities are strings (not objects) and validate day structure
+    result.itinerary = result.itinerary
+      .filter((day: any) => day && typeof day === 'object') // Remove invalid entries
+      .map((day: any, index: number) => {
+        // Ensure day number is set correctly
+        if (!day.day || typeof day.day !== 'number') {
+          day.day = index + 1;
+        }
+        
+        // Ensure title exists
+        if (!day.title || typeof day.title !== 'string') {
+          day.title = `Day ${day.day} Itinerary`;
+        }
+        
+        // Ensure activities is an array of strings
+        if (Array.isArray(day.activities)) {
+          day.activities = day.activities
+            .filter((activity: any) => activity !== null && activity !== undefined)
+            .map((activity: any) => {
+              // If activity is an object, convert it to string
+              if (typeof activity === 'object' && activity !== null) {
+                return JSON.stringify(activity);
+              }
+              // Ensure it's a string
+              return String(activity);
+            });
+        } else {
+          // If activities is not an array, make it an empty array
+          day.activities = [];
+        }
+        
+        // Ensure imageKeywords is a string if provided
+        if (day.imageKeywords && typeof day.imageKeywords !== 'string') {
+          day.imageKeywords = String(day.imageKeywords);
+        }
+        
+        return day;
+      })
+      .sort((a: any, b: any) => a.day - b.day); // Sort by day number
+    
+    // Ensure we maintain the same number of days as the original itinerary
+    const originalDayCount = currentItinerary.length;
+    if (result.itinerary.length < originalDayCount) {
+      // Fill in missing days from original itinerary
+      for (let i = 1; i <= originalDayCount; i++) {
+        const existingDay = result.itinerary.find((d: any) => d.day === i);
+        if (!existingDay) {
+          const originalDay = currentItinerary.find((d) => d.day === i);
+          if (originalDay) {
+            result.itinerary.push({
+              day: i,
+              title: originalDay.title,
+              activities: originalDay.activities,
+              imageKeywords: originalDay.imageKeywords,
+              imageUrl: originalDay.imageUrl,
+            });
+          }
+        }
+      }
+      // Re-sort after adding missing days
+      result.itinerary.sort((a: any, b: any) => a.day - b.day);
     }
 
     // Update image URLs for modified days
