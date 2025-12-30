@@ -14,7 +14,7 @@ export default function ExportCsvPage() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleDownload = async () => {
+  const handleDownload = () => {
     if (!accessToken) {
       setError('Please log in to download trips data');
       return;
@@ -23,72 +23,40 @@ export default function ExportCsvPage() {
     setIsDownloading(true);
     setError(null);
 
-    try {
-      const apiUrl = env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      let url = `${apiUrl}/trips/download-csv`;
+    const apiUrl = env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    let url = `${apiUrl}/trips/download-csv`;
 
-      // Add query parameters if dates are provided
-      const params = new URLSearchParams();
-      if (startDate) params.append('startDate', startDate);
-      if (endDate) params.append('endDate', endDate);
-      if (params.toString()) {
-        url += `?${params.toString()}`;
-      }
+    // Add query parameters if dates are provided
+    if (startDate) url += `?startDate=${startDate}`;
+    if (endDate) url += `${startDate ? '&' : '?'}endDate=${endDate}`;
 
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Accept': 'text/csv',
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Failed to download: ${response.status}`);
-      }
-
-      // Get the text content from response
-      const csvText = await response.text();
-      
-      // Create a blob with explicit CSV MIME type
-      const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
-      
-      // Get filename from Content-Disposition header or use default
-      const contentDisposition = response.headers.get('Content-Disposition');
-      let filename = 'trips-export.csv';
-      if (contentDisposition) {
-        const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-        if (filenameMatch && filenameMatch[1]) {
-          filename = filenameMatch[1].replace(/['"]/g, '');
+    // Just fetch and download - no parsing, no validation
+    fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Failed to download: ${response.status}`);
         }
-      }
-      
-      // Ensure filename has .csv extension
-      if (!filename.endsWith('.csv')) {
-        filename = filename.endsWith('.') ? filename + 'csv' : filename + '.csv';
-      }
-
-      // Create download link and trigger download
-      const url_blob = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url_blob;
-      link.download = filename;
-      link.style.display = 'none';
-      document.body.appendChild(link);
-      link.click();
-      
-      // Clean up
-      setTimeout(() => {
+        return response.blob();
+      })
+      .then(blob => {
+        const url_blob = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url_blob;
+        link.download = 'trips-export.csv';
+        document.body.appendChild(link);
+        link.click();
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url_blob);
-      }, 100);
-    } catch (err) {
-      console.error('Download error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to download CSV');
-    } finally {
-      setIsDownloading(false);
-    }
+        setIsDownloading(false);
+      })
+      .catch(() => {
+        setError('Failed to download CSV');
+        setIsDownloading(false);
+      });
   };
 
   return (
