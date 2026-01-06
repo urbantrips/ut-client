@@ -6,11 +6,81 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { testimonials } from '@/data/testimonials';
 import { CustomerAvatar } from '@/components/ui/customer-avatar';
+import { useQuery } from '@tanstack/react-query';
+import { apiGet } from '@/lib/api-client';
+import { queryKeys } from '@/lib/query-keys';
+import { useUserStore } from '@/store/user-store';
+import { useState, useEffect } from 'react';
+
+interface TripResponse {
+  id: string;
+  bookingId: string;
+  destination: string;
+  departureCity?: string;
+  startDate?: string;
+  endDate?: string;
+  travelerCounts: {
+    adults: number;
+    children: number;
+    infants: number;
+  };
+  itinerary: Array<{
+    day: number;
+    title: string;
+    activities: string[];
+    imageUrl?: string;
+  }>;
+  status: string;
+}
 
 export const HeroSection = () => {
   const popularDestinations = ['Paris', 'Tokyo', 'Bali', 'New York', 'Dubai'];
-
   const router = useRouter();
+  const [isHydrated, setIsHydrated] = useState(false);
+  const accessToken = useUserStore((state) => state.accessToken);
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+  // Wait for Zustand persist to hydrate from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('user-storage');
+      if (stored) {
+        try {
+          JSON.parse(stored);
+          const timer = setTimeout(() => {
+            setIsHydrated(true);
+          }, 100);
+          return () => clearTimeout(timer);
+        } catch {
+          setIsHydrated(true);
+        }
+      } else {
+        setIsHydrated(true);
+      }
+    } else {
+      setIsHydrated(true);
+    }
+  }, []);
+
+  // Fetch trips for testing
+  const { data: trips, isLoading, error } = useQuery<TripResponse[]>({
+    queryKey: queryKeys.trips.all,
+    queryFn: async () => {
+      return apiGet<TripResponse[]>(`${apiUrl}/trips`);
+    },
+    enabled: isHydrated && !!accessToken, // Only fetch if user is authenticated
+    retry: 1,
+  });
+
+  // Log trips data for testing
+  useEffect(() => {
+    if (trips) {
+      console.log('Trips fetched in hero:', trips);
+    }
+    if (error) {
+      console.error('Error fetching trips in hero:', error);
+    }
+  }, [trips, error]);
 
   const handleSearch = () => {
     router.push('/search');
