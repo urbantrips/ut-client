@@ -105,7 +105,7 @@ export default function TripsPage() {
   const { data: trips, isLoading, error } = useQuery<TripResponse[]>({
     queryKey: queryKeys.trips.all,
     queryFn: async () => {
-      return apiGet<TripResponse[]>(`${apiUrl}/api/v1/trips`);
+      return apiGet<TripResponse[]>(`${apiUrl}/trips`);
     },
     retry: 1,
   });
@@ -113,7 +113,7 @@ export default function TripsPage() {
   // Cancel trip mutation
   const cancelTripMutation = useMutation({
     mutationFn: async (tripId: string) => {
-      return apiPatch(`${apiUrl}/api/v1/trips/${tripId}`, { status: 'Cancelled' });
+      return apiPatch(`${apiUrl}/trips/${tripId}`, { status: 'Cancelled' });
     },
     onSuccess: () => {
       // Invalidate and refetch trips list
