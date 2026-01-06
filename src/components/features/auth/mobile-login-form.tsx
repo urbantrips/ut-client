@@ -137,10 +137,6 @@ export const MobileLoginForm = ({ onLoginSuccess }: MobileLoginFormProps) => {
                         refreshToken: authData.refreshToken,
                     }
                 );
-                
-                // Also set cookies for server-side access
-                document.cookie = `accessToken=${authData.accessToken}; path=/; max-age=${15 * 60}; SameSite=Lax`;
-                document.cookie = `refreshToken=${authData.refreshToken}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
             }
 
             onLoginSuccess?.();
