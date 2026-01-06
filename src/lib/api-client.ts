@@ -79,12 +79,17 @@ export async function apiRequest<T = any>(
 
   // If we get a 401, try to refresh the token and retry
   if (response.status === 401) {
-    // Check if this is a token expiry error
+    // Check if this is a token expiry error or missing auth header
     const errorData = await response.json().catch(() => ({}));
-    const isTokenExpired = errorData.message?.includes('expired') || 
-                          errorData.message?.includes('refresh');
+    const errorMessage = errorData.message || '';
+    const isTokenExpired = errorMessage.includes('expired') || 
+                          errorMessage.includes('refresh');
+    const isMissingAuth = errorMessage.includes('No authorization header') ||
+                         errorMessage.includes('authorization header');
 
-    if (isTokenExpired) {
+    // Try to refresh if we have a refresh token and it's a token-related error
+    const { refreshToken } = useUserStore.getState();
+    if (refreshToken && (isTokenExpired || isMissingAuth)) {
       // Prevent multiple simultaneous refresh attempts
       if (!isRefreshing) {
         isRefreshing = true;
@@ -107,13 +112,23 @@ export async function apiRequest<T = any>(
           ...options,
           headers: retryHeaders,
         });
+        
+        // If retry still fails with 401, throw the error
+        if (response.status === 401) {
+          const retryErrorData = await response.json().catch(() => ({}));
+          throw new Error(retryErrorData.message || 'Authentication failed. Please log in again.');
+        }
       } else {
-        // Refresh failed, throw the original error
-        throw new Error(errorData.message || 'Authentication failed. Please log in again.');
+        // Refresh failed, clear user and throw error
+        useUserStore.getState().clearUser();
+        throw new Error('Authentication failed. Please log in again.');
       }
     } else {
-      // Not a token expiry error, throw it
-      throw new Error(errorData.message || 'Authentication failed');
+      // No refresh token or not a refreshable error, clear user and throw
+      if (!refreshToken) {
+        useUserStore.getState().clearUser();
+      }
+      throw new Error(errorMessage || 'Authentication failed. Please log in again.');
     }
   }
 

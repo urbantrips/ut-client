@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { MobileLoginForm } from '@/components/features/auth/mobile-login-form';
 import { ArrowLeftIcon } from 'lucide-react';
 import Link from 'next/link';
@@ -8,14 +8,15 @@ import Link from 'next/link';
 
 export default function SigninPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     // We'll use this store just to persist any data if needed or access future auth state
 
     const handleLoginSuccess = () => {
+        // Check if there's a redirect parameter in the URL
+        const redirectTo = searchParams.get('redirect');
         // Navigate to the referring page or a dashboard.
-        // For now, let's assume they might be coming to check their trip or plan one.
-        // If they were in the middle of planning, we might want to redirect there.
-        // Defaulting to root for now or user dashboard if it existed.
-        router.push('/');
+        // If redirect parameter exists, use it; otherwise default to root.
+        router.push(redirectTo || '/');
     };
 
     return (

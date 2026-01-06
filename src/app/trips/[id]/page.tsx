@@ -8,7 +8,8 @@ import { queryKeys } from '@/lib/query-keys';
 import { env } from '@/lib/env';
 import { LoadingState } from '@/components/features/generate-trip/loading-state';
 import { ItineraryView } from '@/components/features/generate-trip/itinerary-view';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useUserStore } from '@/store/user-store';
 
 interface TripResponse {
   id: string;
@@ -65,20 +66,63 @@ export default function TripDetailPage() {
   const router = useRouter();
   const params = useParams();
   const tripId = params?.id as string;
+  const [isHydrated, setIsHydrated] = useState(false);
+  const accessToken = useUserStore((state) => state.accessToken);
   
   const apiUrl = env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
   const [selectedDay, setSelectedDay] = useState<number>(1);
   const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
   const [imageLoaded, setImageLoaded] = useState<Record<number, boolean>>({});
   
+  // Wait for Zustand persist to hydrate from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Check if localStorage has user data
+      const stored = localStorage.getItem('user-storage');
+      if (stored) {
+        try {
+          JSON.parse(stored);
+          // Wait a bit for Zustand to hydrate
+          const timer = setTimeout(() => {
+            setIsHydrated(true);
+          }, 100);
+          return () => clearTimeout(timer);
+        } catch {
+          setIsHydrated(true);
+        }
+      } else {
+        // No stored data, proceed immediately
+        setIsHydrated(true);
+      }
+    } else {
+      setIsHydrated(true);
+    }
+  }, []);
+  
   const { data: trip, isLoading, error } = useQuery<TripResponse>({
     queryKey: queryKeys.trips.detail(tripId),
     queryFn: async () => {
       return apiGet<TripResponse>(`${apiUrl}/trips/${tripId}`);
     },
-    enabled: !!tripId,
+    enabled: isHydrated && !!tripId && !!accessToken,
     retry: 1,
   });
+
+  // Redirect to login if authentication error occurs
+  useEffect(() => {
+    if (error instanceof Error) {
+      const errorMessage = error.message.toLowerCase();
+      const isAuthError = errorMessage.includes('authentication') || 
+                        errorMessage.includes('authorization') ||
+                        errorMessage.includes('log in') ||
+                        errorMessage.includes('bearer token');
+      
+      if (isAuthError && !accessToken) {
+        // Redirect to signin page with return URL
+        router.push(`/signin?redirect=${encodeURIComponent(`/trips/${tripId}`)}`);
+      }
+    }
+  }, [error, accessToken, router, tripId]);
 
   const handleBack = () => {
     router.back();
@@ -113,13 +157,28 @@ export default function TripDetailPage() {
 
       {/* Content */}
       <div className="px-4 py-4 pb-20">
-        {isLoading ? (
+        {!isHydrated ? (
+          <LoadingState message="Loading..." />
+        ) : isLoading ? (
           <LoadingState message="Loading trip details..." />
         ) : error ? (
-          <div className="flex items-center justify-center h-64">
+          <div className="flex flex-col items-center justify-center h-64 space-y-4">
             <p className="text-sm text-red-600 text-center" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
               {error instanceof Error ? error.message : 'Failed to load trip details. Please try again later.'}
             </p>
+            {error instanceof Error && (
+              error.message.toLowerCase().includes('authentication') || 
+              error.message.toLowerCase().includes('authorization') ||
+              error.message.toLowerCase().includes('log in')
+            ) && (
+              <button
+                onClick={() => router.push(`/signin?redirect=${encodeURIComponent(`/trips/${tripId}`)}`)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
+              >
+                Sign In
+              </button>
+            )}
           </div>
         ) : trip ? (
           <div className="space-y-6">
