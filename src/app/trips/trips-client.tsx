@@ -94,48 +94,13 @@ function transformTripToBooking(trip: TripResponse): BookingCardData {
 export function TripsClient() {
   const router = useRouter();
   const [trips, setTrips] = useState<TripResponse[] | null>(null);
-  const [isMounted, setIsMounted] = useState(false);
-  const [isHydrated, setIsHydrated] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // Start as false, will be set to true when actually fetching
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [tripToCancel, setTripToCancel] = useState<BookingCardData | null>(null);
   const accessToken = useUserStore((state) => state.accessToken);
 
-  // Mark component as mounted (client-side only)
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  // Wait for Zustand persist to hydrate from localStorage (client-side only)
-  useEffect(() => {
-    if (!isMounted || typeof window === 'undefined') {
-      return;
-    }
-
-    const stored = localStorage.getItem('user-storage');
-    if (stored) {
-      try {
-        JSON.parse(stored);
-        const timer = setTimeout(() => {
-          setIsHydrated(true);
-        }, 100);
-        return () => clearTimeout(timer);
-      } catch {
-        setIsHydrated(true);
-      }
-    } else {
-      setIsHydrated(true);
-    }
-  }, [isMounted]);
-
-  // Fetch trips - ONLY on client side after mount and hydration
-  useEffect(() => {
-    // Strict check: must be mounted, in browser, hydrated
-    if (!isMounted || typeof window === 'undefined' || !isHydrated) {
-      return;
-    }
-
     const fetchTrips = async () => {
       setIsLoading(true);
       setError(null);
@@ -152,8 +117,7 @@ export function TripsClient() {
         const isAuthError = errorMessage.includes('authentication') || 
                           errorMessage.includes('authorization') ||
                           errorMessage.includes('log in') ||
-                          errorMessage.includes('bearer token') ||
-                          errorMessage.includes('no authorization header');
+                          errorMessage.includes('bearer token');
         
         if (isAuthError && !accessToken) {
           router.push(`/signin?redirect=${encodeURIComponent('/trips')}`);
@@ -164,7 +128,7 @@ export function TripsClient() {
     };
 
     fetchTrips();
-  }, [isMounted, isHydrated, accessToken, router]);
+  }, [accessToken, router]);
 
   const cancelTripMutation = useMutation({
     mutationFn: async (tripId: string) => {
@@ -231,7 +195,7 @@ export function TripsClient() {
       </div>
 
       <div className="px-4 py-4 pb-20">
-        {!isMounted || !isHydrated || isLoading ? (
+        {isLoading ? (
           <LoadingState message="Loading your trips..." />
         ) : error ? (
           <div className="flex flex-col items-center justify-center h-64 space-y-4">
