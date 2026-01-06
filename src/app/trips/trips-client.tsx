@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { BookingCard } from '@/components/features/trips/booking-card';
-import { apiGet, apiPatch } from '@/lib/api-client';
+import { apiPatch } from '@/lib/api-client';
 import { queryKeys } from '@/lib/query-keys';
 import { getDestinationImage } from '@/lib/destination-utils';
 import { LoadingState } from '@/components/features/generate-trip/loading-state';
@@ -102,8 +102,16 @@ export function TripsClient() {
   const { data: trips, isLoading, error } = useQuery<TripResponse[]>({
     queryKey: queryKeys.trips.all,
     queryFn: async () => {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      return apiGet<TripResponse[]>(`${apiUrl}/trips`);
+      const response = await fetch('/api/trips', {
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to fetch trips');
+      }
+      
+      return response.json();
     },
     retry: 1,
   });
