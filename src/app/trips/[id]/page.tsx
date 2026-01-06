@@ -102,7 +102,7 @@ export default function TripDetailPage() {
   const { data: trip, isLoading, error } = useQuery<TripResponse>({
     queryKey: queryKeys.trips.detail(tripId),
     queryFn: async () => {
-      return apiGet<TripResponse>(`${apiUrl}/trips/${tripId}`);
+      return apiGet<TripResponse>(`${apiUrl}/api/v1/trips/${tripId}`);
     },
     enabled: isHydrated && !!tripId && !!accessToken,
     retry: 1,

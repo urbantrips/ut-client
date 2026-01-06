@@ -42,7 +42,7 @@ export default function ExportCsvPage() {
     setError(null);
 
     const apiUrl = env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-    let url = `${apiUrl}/trips/download-csv`;
+    let url = `${apiUrl}/api/v1/trips/download-csv`;
 
     // Add query parameters if dates are provided
     const params = new URLSearchParams();

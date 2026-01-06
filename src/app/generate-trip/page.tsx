@@ -252,7 +252,7 @@ export default function GenerateTripPage() {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
       
       // Use API client which handles token refresh automatically
-      await apiPost(`${apiUrl}/trips`, tripData);
+      await apiPost(`${apiUrl}/api/v1/trips`, tripData);
 
       // Trip saved successfully
       setIsConfirmed(true);
