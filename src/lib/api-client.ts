@@ -59,31 +59,7 @@ export async function apiRequest<T = any>(
   url: string,
   options: RequestInit = {}
 ): Promise<T> {
-  // Get access token - try multiple times to ensure hydration is complete
-  let accessToken = useUserStore.getState().accessToken;
-  
-  // If no token, try to get it directly from localStorage (especially important in production SSR)
-  if (!accessToken && typeof window !== 'undefined') {
-    try {
-      const stored = localStorage.getItem('user-storage');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed?.state?.accessToken) {
-          accessToken = parsed.state.accessToken;
-          // Update the store with the token we found
-          useUserStore.getState().setTokens({
-            accessToken: parsed.state.accessToken,
-            refreshToken: parsed.state.refreshToken || '',
-          });
-        }
-      }
-    } catch (e) {
-      // Ignore parse errors
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('[API Client] Error reading token from localStorage:', e);
-      }
-    }
-  }
+  const { accessToken } = useUserStore.getState();
   
   // Add authorization header if we have a token
   const headers: Record<string, string> = {
@@ -93,11 +69,6 @@ export async function apiRequest<T = any>(
 
   if (accessToken) {
     headers['Authorization'] = `Bearer ${accessToken}`;
-  } else {
-    // Log warning in development to help debug
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('[API Client] No access token available for request to:', url);
-    }
   }
 
   // Make the initial request
