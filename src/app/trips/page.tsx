@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -11,7 +11,6 @@ import { getDestinationImage } from '@/lib/destination-utils';
 import { env } from '@/lib/env';
 import { LoadingState } from '@/components/features/generate-trip/loading-state';
 import { CancelConfirmationModal } from '@/components/features/trips/cancel-confirmation-modal';
-import { useUserStore } from '@/store/user-store';
 
 interface TripResponse {
   id: string;
@@ -100,35 +99,8 @@ export default function TripsPage() {
   const queryClient = useQueryClient();
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [tripToCancel, setTripToCancel] = useState<BookingCardData | null>(null);
-  const [isHydrated, setIsHydrated] = useState(false);
-  const accessToken = useUserStore((state) => state.accessToken);
   
   const apiUrl = env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-  
-  // Wait for Zustand persist to hydrate from localStorage
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Check if localStorage has user data
-      const stored = localStorage.getItem('user-storage');
-      if (stored) {
-        try {
-          JSON.parse(stored);
-          // Wait a bit for Zustand to hydrate
-          const timer = setTimeout(() => {
-            setIsHydrated(true);
-          }, 100);
-          return () => clearTimeout(timer);
-        } catch {
-          setIsHydrated(true);
-        }
-      } else {
-        // No stored data, proceed immediately
-        setIsHydrated(true);
-      }
-    } else {
-      setIsHydrated(true);
-    }
-  }, []);
   
   const { data: trips, isLoading, error } = useQuery<TripResponse[]>({
     queryKey: queryKeys.trips.all,
@@ -136,24 +108,7 @@ export default function TripsPage() {
       return apiGet<TripResponse[]>(`${apiUrl}/trips`);
     },
     retry: 1,
-    enabled: isHydrated && !!accessToken, // Only run query after hydration and if we have an access token
   });
-
-  // Redirect to login if authentication error occurs
-  useEffect(() => {
-    if (error instanceof Error) {
-      const errorMessage = error.message.toLowerCase();
-      const isAuthError = errorMessage.includes('authentication') || 
-                        errorMessage.includes('authorization') ||
-                        errorMessage.includes('log in') ||
-                        errorMessage.includes('bearer token');
-      
-      if (isAuthError && !accessToken) {
-        // Redirect to signin page with return URL
-        router.push(`/signin?redirect=${encodeURIComponent('/trips')}`);
-      }
-    }
-  }, [error, accessToken, router]);
 
   // Cancel trip mutation
   const cancelTripMutation = useMutation({
@@ -219,28 +174,13 @@ export default function TripsPage() {
 
       {/* Content */}
       <div className="px-4 py-4 pb-20 ">
-        {!isHydrated ? (
-          <LoadingState message="Loading..." />
-        ) : isLoading ? (
+        {isLoading ? (
           <LoadingState message="Loading your trips..." />
         ) : error ? (
-          <div className="flex flex-col items-center justify-center h-64 space-y-4">
+          <div className="flex items-center justify-center h-64">
             <p className="text-sm text-red-600 text-center" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
               {error instanceof Error ? error.message : 'Failed to load trips. Please try again later.'}
             </p>
-            {error instanceof Error && (
-              error.message.toLowerCase().includes('authentication') || 
-              error.message.toLowerCase().includes('authorization') ||
-              error.message.toLowerCase().includes('log in')
-            ) && (
-              <button
-                onClick={() => router.push(`/signin?redirect=${encodeURIComponent('/trips')}`)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
-              >
-                Sign In
-              </button>
-            )}
           </div>
         ) : filteredBookings.length > 0 ? (
           <div className="space-y-4">
