@@ -6,6 +6,9 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { testimonials } from '@/data/testimonials';
 import { CustomerAvatar } from '@/components/ui/customer-avatar';
+import { useQuery } from '@tanstack/react-query';
+import { apiGet } from '@/lib/api-client';
+import { queryKeys } from '@/lib/query-keys';
 import { useUserStore } from '@/store/user-store';
 import { useState, useEffect } from 'react';
 
@@ -59,30 +62,25 @@ export const HeroSection = () => {
     }
   }, []);
 
-  // Fetch trips for testing - only on client side when authenticated
-  useEffect(() => {
-    // Only fetch on client side, after hydration, and when user is authenticated
-    if (typeof window === 'undefined' || !isHydrated || !accessToken) {
-      return;
-    }
+  // Fetch trips for testing
+  const { data: trips, isLoading, error } = useQuery<TripResponse[]>({
+    queryKey: queryKeys.trips.all,
+    queryFn: async () => {
+      return apiGet<TripResponse[]>(`${apiUrl}/trips`);
+    },
+    enabled: isHydrated && !!accessToken, // Only fetch if user is authenticated
+    retry: 1,
+  });
 
-    // Import apiGet dynamically to ensure it's only used on client
-    import('@/lib/api-client').then(({ apiGet }) => {
-      apiGet<TripResponse[]>(`${apiUrl}/trips`)
-        .then((trips) => {
-          console.log('Trips fetched in hero:', trips);
-        })
-        .catch((error) => {
-          // Silently handle 401 errors (user not authenticated)
-          if (error instanceof Error) {
-            const errorMsg = error.message.toLowerCase();
-            if (!errorMsg.includes('authentication') && !errorMsg.includes('unauthorized') && !errorMsg.includes('401')) {
-              console.error('Error fetching trips in hero:', error);
-            }
-          }
-        });
-    });
-  }, [isHydrated, accessToken, apiUrl]);
+  // Log trips data for testing
+  useEffect(() => {
+    if (trips) {
+      console.log('Trips fetched in hero:', trips);
+    }
+    if (error) {
+      console.error('Error fetching trips in hero:', error);
+    }
+  }, [trips, error]);
 
   const handleSearch = () => {
     router.push('/search');
