@@ -96,7 +96,7 @@ export function TripsClient() {
   const [trips, setTrips] = useState<TripResponse[] | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // Start as false, will be set to true when actually fetching
+  const [isLoading, setIsLoading] = useState(true); // Start as true to show loading UI immediately
   const [error, setError] = useState<Error | null>(null);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [tripToCancel, setTripToCancel] = useState<BookingCardData | null>(null);
