@@ -94,15 +94,9 @@ export async function apiRequest<T = any>(
   if (accessToken) {
     headers['Authorization'] = `Bearer ${accessToken}`;
   } else {
-    // Log warning to help debug (both dev and prod for troubleshooting)
-    console.warn('[API Client] No access token available for request to:', url);
-    console.warn('[API Client] Check localStorage for user-storage key');
-    
-    // Try one more time to get token from store
-    const retryToken = useUserStore.getState().accessToken;
-    if (retryToken) {
-      headers['Authorization'] = `Bearer ${retryToken}`;
-      console.log('[API Client] Token found on retry');
+    // Log warning in development to help debug
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('[API Client] No access token available for request to:', url);
     }
   }
 

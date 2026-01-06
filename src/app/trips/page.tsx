@@ -136,7 +136,7 @@ export default function TripsPage() {
       return apiGet<TripResponse[]>(`${apiUrl}/trips`);
     },
     retry: 1,
-    enabled: isHydrated, // Only run query after hydration - let API client handle token retrieval
+    enabled: isHydrated && !!accessToken, // Only run query after hydration and if we have an access token
   });
 
   // Redirect to login if authentication error occurs
