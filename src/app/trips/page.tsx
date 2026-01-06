@@ -100,43 +100,20 @@ export default function TripsPage() {
   const queryClient = useQueryClient();
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [tripToCancel, setTripToCancel] = useState<BookingCardData | null>(null);
-  const [isHydrated, setIsHydrated] = useState(false);
   const accessToken = useUserStore((state) => state.accessToken);
   
   const apiUrl = env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
   
-  // Wait for Zustand persist to hydrate from localStorage
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Check if localStorage has user data
-      const stored = localStorage.getItem('user-storage');
-      if (stored) {
-        try {
-          JSON.parse(stored);
-          // Wait a bit for Zustand to hydrate
-          const timer = setTimeout(() => {
-            setIsHydrated(true);
-          }, 100);
-          return () => clearTimeout(timer);
-        } catch {
-          setIsHydrated(true);
-        }
-      } else {
-        // No stored data, proceed immediately
-        setIsHydrated(true);
-      }
-    } else {
-      setIsHydrated(true);
-    }
-  }, []);
-  
   const { data: trips, isLoading, error } = useQuery<TripResponse[]>({
     queryKey: queryKeys.trips.all,
     queryFn: async () => {
-      return apiGet<TripResponse[]>(`${apiUrl}/trips`);
+      console.log('[TripsPage] Fetching trips from:', `${apiUrl}/trips`);
+      const result = await apiGet<TripResponse[]>(`${apiUrl}/trips`);
+      console.log('[TripsPage] Received trips:', result?.length || 0);
+      return result;
     },
     retry: 1,
-    enabled: isHydrated, // Only run query after hydration - let API client handle token retrieval
+    // Remove enabled check - let React Query run it, API client will handle auth
   });
 
   // Redirect to login if authentication error occurs
@@ -219,9 +196,7 @@ export default function TripsPage() {
 
       {/* Content */}
       <div className="px-4 py-4 pb-20 ">
-        {!isHydrated ? (
-          <LoadingState message="Loading..." />
-        ) : isLoading ? (
+        {isLoading ? (
           <LoadingState message="Loading your trips..." />
         ) : error ? (
           <div className="flex flex-col items-center justify-center h-64 space-y-4">
