@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Destination } from '@/data/destinations';
+import { useTravelersInfoStore } from '@/store/travelers-info-store';
 
 interface ExploreSectionProps {
   title: string;
@@ -15,6 +17,8 @@ export function ExploreSection({ title, subtitle, destinations, cardCount = 5 }:
   const displayDestinations = destinations.slice(0, cardCount);
   const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
   const [imageLoaded, setImageLoaded] = useState<Record<number, boolean>>({});
+  const router = useRouter();
+  const setSelectedDestination = useTravelersInfoStore((state) => state.setSelectedDestination);
 
   const handleImageError = (index: number) => {
     setImageErrors((prev) => ({ ...prev, [index]: true }));
@@ -22,6 +26,11 @@ export function ExploreSection({ title, subtitle, destinations, cardCount = 5 }:
 
   const handleImageLoad = (index: number) => {
     setImageLoaded((prev) => ({ ...prev, [index]: true }));
+  };
+
+  const handleDestinationClick = (destination: Destination) => {
+    setSelectedDestination(destination.title);
+    router.push('/travelers-info');
   };
 
   return (
@@ -40,6 +49,7 @@ export function ExploreSection({ title, subtitle, destinations, cardCount = 5 }:
           {displayDestinations.map((destination, index) => (
             <div
               key={`${destination.title}-${index}`}
+              onClick={() => handleDestinationClick(destination)}
               className={`cursor-pointer group flex-shrink-0 ${index < displayDestinations.length - 1 ? 'md:mr-4' : ''}`}
             >
               <div

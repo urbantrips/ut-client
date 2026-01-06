@@ -3,13 +3,22 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { destinationsByCategory, type DestinationCategory, type Destination } from '@/data/destinations';
+import { useTravelersInfoStore } from '@/store/travelers-info-store';
 
 const filterOptions: DestinationCategory[] = ['Must Visit', 'Trending', 'Weekend', 'New Discoveries', 'Just for You'];
 
 function DestinationCard({ destination, index, activeFilter }: { destination: Destination; index: number; activeFilter: DestinationCategory }) {
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const router = useRouter();
+  const setSelectedDestination = useTravelersInfoStore((state) => state.setSelectedDestination);
+
+  const handleDestinationClick = () => {
+    setSelectedDestination(destination.title);
+    router.push('/travelers-info');
+  };
 
   return (
     <motion.div
@@ -17,6 +26,7 @@ function DestinationCard({ destination, index, activeFilter }: { destination: De
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.05 }}
+      onClick={handleDestinationClick}
       className={`flex flex-col cursor-pointer group ${index >= 6 ? 'hidden sm:flex' : ''}`}
     >
       {/* Destination Image */}
