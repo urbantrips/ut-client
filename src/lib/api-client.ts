@@ -93,51 +93,34 @@ export async function apiRequest<T = any>(
 
   if (accessToken) {
     headers['Authorization'] = `Bearer ${accessToken}`;
-    console.log('[API Client] Token found, making request to:', url);
   } else {
-    // Log warning to help debug (both dev and prod for troubleshooting)
-    console.warn('[API Client] No access token available for request to:', url);
-    console.warn('[API Client] Check localStorage for user-storage key');
-    
     // Try one more time to get token from store
     const retryToken = useUserStore.getState().accessToken;
     if (retryToken) {
       headers['Authorization'] = `Bearer ${retryToken}`;
-      console.log('[API Client] Token found on retry');
     } else {
       // Check localStorage one more time
       if (typeof window !== 'undefined') {
         try {
           const stored = localStorage.getItem('user-storage');
-          console.log('[API Client] localStorage user-storage exists:', !!stored);
           if (stored) {
             const parsed = JSON.parse(stored);
-            console.log('[API Client] Parsed storage has accessToken:', !!parsed?.state?.accessToken);
             if (parsed?.state?.accessToken) {
               headers['Authorization'] = `Bearer ${parsed.state.accessToken}`;
-              console.log('[API Client] Using token from localStorage directly');
             }
           }
         } catch (e) {
-          console.error('[API Client] Error reading localStorage:', e);
+          // Ignore parse errors
         }
       }
     }
   }
-
-  // Log the headers being sent (without the token value for security)
-  console.log('[API Client] Request headers:', {
-    ...headers,
-    Authorization: headers['Authorization'] ? 'Bearer ***' : 'NOT SET'
-  });
 
   // Make the initial request
   let response = await fetch(url, {
     ...options,
     headers,
   });
-  
-  console.log('[API Client] Response status:', response.status, 'for', url);
 
   // If we get a 401, try to refresh the token and retry
   if (response.status === 401) {

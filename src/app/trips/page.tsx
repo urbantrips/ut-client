@@ -1,268 +1,70 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { BookingCard } from '@/components/features/trips/booking-card';
-import { apiPatch } from '@/lib/api-client';
+import { getQueryClient } from '@/lib/get-query-client';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import { cookies } from 'next/headers';
 import { queryKeys } from '@/lib/query-keys';
-import { getDestinationImage } from '@/lib/destination-utils';
-import { LoadingState } from '@/components/features/generate-trip/loading-state';
-import { CancelConfirmationModal } from '@/components/features/trips/cancel-confirmation-modal';
-import { useUserStore } from '@/store/user-store';
+import { TripsClient } from './trips-client';
 
-interface TripResponse {
-  id: string;
-  bookingId: string;
-  destination: string;
-  departureCity?: string;
-  startDate?: string;
-  endDate?: string;
-  travelerCounts: {
-    adults: number;
-    children: number;
-    infants: number;
-  };
-  itinerary: Array<{
-    day: number;
-    title: string;
-    activities: string[];
-    imageUrl?: string;
-  }>;
-  status: string;
-}
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
-interface BookingCardData {
-  id: string;
-  tripId: string; // MongoDB ID for navigation
-  title: string;
-  dates: string;
-  travelers: number;
-  image?: string;
-  status: 'Payment Pending' | 'Confirmed' | 'Upcoming' | 'Cancelled' | string;
-}
+async function getTrips() {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get('accessToken')?.value;
 
-function formatDateRange(startDate?: string, endDate?: string): string {
-  if (!startDate || !endDate) {
-    return 'Dates TBD';
+  console.log('[TripsPage Server] Fetching trips:', {
+    hasToken: !!accessToken,
+    apiUrl: `${API_URL}/trips`,
+  });
+
+  if (!accessToken) {
+    console.warn('[TripsPage Server] No access token found in cookies');
+    return null;
   }
 
   try {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    
-    const startMonth = start.toLocaleDateString('en-US', { month: 'short' });
-    const startDay = start.getDate();
-    const endMonth = end.toLocaleDateString('en-US', { month: 'short' });
-    const endDay = end.getDate();
-    
-    if (startMonth === endMonth) {
-      return `${startMonth} ${startDay} - ${endDay}`;
+    const response = await fetch(`${API_URL}/trips`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      cache: 'no-store',
+    });
+
+    console.log('[TripsPage Server] Response:', {
+      status: response.status,
+      statusText: response.statusText,
+      ok: response.ok,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('[TripsPage Server] Failed to fetch trips:', errorData);
+      return null;
     }
-    return `${startMonth} ${startDay} - ${endMonth} ${endDay}`;
-  } catch {
-    return 'Dates TBD';
+
+    const trips = await response.json();
+    console.log('[TripsPage Server] Successfully fetched trips:', trips?.length || 0);
+    return trips;
+  } catch (error) {
+    console.error('[TripsPage Server] Error fetching trips:', error);
+    return null;
   }
 }
 
-function transformTripToBooking(trip: TripResponse): BookingCardData {
-  const totalTravelers = 
-    (trip.travelerCounts?.adults || 0) + 
-    (trip.travelerCounts?.children || 0) + 
-    (trip.travelerCounts?.infants || 0);
+export default async function TripsPage() {
+  const queryClient = getQueryClient();
 
-  // Get image from itinerary first day, or destination image, or undefined
-  const imageUrl = 
-    trip.itinerary?.[0]?.imageUrl || 
-    getDestinationImage(trip.destination) ||
-    undefined;
-
-  // Create title from destination and departure city
-  const title = trip.departureCity 
-    ? `${trip.departureCity} to ${trip.destination}`
-    : trip.destination;
-
-  return {
-    id: trip.bookingId,
-    tripId: trip.id, // MongoDB ID for API calls and navigation
-    title,
-    dates: formatDateRange(trip.startDate, trip.endDate),
-    travelers: totalTravelers,
-    image: imageUrl,
-    status: trip.status || 'Confirmed',
-  };
-}
-
-export default function TripsPage() {
-  const router = useRouter();
-  const queryClient = useQueryClient();
-  const [cancelModalOpen, setCancelModalOpen] = useState(false);
-  const [tripToCancel, setTripToCancel] = useState<BookingCardData | null>(null);
-  const accessToken = useUserStore((state) => state.accessToken);
-  
-  const { data: trips, isLoading, error } = useQuery<TripResponse[]>({
+  // Prefetch trips on the server
+  await queryClient.prefetchQuery({
     queryKey: queryKeys.trips.all,
-    queryFn: async () => {
-      // Use Next.js API route which handles server-side fetching
-      const response = await fetch('/api/trips', {
-        credentials: 'include', // Include cookies
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Failed to fetch trips');
-      }
-      
-      return response.json();
-    },
-    retry: 1,
+    queryFn: getTrips,
   });
 
-  // Redirect to login if authentication error occurs
-  useEffect(() => {
-    if (error instanceof Error) {
-      const errorMessage = error.message.toLowerCase();
-      const isAuthError = errorMessage.includes('authentication') || 
-                        errorMessage.includes('authorization') ||
-                        errorMessage.includes('log in') ||
-                        errorMessage.includes('bearer token');
-      
-      if (isAuthError && !accessToken) {
-        // Redirect to signin page with return URL
-        router.push(`/signin?redirect=${encodeURIComponent('/trips')}`);
-      }
-    }
-  }, [error, accessToken, router]);
-
-  // Cancel trip mutation
-  const cancelTripMutation = useMutation({
-    mutationFn: async (tripId: string) => {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      return apiPatch(`${apiUrl}/trips/${tripId}`, { status: 'Cancelled' });
-    },
-    onSuccess: () => {
-      // Invalidate and refetch trips list
-      queryClient.invalidateQueries({ queryKey: queryKeys.trips.all });
-      setCancelModalOpen(false);
-      setTripToCancel(null);
-    },
-    onError: (error: Error) => {
-      console.error('Failed to cancel trip:', error);
-      alert(`Failed to cancel trip: ${error.message}`);
-    },
-  });
-
-  // Transform trips to booking card format
-  const filteredBookings = trips?.map(transformTripToBooking) || [];
-
-  const handleBack = () => {
-    router.back();
-  };
-
-  const handleViewDetails = (booking: BookingCardData) => {
-    router.push(`/trips/${booking.tripId}`);
-  };
-
-  const handleCancel = (booking: BookingCardData) => {
-    setTripToCancel(booking);
-    setCancelModalOpen(true);
-  };
-
-  const handleConfirmCancel = () => {
-    if (tripToCancel) {
-      cancelTripMutation.mutate(tripToCancel.tripId);
-    }
-  };
+  const dehydratedState = dehydrate(queryClient);
 
   return (
-    <div className="min-h-screen">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-40">
-        <div className="px-4 py-4">
-          <div className="flex items-center">
-            <button
-              onClick={handleBack}
-              className="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors"
-              aria-label="Go back"
-            >
-              <ArrowLeft className="w-6 h-6 text-black" />
-            </button>
-            <h1 className="text-xl font-bold text-black flex-1 text-center" >
-              My Trips</h1>
-            <div className="w-10" /> {/* Spacer to balance the back button */}
-          </div>
-        </div>
-
-        {/* Tabs */}
-        {/* <TripsTabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} /> */}
-      </div>
-
-      {/* Content */}
-      <div className="px-4 py-4 pb-20 ">
-        {isLoading ? (
-          <LoadingState message="Loading your trips..." />
-        ) : error ? (
-          <div className="flex flex-col items-center justify-center h-64 space-y-4">
-            <p className="text-sm text-red-600 text-center" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
-              {error instanceof Error ? error.message : 'Failed to load trips. Please try again later.'}
-            </p>
-            {error instanceof Error && (
-              error.message.toLowerCase().includes('authentication') || 
-              error.message.toLowerCase().includes('authorization') ||
-              error.message.toLowerCase().includes('log in')
-            ) && (
-              <button
-                onClick={() => router.push(`/signin?redirect=${encodeURIComponent('/trips')}`)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
-              >
-                Sign In
-              </button>
-            )}
-          </div>
-        ) : filteredBookings.length > 0 ? (
-          <div className="space-y-4">
-            {filteredBookings.map((booking, index) => (
-              <BookingCard
-                key={`${booking.id}-${index}`}
-                id={booking.id}
-                title={booking.title}
-                dates={booking.dates}
-                travelers={booking.travelers}
-                image={booking.image}
-                status={booking.status}
-                index={index}
-                onCompleteBooking={() => {
-                  // Handle complete booking action
-                  console.log('Complete booking for:', booking.id);
-                }}
-                onCancel={() => handleCancel(booking)}
-                onViewDetails={() => handleViewDetails(booking)}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="flex items-center justify-center h-64">
-            <p className="text-sm text-gray-600 text-center" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
-              No trips found in this category
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Cancel Confirmation Modal */}
-      <CancelConfirmationModal
-        isOpen={cancelModalOpen}
-        onClose={() => {
-          setCancelModalOpen(false);
-          setTripToCancel(null);
-        }}
-        onConfirm={handleConfirmCancel}
-        isLoading={cancelTripMutation.isPending}
-        tripTitle={tripToCancel?.title}
-      />
-    </div>
+    <HydrationBoundary state={dehydratedState}>
+      <TripsClient />
+    </HydrationBoundary>
   );
 }
-
