@@ -33,36 +33,42 @@ interface TripResponse {
 export const HeroSection = () => {
   const popularDestinations = ['Paris', 'Tokyo', 'Bali', 'New York', 'Dubai'];
   const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
   const accessToken = useUserStore((state) => state.accessToken);
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
-  // Wait for Zustand persist to hydrate from localStorage
+  // Mark component as mounted (client-side only)
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('user-storage');
-      if (stored) {
-        try {
-          JSON.parse(stored);
-          const timer = setTimeout(() => {
-            setIsHydrated(true);
-          }, 100);
-          return () => clearTimeout(timer);
-        } catch {
+    setIsMounted(true);
+  }, []);
+
+  // Wait for Zustand persist to hydrate from localStorage (client-side only)
+  useEffect(() => {
+    if (!isMounted || typeof window === 'undefined') {
+      return;
+    }
+
+    const stored = localStorage.getItem('user-storage');
+    if (stored) {
+      try {
+        JSON.parse(stored);
+        const timer = setTimeout(() => {
           setIsHydrated(true);
-        }
-      } else {
+        }, 100);
+        return () => clearTimeout(timer);
+      } catch {
         setIsHydrated(true);
       }
     } else {
       setIsHydrated(true);
     }
-  }, []);
+  }, [isMounted]);
 
-  // Fetch trips for testing - only on client side when authenticated
+  // Fetch trips for testing - ONLY on client side after mount and hydration
   useEffect(() => {
-    // Only fetch on client side, after hydration, and when user is authenticated
-    if (typeof window === 'undefined' || !isHydrated || !accessToken) {
+    // Strict check: must be mounted, in browser, hydrated, and authenticated
+    if (!isMounted || typeof window === 'undefined' || !isHydrated || !accessToken) {
       return;
     }
 
@@ -82,7 +88,7 @@ export const HeroSection = () => {
           }
         });
     });
-  }, [isHydrated, accessToken, apiUrl]);
+  }, [isMounted, isHydrated, accessToken, apiUrl]);
 
   const handleSearch = () => {
     router.push('/search');
