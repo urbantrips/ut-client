@@ -5,10 +5,9 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { BookingCard } from '@/components/features/trips/booking-card';
-import { apiGet, apiPatch } from '@/lib/api-client';
+import { apiPatch } from '@/lib/api-client';
 import { queryKeys } from '@/lib/query-keys';
 import { getDestinationImage } from '@/lib/destination-utils';
-import { env } from '@/lib/env';
 import { LoadingState } from '@/components/features/generate-trip/loading-state';
 import { CancelConfirmationModal } from '@/components/features/trips/cancel-confirmation-modal';
 import { useUserStore } from '@/store/user-store';
@@ -102,18 +101,22 @@ export default function TripsPage() {
   const [tripToCancel, setTripToCancel] = useState<BookingCardData | null>(null);
   const accessToken = useUserStore((state) => state.accessToken);
   
-  const apiUrl = env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-  
   const { data: trips, isLoading, error } = useQuery<TripResponse[]>({
     queryKey: queryKeys.trips.all,
     queryFn: async () => {
-      console.log('[TripsPage] Fetching trips from:', `${apiUrl}/trips`);
-      const result = await apiGet<TripResponse[]>(`${apiUrl}/trips`);
-      console.log('[TripsPage] Received trips:', result?.length || 0);
-      return result;
+      // Use Next.js API route which handles server-side fetching
+      const response = await fetch('/api/trips', {
+        credentials: 'include', // Include cookies
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to fetch trips');
+      }
+      
+      return response.json();
     },
     retry: 1,
-    // Remove enabled check - let React Query run it, API client will handle auth
   });
 
   // Redirect to login if authentication error occurs
@@ -135,6 +138,7 @@ export default function TripsPage() {
   // Cancel trip mutation
   const cancelTripMutation = useMutation({
     mutationFn: async (tripId: string) => {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
       return apiPatch(`${apiUrl}/trips/${tripId}`, { status: 'Cancelled' });
     },
     onSuccess: () => {
