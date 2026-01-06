@@ -104,7 +104,7 @@ export default function TripDetailPage() {
     queryFn: async () => {
       return apiGet<TripResponse>(`${apiUrl}/trips/${tripId}`);
     },
-    enabled: isHydrated && !!tripId && !!accessToken,
+    enabled: isHydrated && !!tripId, // Only run query after hydration - let API client handle token retrieval
     retry: 1,
   });
 
