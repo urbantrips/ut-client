@@ -3,10 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { BookingCard } from '@/components/features/trips/booking-card';
 import { apiGet, apiPatch } from '@/lib/api-client';
-import { queryKeys } from '@/lib/query-keys';
 import { getDestinationImage } from '@/lib/destination-utils';
 import { LoadingState } from '@/components/features/generate-trip/loading-state';
 import { CancelConfirmationModal } from '@/components/features/trips/cancel-confirmation-modal';
@@ -94,41 +93,57 @@ function transformTripToBooking(trip: TripResponse): BookingCardData {
 
 export function TripsClient() {
   const router = useRouter();
-  const queryClient = useQueryClient();
+  const [trips, setTrips] = useState<TripResponse[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [tripToCancel, setTripToCancel] = useState<BookingCardData | null>(null);
   const accessToken = useUserStore((state) => state.accessToken);
-  
-  const { data: trips, isLoading, error } = useQuery<TripResponse[]>({
-    queryKey: queryKeys.trips.all,
-    queryFn: async () => {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      return apiGet<TripResponse[]>(`${apiUrl}/trips`);
-    },
-    retry: 1,
-  });
 
   useEffect(() => {
-    if (error instanceof Error) {
-      const errorMessage = error.message.toLowerCase();
-      const isAuthError = errorMessage.includes('authentication') || 
-                        errorMessage.includes('authorization') ||
-                        errorMessage.includes('log in') ||
-                        errorMessage.includes('bearer token');
+    const fetchTrips = async () => {
+      setIsLoading(true);
+      setError(null);
       
-      if (isAuthError && !accessToken) {
-        router.push(`/signin?redirect=${encodeURIComponent('/trips')}`);
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        const data = await apiGet<TripResponse[]>(`${apiUrl}/trips`);
+        setTrips(data);
+      } catch (err) {
+        const error = err instanceof Error ? err : new Error('Failed to fetch trips');
+        setError(error);
+        
+        const errorMessage = error.message.toLowerCase();
+        const isAuthError = errorMessage.includes('authentication') || 
+                          errorMessage.includes('authorization') ||
+                          errorMessage.includes('log in') ||
+                          errorMessage.includes('bearer token');
+        
+        if (isAuthError && !accessToken) {
+          router.push(`/signin?redirect=${encodeURIComponent('/trips')}`);
+        }
+      } finally {
+        setIsLoading(false);
       }
-    }
-  }, [error, accessToken, router]);
+    };
+
+    fetchTrips();
+  }, [accessToken, router]);
 
   const cancelTripMutation = useMutation({
     mutationFn: async (tripId: string) => {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
       return apiPatch(`${apiUrl}/trips/${tripId}`, { status: 'Cancelled' });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.trips.all });
+    onSuccess: async () => {
+      // Refetch trips after successful cancellation
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        const data = await apiGet<TripResponse[]>(`${apiUrl}/trips`);
+        setTrips(data);
+      } catch (err) {
+        console.error('Failed to refetch trips after cancellation:', err);
+      }
       setCancelModalOpen(false);
       setTripToCancel(null);
     },
