@@ -74,7 +74,7 @@ export function Header() {
             {isLoggedIn ? (
               <motion.div whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
                 <Link
-                  href="/trips"
+                  href="/my-trips"
                   className="text-sm font-bold text-black border-b-2 border-transparent hover:border-black transition-all whitespace-nowrap"
                   style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
                 >
