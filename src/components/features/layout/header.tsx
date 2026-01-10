@@ -122,7 +122,7 @@ export function Header() {
             >
               {isLoggedIn ? (
                 <Link
-                  href="/trips"
+                  href="/my-trips"
                   className="block text-sm font-bold text-black py-2"
                   style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
                   onClick={() => setIsMobileMenuOpen(false)}
